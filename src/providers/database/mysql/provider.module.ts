@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { MysqlConfigModule } from '../../../config/database/mysql/configuration.module';
 import { MysqlConfigService } from '../../../config/database/mysql/configuration.service';
+import { User } from 'src/models/auth/entities/user.entity';
 
 @Module({
   imports: [
@@ -16,8 +17,13 @@ import { MysqlConfigService } from '../../../config/database/mysql/configuration
         password: mysqlConfigService.password,
         database: mysqlConfigService.database,
         entities: [
-          // ... All MySQL based schemas/entities
+          /**
+           * @Entity 리스트 주입
+           * /model 에서 정의된 entity 를 추가한다.
+           */
+          User,
         ],
+        synchronize: true,
       }),
       inject: [MysqlConfigService],
     } as TypeOrmModuleAsyncOptions),

@@ -25,7 +25,7 @@ AppConfigModule = __decorate([
                         .valid('development', 'production', 'test', 'provision')
                         .default('development'),
                     APP_URL: Joi.string().default('http://yallo-market-api-server.test'),
-                    APP_PORT: Joi.number().default(3000),
+                    APP_PORT: Joi.number().default(5000),
                 }),
             }),
         ],
