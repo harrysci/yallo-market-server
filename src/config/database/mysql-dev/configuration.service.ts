@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 /**
- * AWS RDS TCP/IP ENV
+ * GCP Cloud Storage SQL TCP/IP ENV
  * @class env method 집합
  */
 @Injectable()
