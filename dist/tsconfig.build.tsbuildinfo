@@ -2982,7 +2982,7 @@
         "affectsGlobalScope": false
       },
       "../src/models/auth/entities/user.entity.ts": {
-        "version": "128b6725d1e861621091b2d1087f63280903e0f85d3bae92abac05b4fe939018",
+        "version": "7c84ac5c974a3661767d9f1b9175c8cc4454de48958e069c9bb0e20df4c29807",
         "signature": "9066046a4997ce50e4c414a062bf25e5cfbf3eec8e522791d708248ade80eeeb",
         "affectsGlobalScope": false
       },
@@ -3012,13 +3012,13 @@
         "affectsGlobalScope": false
       },
       "../src/models/auth/auth.service.ts": {
-        "version": "9096248e49716609018c2a96503117c2c72c1017bfbeff53f958e5adf3ed2e62",
-        "signature": "bf7d6e712e1252fb243c342b0684ce3369b689d6342c0e118979e279ad38716b",
+        "version": "59f6fb637cabf49b644ef0860eac134e059400435148be6df7e7d38e13cbd07b",
+        "signature": "d4b32daa4db93ee2f36200867161a6816db9419cb0c30a89fc821b63dc58ff2c",
         "affectsGlobalScope": false
       },
       "../src/models/auth/auth.controller.ts": {
         "version": "89beffcb90b36d08d75cbd1ba7a7ccd71df4cbc0421b27daa5630e0e75b3f06f",
-        "signature": "a1843fe669a6ab8c5d4da228c9b28cf47b41d5ed70788022a77ca9bbc1617630",
+        "signature": "440cc010d7b7d3bb5fc362f312e4e5d7b32713f5fc98b5ab51f198ad07d05428",
         "affectsGlobalScope": false
       },
       "../src/models/auth/auth.module.ts": {
@@ -3027,7 +3027,7 @@
         "affectsGlobalScope": false
       },
       "../src/app.module.ts": {
-        "version": "9bdca24e67c36558dfbd89392f64742da3c98b774c07b88cac721b7668d37340",
+        "version": "fd77df18dd0c042677e22a3963005d6d067338d1d6bcb1e9b11529f7ccf6deec",
         "signature": "b82491e2990291580288c5602d4c017238977749d52b17391f0e45d9a29be644",
         "affectsGlobalScope": false
       },
@@ -3561,11 +3561,6 @@
         "signature": "d889ca31ecf859432c9e675cf056009a227f839856a8cac58a70875e2d619a8b",
         "affectsGlobalScope": false
       },
-      "../src/models/default.ts": {
-        "version": "450f0af4f4c1ecc4c7180f2e364c8a59bfed69dd350fb6b47bce8641c2a37786",
-        "signature": "d889ca31ecf859432c9e675cf056009a227f839856a8cac58a70875e2d619a8b",
-        "affectsGlobalScope": false
-      },
       "../src/models/auth/constants/default.ts": {
         "version": "450f0af4f4c1ecc4c7180f2e364c8a59bfed69dd350fb6b47bce8641c2a37786",
         "signature": "d889ca31ecf859432c9e675cf056009a227f839856a8cac58a70875e2d619a8b",
@@ -3584,6 +3579,21 @@
       "../src/models/auth/interfaces/default.ts": {
         "version": "450f0af4f4c1ecc4c7180f2e364c8a59bfed69dd350fb6b47bce8641c2a37786",
         "signature": "d889ca31ecf859432c9e675cf056009a227f839856a8cac58a70875e2d619a8b",
+        "affectsGlobalScope": false
+      },
+      "../src/models/test/test.controller.ts": {
+        "version": "8a0b1a65b58113c4978798a5ea88afac7425f892c183ca232e5f47cd5d5053a5",
+        "signature": "0cd663433591904a918288048e9291b4654efc5aafa80784013fe56b3666a2a3",
+        "affectsGlobalScope": false
+      },
+      "../src/models/test/test.service.ts": {
+        "version": "661d5463fdfc42076476759df8c8f7c0c63914438672e49c694eb30905ded30c",
+        "signature": "ad171cc31ebe42f772aea049c57c96ba243a64d1e1fc4f443f8614dd894ceae2",
+        "affectsGlobalScope": false
+      },
+      "../src/models/test/test.module.ts": {
+        "version": "128b0ec05e0ddd68491afb51659ee777d5ed2a96f5aff89d0dd9cde10ea17286",
+        "signature": "fa5c57ddaaa13835f133dfe7c347f9f102d3cf8e17fbeac408defc6073ddd28e",
         "affectsGlobalScope": false
       },
       "../src/providers/cache/default.ts": {
@@ -6548,6 +6558,17 @@
       ],
       "../src/models/auth/entities/user.entity.ts": [
         "../node_modules/typeorm/index.d.ts"
+      ],
+      "../src/models/test/test.controller.ts": [
+        "../node_modules/@nestjs/common/index.d.ts"
+      ],
+      "../src/models/test/test.module.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../src/models/test/test.controller.ts",
+        "../src/models/test/test.service.ts"
+      ],
+      "../src/models/test/test.service.ts": [
+        "../node_modules/@nestjs/common/index.d.ts"
       ],
       "../src/providers/database/mysql-dev/provider.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -9957,7 +9978,19 @@
       "../node_modules/typescript/lib/lib.scripthost.d.ts",
       "../node_modules/typescript/lib/lib.webworker.importscripts.d.ts",
       "../src/app.controller.ts",
-      "../src/app.module.ts",
+      [
+        "../src/app.module.ts",
+        [
+          {
+            "file": "../src/app.module.ts",
+            "start": 550,
+            "length": 31,
+            "messageText": "Cannot find module './src/models/test/test.module' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
       "../src/app.service.ts",
       "../src/common/default.ts",
       "../src/config/app/configuration.module.ts",
@@ -9984,7 +10017,9 @@
       "../src/models/auth/entities/default.ts",
       "../src/models/auth/entities/user.entity.ts",
       "../src/models/auth/interfaces/default.ts",
-      "../src/models/default.ts",
+      "../src/models/test/test.controller.ts",
+      "../src/models/test/test.module.ts",
+      "../src/models/test/test.service.ts",
       "../src/providers/cache/default.ts",
       "../src/providers/database/mongo/default.ts",
       "../src/providers/database/mysql-dev/provider.module.ts",

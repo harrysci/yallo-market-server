@@ -14,6 +14,7 @@ const configuration_module_1 = require("./config/app/configuration.module");
 const provider_module_1 = require("./providers/database/mysql/provider.module");
 const provider_module_2 = require("./providers/database/mysql-dev/provider.module");
 const auth_module_1 = require("./models/auth/auth.module");
+const test_module_1 = require("./src/models/test/test.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -23,6 +24,7 @@ AppModule = __decorate([
             provider_module_1.MysqlDatabaseProviderModule,
             configuration_module_1.AppConfigModule,
             auth_module_1.AuthModule,
+            test_module_1.TestModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

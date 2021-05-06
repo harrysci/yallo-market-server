@@ -22,7 +22,22 @@ let AuthService = class AuthService {
         this.userRepository = userRepository;
     }
     async testFunc() {
-        return this.userRepository.find();
+        const testNewUser = {
+            _id: 3,
+            userId: 'test',
+            name: 'test',
+            nickName: 'test',
+            gender: 'test',
+            birthday: 'test',
+            age: 'test',
+            email: 'test',
+            phone: 'test',
+            address: 'test',
+            thumbnail: 'test',
+            accountType: 'test',
+            createdAt: 'test',
+        };
+        return this.userRepository.save(testNewUser);
     }
 };
 AuthService = __decorate([

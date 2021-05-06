@@ -22,6 +22,23 @@ export class AuthService {
    * @returns user 테이블 find result
    */
   async testFunc() {
-    return this.userRepository.find();
+    // return this.userRepository.find();
+    const testNewUser: User = {
+      _id: 3,
+      userId: 'test',
+      name: 'test',
+      nickName: 'test',
+      gender: 'test',
+      birthday: 'test',
+      age: 'test',
+      email: 'test',
+      phone: 'test',
+      address: 'test',
+      thumbnail: 'test',
+      accountType: 'test',
+      createdAt: 'test',
+    };
+
+    return this.userRepository.save(testNewUser);
   }
 }
