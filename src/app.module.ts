@@ -7,12 +7,18 @@ import { AppConfigModule } from './config/app/configuration.module';
 
 /* MySQL Database Module */
 import { MysqlDatabaseProviderModule } from './providers/database/mysql/provider.module';
+import { GCPMysqlDatabaseProviderModule } from './providers/database/mysql-dev/provider.module';
 
 /* Authentication Module */
 import { AuthModule } from './models/auth/auth.module';
 
 @Module({
-  imports: [MysqlDatabaseProviderModule, AppConfigModule, AuthModule],
+  imports: [
+    GCPMysqlDatabaseProviderModule,
+    MysqlDatabaseProviderModule,
+    AppConfigModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

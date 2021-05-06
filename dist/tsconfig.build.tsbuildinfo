@@ -2991,6 +2991,26 @@
         "signature": "10cf2d82284feba0398e698ebd9bbb037c900a014a3d268bb596ba20741a256d",
         "affectsGlobalScope": false
       },
+      "../src/config/database/mysql-dev/configuration.service.ts": {
+        "version": "c781f92cd73c48ec2f8bb4b4048fb231739c283285871916491b519897a39ac1",
+        "signature": "d6e5de3ff421adba2f54da4e536be41e122ec1bfb8f833c90123ec1d5424746d",
+        "affectsGlobalScope": false
+      },
+      "../src/config/database/mysql-dev/configuration.ts": {
+        "version": "105bc34b4c929f608ab73084f2e9816a7f308f66f9a90e17df0aea8ba46d2767",
+        "signature": "e351eab7f79837394a957f94c51b87a3fafd9acfc4e89dcd60f2784e360437d2",
+        "affectsGlobalScope": false
+      },
+      "../src/config/database/mysql-dev/configuration.module.ts": {
+        "version": "a67592cc8e8126b5302650971bae28e2386ebd5dfcea3a63208d848f024e300d",
+        "signature": "fd4a50a6e9949f689c9e25370a40b9452da8ca05c8ac78a0b5eea18cb4cb407b",
+        "affectsGlobalScope": false
+      },
+      "../src/providers/database/mysql-dev/provider.module.ts": {
+        "version": "c164613a8534ff08e0695ace649f6a4d73a1fb46bea87f9884d98d98acd6e514",
+        "signature": "4eac535a4e204820a5b52639b1ce29138c4a2e7806434ae269b2df51bd8041df",
+        "affectsGlobalScope": false
+      },
       "../src/models/auth/auth.service.ts": {
         "version": "9096248e49716609018c2a96503117c2c72c1017bfbeff53f958e5adf3ed2e62",
         "signature": "bf7d6e712e1252fb243c342b0684ce3369b689d6342c0e118979e279ad38716b",
@@ -3007,7 +3027,7 @@
         "affectsGlobalScope": false
       },
       "../src/app.module.ts": {
-        "version": "c9134cb71d1d14f59a274af8615c55519187703c34cd3d42677577384fd4e4d0",
+        "version": "9bdca24e67c36558dfbd89392f64742da3c98b774c07b88cac721b7668d37340",
         "signature": "b82491e2990291580288c5602d4c017238977749d52b17391f0e45d9a29be644",
         "affectsGlobalScope": false
       },
@@ -6442,6 +6462,7 @@
         "../src/app.service.ts",
         "../src/config/app/configuration.module.ts",
         "../src/models/auth/auth.module.ts",
+        "../src/providers/database/mysql-dev/provider.module.ts",
         "../src/providers/database/mysql/provider.module.ts"
       ],
       "../src/app.service.ts": [
@@ -6459,6 +6480,20 @@
         "../node_modules/@nestjs/config/index.d.ts"
       ],
       "../src/config/app/configuration.ts": [
+        "../node_modules/@nestjs/config/index.d.ts"
+      ],
+      "../src/config/database/mysql-dev/configuration.module.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/config/index.d.ts",
+        "../node_modules/@types/hapi__joi/index.d.ts",
+        "../src/config/database/mysql-dev/configuration.service.ts",
+        "../src/config/database/mysql-dev/configuration.ts"
+      ],
+      "../src/config/database/mysql-dev/configuration.service.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/config/index.d.ts"
+      ],
+      "../src/config/database/mysql-dev/configuration.ts": [
         "../node_modules/@nestjs/config/index.d.ts"
       ],
       "../src/config/database/mysql/configuration.module.ts": [
@@ -6513,6 +6548,14 @@
       ],
       "../src/models/auth/entities/user.entity.ts": [
         "../node_modules/typeorm/index.d.ts"
+      ],
+      "../src/providers/database/mysql-dev/provider.module.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/typeorm/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/config/database/mysql-dev/configuration.module.ts",
+        "../src/config/database/mysql-dev/configuration.service.ts",
+        "../src/models/auth/entities/user.entity.ts"
       ],
       "../src/providers/database/mysql/provider.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
@@ -9158,6 +9201,12 @@
       "../src/config/app/configuration.ts": [
         "../node_modules/@nestjs/config/index.d.ts"
       ],
+      "../src/config/database/mysql-dev/configuration.service.ts": [
+        "../node_modules/@nestjs/config/index.d.ts"
+      ],
+      "../src/config/database/mysql-dev/configuration.ts": [
+        "../node_modules/@nestjs/config/index.d.ts"
+      ],
       "../src/config/database/mysql/configuration.service.ts": [
         "../node_modules/@nestjs/config/index.d.ts"
       ],
@@ -9915,6 +9964,9 @@
       "../src/config/app/configuration.service.ts",
       "../src/config/app/configuration.ts",
       "../src/config/database/mongo/default.ts",
+      "../src/config/database/mysql-dev/configuration.module.ts",
+      "../src/config/database/mysql-dev/configuration.service.ts",
+      "../src/config/database/mysql-dev/configuration.ts",
       "../src/config/database/mysql/configuration.module.ts",
       "../src/config/database/mysql/configuration.service.ts",
       "../src/config/database/mysql/configuration.ts",
@@ -9935,6 +9987,7 @@
       "../src/models/default.ts",
       "../src/providers/cache/default.ts",
       "../src/providers/database/mongo/default.ts",
+      "../src/providers/database/mysql-dev/provider.module.ts",
       "../src/providers/database/mysql/provider.module.ts"
     ]
   },
