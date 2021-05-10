@@ -130,6 +130,7 @@
 | `database` | typeorm module connection provider 를 정의 (Database 연결 공급자) |
 
 #### /jobs
+(https://docs.nestjs.com/techniques/queues)
 | 디렉토리명 | 내용 |
 |---|:---:|
 | `consumers` | @nestjs/bull 라이브러리를 통해 생성된는 nest queue 대기 작업 처리 방식 정의 |
