@@ -11,7 +11,6 @@ import { GCPMysqlDatabaseProviderModule } from './providers/database/mysql-dev/p
 
 /* Authentication Module */
 import { AuthModule } from './models/auth/auth.module';
-import { TestModule } from './src/models/test/test.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { TestModule } from './src/models/test/test.module';
     MysqlDatabaseProviderModule,
     AppConfigModule,
     AuthModule,
-    TestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
