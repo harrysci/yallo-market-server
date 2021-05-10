@@ -104,7 +104,7 @@
             ├── mysql
             └── mysql-dev
     ```
-###### /common
+#### /common
 | 디렉토리명 | 내용 |
 |---|:---:|
 | `constants` | 공용 사용 **상수값** 정의 |
@@ -115,6 +115,26 @@
 | `middlewares` | nest() 메소드를 통해 HTTP request, response 에 접근 할 수 있는 custom middleware 정의  |
 | `pipes` | Nest method 가 호출되기 직전에 삽입되며 예외 영역 내에서 실행되는 custom pipe 정의  |
 | `serializers` | 네트워크 응답과정에서 개채 반환 직전 데이터를 변환/삭제 하는 규칙을 제공하는 custom serializer 정의  |
+
+#### /config
+| 디렉토리명 | 내용 |
+|---|:---:|
+| `app` | nest 프로젝트 내에서 사용되는 공용, 전역 환경 변수 정의 |
+| `cache` | HTTP 요청 처리간에 발생하는 cache 처리 관련 환경 변수 정의 |
+| `database` | 데이터베이스 connection 과 관련된 환경 변수 정의 |
+
+#### /providers
+| 디렉토리명 | 내용 |
+|---|:---:|
+| `cache` | 임시 데이터 저장소 cache connection provider 를 정의 |
+| `database` | typeorm module connection provider 를 정의 (Database 연결 공급자) |
+
+#### /jobs
+| 디렉토리명 | 내용 |
+|---|:---:|
+| `consumers` | @nestjs/bull 라이브러리를 통해 생성된는 nest queue 대기 작업 처리 방식 정의 |
+| `producers` | @nestjs/bull 라이브러리를 통해 생성된는 nest queue 대기 작업 생성 방식 정의) |
+
 
    ### [3-2] API Endpoints (/src/models/...controller)
 
