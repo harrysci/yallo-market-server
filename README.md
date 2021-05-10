@@ -1,12 +1,6 @@
 # Yallo Market API Server
 
 # [1] 개발 프로세스 정립
-| 값 | 의미 | 기본값 |
-|---|:---:|---:|
-| `static` | 유형(기준) 없음 / 배치 불가능 | `static` |
-| `relative` | 요소 자신을 기준으로 배치 |  |
-| `absolute` | 위치 상 부모(조상)요소를 기준으로 배치 |  |
-| `fixed` | 브라우저 창을 기준으로 배치 |  |
 
 - 개발 프로세스 정립
 
@@ -110,6 +104,14 @@
             ├── mysql
             └── mysql-dev
     ```
+###### /common
+| 디렉토리명 | 내용 |
+|---|:---:|
+| `constants` | 공용 사용 **상수값** 정의 |
+| `decorator` | meta data 를 인자로 하고 함수를 반환하는 nest custom decorator 정의 |
+| `exceptions` | 서비스 내 특정 클래스에서 발생하는 예외에 대한 nest custom exceptions 정의 (내장 예외 레이어 제외) |
+
+
 
     ### [3-2] API Endpoints (/src/models/...controller)
 
