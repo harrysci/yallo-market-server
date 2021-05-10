@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-/* ENV Module */
+/* ENV Config Module */
 import { AppConfigModule } from './config/app/configuration.module';
 
 /* MySQL Database Module */
