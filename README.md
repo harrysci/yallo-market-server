@@ -1,15 +1,3 @@
-# [기능명세서] API server
-
-person: Emma 박상은, 중혁 최, BB 김범창, Harry 김법우
-담당자: Harry 김법우
-프로젝트 분류: 기능 명세서
-
-**API server 기능 명세서**
-무엇을, 어떻게 만들지 정의한다. 
-
-무엇을? API 의 기능 목적을 기술한다.
-어떻게? 개발스택과 프로세스, 입력/출력/상태/에러 에 대해 기술한다.
-
 # Yallo Market API Server
 
 # [1] 개발 프로세스 정립
@@ -47,10 +35,10 @@ person: Emma 박상은, 중혁 최, BB 김범창, Harry 김법우
     ### [2-2] REST API
 
     Representational State Transfer, 서버가 보유한 '자원'을 이름으로 구별하여 해당 자원의 '상태'를 주고 받는 모든 것.
-    1.  HTTP URI 를 통해 자원(resource)을 명시 
+    1. HTTP URI 를 통해 자원(resource)을 명시 
     2. HTTP Method 를 통해 자원에 대한 CRUD Operation 을 명시  
 
-    **- Create (POST) 
+    - Create (POST) 
     - Read (GET)
     - Update (UPDATE)
     - Delete (DELETE)
