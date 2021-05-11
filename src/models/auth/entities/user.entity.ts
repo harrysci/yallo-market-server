@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { AccountType } from '../constants/accountType.type';
 
 /**
  * Entity Schema for Users
@@ -9,44 +10,60 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 })
 export class User {
   @PrimaryGeneratedColumn()
-  _id!: number;
+  _id?: number;
 
   @Column()
   userId: string;
 
-  @Column()
-  name: string;
+  @Column({
+    nullable: true,
+  })
+  name!: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   nickName: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   gender: string;
 
-  @Column()
-  birthday: string;
+  @Column({
+    nullable: true,
+  })
+  birthday!: string;
 
-  @Column()
-  age: string;
+  @Column({
+    nullable: true,
+  })
+  age!: string;
 
   @Column()
   email: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   phone: string;
 
-  @Column()
-  address: string;
+  @Column({
+    nullable: true,
+  })
+  address!: string;
+
+  @Column({
+    nullable: true,
+  })
+  thumbnail!: string;
 
   @Column()
-  thumbnail: string;
-
-  @Column()
-  accountType: string;
+  accountType: AccountType;
 
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  createdAt: string;
+  createdAt?: string;
 }
