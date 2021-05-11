@@ -5,8 +5,13 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get('/test')
-  async testRoute() {
-    return this.authService.testFunc();
+  @Get('profile')
+  async getUserProfile() {
+    const req = {
+      userId: 'aa',
+      accountType: 'KAKAO',
+    };
+
+    return this.authService.searchOneUserProfile(req);
   }
 }

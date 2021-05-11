@@ -41,4 +41,22 @@ export class AuthService {
 
     return this.userRepository.save(testNewUser);
   }
+
+  async searchOneUserProfile(req: any) {
+    const { userId, accountType } = req;
+
+    const userProfile = await this.userRepository.findOne({
+      userId,
+      accountType,
+    });
+
+    if (userProfile) {
+      console.log('[SUCCESS] profile exist');
+
+      return userProfile;
+    } else {
+      console.log('[FAIL] profile exist');
+      return null;
+    }
+  }
 }
