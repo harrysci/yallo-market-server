@@ -109,8 +109,26 @@ export class AuthService {
    * @param appleResProfile 애플 API 프로필 조회 반환 값
    * @returns User Entity 값
    */
-  appleProfilePreprocessor(appleResProfile: GoogleUserProfile) {
+  appleProfilePreprocessor(appleResProfile: User) {
     return appleResProfile;
+  }
+
+  /**
+   * 로컬 API 프로필 데이터를 User Entity 로 맵핑한다.
+   * @param localResProfile 모바일 앱 저장 요청 프로필 값
+   * @returns User Entity 값
+   */
+  localProfilePreprocessor(localResProfile: User) {
+    if (localResProfile.userId) {
+      const newLocalUserProfile: User = {
+        ...localResProfile,
+        accountType: 'LOCAL',
+      };
+
+      return newLocalUserProfile;
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -122,7 +140,7 @@ export class AuthService {
   profilePreprocessor(profile: any, accountType: AccountType) {
     switch (accountType) {
       case 'LOCAL':
-        return profile;
+        return this.localProfilePreprocessor(profile);
       case 'KAKAO':
         return this.kakaoProfilePreprocessor(profile);
       case 'GOOGLE':
@@ -152,7 +170,7 @@ export class AuthService {
       phone: 'test',
       address: 'test',
       thumbnail: 'test',
-      accountType: 'KAKAO',
+      accountType: 'LOCAL',
       createdAt: 'test',
     };
 
@@ -202,7 +220,7 @@ export class AuthService {
       },
     };
 
-    const newUser = this.profilePreprocessor(googleTestUser, 'GOOGLE');
+    const newUser = this.profilePreprocessor(kakaoTestUser, 'KAKAO');
 
     if (newUser) {
       return this.userRepository.save(newUser);
