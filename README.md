@@ -104,18 +104,50 @@
             ├── mysql
             └── mysql-dev
     ```
+#### /common
+| 디렉토리명 | 내용 |
+|---|:---:|
+| `constants` | 공용 사용 **상수값** 정의 |
+| `decorator` | meta data 를 인자로 하고 함수를 반환하는 nest custom decorator 정의 |
+| `exceptions` | 서비스 내 특정 클래스에서 발생하는 예외에 대한 nest custom exceptions 정의 (내장 예외 레이어 제외) |
+| `guards` | 각 middleware 이후, interceptor or pipe 이전 실행되며 런타임안에서 요청의 적정 조건 만족여부 확인 후 controller 처리 할지를 판단하는 custom guard 정의  |
+| `interfaces` | /common 디렉토리 내에서 사용되는 interfaces 정의, /src 제외 타 디렉토리 내에서 사용되는 interfaces 정의  |
+| `middlewares` | nest() 메소드를 통해 HTTP request, response 에 접근 할 수 있는 custom middleware 정의  |
+| `pipes` | Nest method 가 호출되기 직전에 삽입되며 예외 영역 내에서 실행되는 custom pipe 정의  |
+| `serializers` | 네트워크 응답과정에서 개채 반환 직전 데이터를 변환/삭제 하는 규칙을 제공하는 custom serializer 정의  |
 
-    ### [3-2] API Endpoints (/src/models/...controller)
+#### /config
+| 디렉토리명 | 내용 |
+|---|:---:|
+| `app` | nest 프로젝트 내에서 사용되는 공용, 전역 환경 변수 정의 |
+| `cache` | HTTP 요청 처리간에 발생하는 cache 처리 관련 환경 변수 정의 |
+| `database` | 데이터베이스 connection 과 관련된 환경 변수 정의 |
 
-    [/auth](https://www.notion.so/3e63a5deaf534200ae892d5c9f108a72)
+#### /providers
+| 디렉토리명 | 내용 |
+|---|:---:|
+| `cache` | 임시 데이터 저장소 cache connection provider 를 정의 |
+| `database` | typeorm module connection provider 를 정의 (Database 연결 공급자) |
 
-    [/owner](https://www.notion.so/c318df53a76d427c8bb07aebb75d22ea)
+#### /jobs
+(https://docs.nestjs.com/techniques/queues)
+| 디렉토리명 | 내용 |
+|---|:---:|
+| `consumers` | @nestjs/bull 라이브러리를 통해 생성된는 nest queue 대기 작업 처리 방식 정의 |
+| `producers` | @nestjs/bull 라이브러리를 통해 생성된는 nest queue 대기 작업 생성 방식 정의) |
 
-    [/market](https://www.notion.so/b514292f46374e579623da8e8f09b2ae)
 
-    [/order-list](https://www.notion.so/b3772258922248458653e5736490bece)
+   ### [3-2] API Endpoints (/src/models/...controller)
 
-    [/my-store](https://www.notion.so/cc2f6ab7f3994308b247655c48009fee)
+   [/auth](https://www.notion.so/3e63a5deaf534200ae892d5c9f108a72)
+
+   [/owner](https://www.notion.so/c318df53a76d427c8bb07aebb75d22ea)
+
+   [/market](https://www.notion.so/b514292f46374e579623da8e8f09b2ae)
+
+   [/order-list](https://www.notion.so/b3772258922248458653e5736490bece)
+
+   [/my-store](https://www.notion.so/cc2f6ab7f3994308b247655c48009fee)
 
 # [4] API Entity 설계
 
