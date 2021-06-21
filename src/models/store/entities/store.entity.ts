@@ -1,3 +1,4 @@
+import { Product } from 'src/models/product/entities/product.entity';
 import {
   Column,
   Entity,
@@ -85,4 +86,8 @@ export class Store {
     (store_paymethod) => store_paymethod.store,
   )
   store_paymethod!: Store_Paymethod[];
+
+  // Store(1) <-> Product(*)
+  @OneToMany((type) => Product, (product) => product.store)
+  product!: Product[];
 }
