@@ -3,7 +3,16 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { MysqlConfigModule } from '../../../config/database/mysql/configuration.module';
 import { MysqlConfigService } from '../../../config/database/mysql/configuration.service';
-import { User } from 'src/models/auth/entities/user.entity';
+import { Store } from 'src/models/store/entities/store.entity';
+import { StoreBank } from 'src/models/store/entities/store-bank.entity';
+import { StorePaymethod } from 'src/models/store/entities/store-paymethod.entity';
+import { Owner } from 'src/models/auth-owner/entities/owner.entity';
+import { Product } from 'src/models/product/entities/product.entity';
+import { ProductImage } from 'src/models/product/entities/product-image.entity';
+import { ProcessedProduct } from 'src/models/product/entities/processed-product.entity';
+import { WeightedProduct } from 'src/models/product/entities/weighted-product.entity';
+import { OnsaleProduct } from 'src/models/product/entities/onsale-product.entity';
+// import { User } from 'src/models/auth/entities/user.entity';
 
 @Module({
   imports: [
@@ -21,7 +30,16 @@ import { User } from 'src/models/auth/entities/user.entity';
            * @Entity 리스트 주입
            * /model 에서 정의된 entity 를 추가한다.
            */
-          User,
+          // User,
+          Owner,
+          Store,
+          StoreBank,
+          StorePaymethod,
+          Product,
+          ProductImage,
+          ProcessedProduct,
+          WeightedProduct,
+          OnsaleProduct,
         ],
         synchronize: true,
       }),
