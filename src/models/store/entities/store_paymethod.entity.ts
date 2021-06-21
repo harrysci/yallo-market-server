@@ -3,16 +3,16 @@ import { Store } from './store.entity';
 
 /**
  * Entity Schema for Store
- * @class Store_Paymethod
+ * @class StorePaymethod
  */
 @Entity({
   name: 'store_bank',
 })
-export class Store_Paymethod {
+export class StorePaymethod {
   @PrimaryGeneratedColumn({ type: 'int' })
   store_paymethod_id: number;
 
-  // Store(1) <-> Store_Paymethod(*)
+  // Store(1) <-> StorePaymethod(*)
   @ManyToOne((type) => Store, (store) => store.store_paymethod, {
     nullable: false,
     onDelete: 'CASCADE',

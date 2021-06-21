@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Owner } from '../../auth-owner/entities/owner.entity';
-import { Store_Bank } from './store_bank.entity';
-import { Store_Paymethod } from './store_paymethod.entity';
+import { StoreBank } from './store_bank.entity';
+import { StorePaymethod } from './store_paymethod.entity';
 
 /**
  * Entity Schema for Store
@@ -76,16 +76,16 @@ export class Store {
   @Column({ type: 'char', length: 255 })
   store_business_image: string;
 
-  // Store(1) <-> Store_Bank(*)
-  @OneToMany((type) => Store_Bank, (store_bank) => store_bank.store)
-  store_bank!: Store_Bank[];
+  // Store(1) <-> StoreBank(*)
+  @OneToMany((type) => StoreBank, (store_bank) => store_bank.store)
+  store_bank!: StoreBank[];
 
-  // Store(1) <-> Store_Paymethod(*)
+  // Store(1) <-> StorePaymethod(*)
   @OneToMany(
-    (type) => Store_Paymethod,
+    (type) => StorePaymethod,
     (store_paymethod) => store_paymethod.store,
   )
-  store_paymethod!: Store_Paymethod[];
+  store_paymethod!: StorePaymethod[];
 
   // Store(1) <-> Product(*)
   @OneToMany((type) => Product, (product) => product.store)

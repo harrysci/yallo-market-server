@@ -2,17 +2,17 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from './product.entity';
 
 /**
- * Entity Schema for Processed_Product
+ * Entity Schema for ProcessedProduct
  * @class Product
  */
 @Entity({
   name: 'processed_product',
 })
-export class Processed_Product {
+export class ProcessedProduct {
   @PrimaryGeneratedColumn({ type: 'int' })
   processed_product_id: number;
 
-  // Product(1) <-> Processed_Product(*)
+  // Product(1) <-> ProcessedProduct(*)
   @ManyToOne((type) => Product, (product) => product.processed_product, {
     nullable: false,
     onDelete: 'CASCADE',

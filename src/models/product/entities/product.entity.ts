@@ -6,10 +6,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Onsale_Product } from './onsale_product.entity';
-import { Processed_Product } from './processed_product.entity';
-import { Product_Image } from './product_image.entity';
-import { Weighted_Product } from './weighted_product.entity';
+import { OnsaleProduct } from './onsale_product.entity';
+import { ProcessedProduct } from './processed_product.entity';
+import { ProductImage } from './product_image.entity';
+import { WeightedProduct } from './weighted_product.entity';
 
 /**
  * Entity Schema for Product
@@ -63,28 +63,28 @@ export class Product {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   product_created_at: Date;
 
-  // Product(1) <-> Product_Image(*)
-  @OneToMany((type) => Product_Image, (product_image) => product_image.product)
-  product_image!: Product_Image[];
+  // Product(1) <-> ProductImage(*)
+  @OneToMany((type) => ProductImage, (product_image) => product_image.product)
+  product_image!: ProductImage[];
 
-  // Product(1) <-> Processed_Product(*)
+  // Product(1) <-> ProcessedProduct(*)
   @OneToMany(
-    (type) => Processed_Product,
+    (type) => ProcessedProduct,
     (processed_product) => processed_product.product,
   )
-  processed_product!: Processed_Product[];
+  processed_product!: ProcessedProduct[];
 
-  // Product(1) <-> Weighted_Product(*)
+  // Product(1) <-> WeightedProduct(*)
   @OneToMany(
-    (type) => Weighted_Product,
+    (type) => WeightedProduct,
     (weighted_product) => weighted_product.product,
   )
-  weighted_product!: Weighted_Product[];
+  weighted_product!: WeightedProduct[];
 
-  // Product(1) <-> Onsale_Product(*)
+  // Product(1) <-> OnsaleProduct(*)
   @OneToMany(
-    (type) => Onsale_Product,
+    (type) => OnsaleProduct,
     (onsale_product) => onsale_product.product,
   )
-  onsale_product!: Onsale_Product[];
+  onsale_product!: OnsaleProduct[];
 }

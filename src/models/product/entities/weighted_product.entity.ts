@@ -2,17 +2,17 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from './product.entity';
 
 /**
- * Entity Schema for Weighted_Product
+ * Entity Schema for WeightedProduct
  * @class Product
  */
 @Entity({
   name: 'weighted_product',
 })
-export class Weighted_Product {
+export class WeightedProduct {
   @PrimaryGeneratedColumn({ type: 'int' })
   weighted_product_id: number;
 
-  // Product(1) <-> Weighted_Product(*)
+  // Product(1) <-> WeightedProduct(*)
   @ManyToOne((type) => Product, (product) => product.weighted_product, {
     nullable: false,
     onDelete: 'CASCADE',
