@@ -46,10 +46,7 @@ export class Owner {
   owner_created_at: Date;
 
   // Store(1) <-> Owner(1)
-  @OneToOne((type) => Store, (store) => store.owner, {
-    eager: true,
-    // onDelete: 'CASCADE',
-  })
+  @OneToOne((type) => Store, (store) => store.owner)
   @JoinColumn()
   store: Store;
 }
