@@ -16,10 +16,7 @@ export class AuthCustomerService {
    * @constructs
    * @param {Repository<User>}
    */
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  constructor() {} // private readonly userRepository: Repository<User>, // @InjectRepository(User)
 
   /**
    * 단일 유저 프로필 정보 조회
@@ -29,19 +26,19 @@ export class AuthCustomerService {
   async searchOneUserProfile(req: any) {
     const { userId, accountType } = req;
 
-    const userProfile = await this.userRepository.findOne({
-      userId,
-      accountType,
-    });
+    // const userProfile = await this.userRepository.findOne({
+    //   userId,
+    //   accountType,
+    // });
 
-    if (userProfile) {
-      console.log('[SUCCESS] profile exist');
+    // if (userProfile) {
+    //   console.log('[SUCCESS] profile exist');
 
-      return userProfile;
-    } else {
-      console.log('[FAIL] profile exist');
-      return null;
-    }
+    //   return userProfile;
+    // } else {
+    //   console.log('[FAIL] profile exist');
+    //   return null;
+    // }
   }
 
   /**
@@ -223,7 +220,8 @@ export class AuthCustomerService {
     const newUser = this.profilePreprocessor(kakaoTestUser, 'KAKAO');
 
     if (newUser) {
-      return this.userRepository.save(newUser);
+      // return this.userRepository.save(newUser);
+      return;
     } else {
       return null;
     }
