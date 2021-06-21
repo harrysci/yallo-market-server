@@ -1,4 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { StoreBankBase } from '../interfaces/store-bank-base.interface';
 import { Store } from './store.entity';
 
 /**
@@ -8,7 +9,7 @@ import { Store } from './store.entity';
 @Entity({
   name: 'store_bank',
 })
-export class Store_Bank {
+export class Store_Bank implements StoreBankBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   store_bank_id: number;
 

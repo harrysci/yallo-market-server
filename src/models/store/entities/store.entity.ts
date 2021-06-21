@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Owner } from '../../auth-owner/entities/owner.entity';
+import { StoreBase } from '../interfaces/store-base.interface';
 import { Store_Bank } from './store_bank.entity';
 import { Store_Paymethod } from './store_paymethod.entity';
 
@@ -16,7 +17,7 @@ import { Store_Paymethod } from './store_paymethod.entity';
 @Entity({
   name: 'store',
 })
-export class Store {
+export class Store implements StoreBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   store_id: number;
 
