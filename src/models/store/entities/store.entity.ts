@@ -2,6 +2,7 @@ import { Product } from 'src/models/product/entities/product.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -22,11 +23,9 @@ export class Store implements StoreBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   store_id: number;
 
-  // Store(1) <-> Owner(1)
-  @OneToOne((type) => Owner, (owner) => owner.store, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  })
+  // // Store(1) <-> Owner(1)
+  @OneToOne(() => Owner)
+  @JoinColumn()
   owner: Owner;
 
   @Column({ type: 'char', length: 30 })

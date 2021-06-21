@@ -1,11 +1,4 @@
-import { Store } from 'src/models/store/entities/store.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { OwnerBase } from '../interfaces/owner.interface';
 
 /**
@@ -45,9 +38,4 @@ export class Owner implements OwnerBase {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   owner_created_at: Date;
-
-  // Store(1) <-> Owner(1)
-  @OneToOne((type) => Store, (store) => store.owner)
-  @JoinColumn()
-  store: Store;
 }

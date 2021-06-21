@@ -1,5 +1,3 @@
-import { Store } from 'src/models/store/entities/store.entity';
-
 /**
  * @interface OwnerBase
  * owner entity base interface
@@ -15,5 +13,4 @@ export interface OwnerBase {
   owner_address: string;
   owner_identification_image: string;
   owner_created_at: Date;
-  store: Store;
 }

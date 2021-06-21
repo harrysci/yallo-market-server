@@ -7,7 +7,7 @@ import { Store } from './store.entity';
  * @class StorePaymethod
  */
 @Entity({
-  name: 'store_bank',
+  name: 'store_paymethod',
 })
 export class StorePaymethod implements StorePaymethodBase {
   @PrimaryGeneratedColumn({ type: 'int' })
