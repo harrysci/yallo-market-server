@@ -1,4 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductImageBase } from '../interfaces/product-image-base.interface';
 import { Product } from './product.entity';
 
 /**
@@ -8,7 +9,7 @@ import { Product } from './product.entity';
 @Entity({
   name: 'product_image',
 })
-export class ProductImage {
+export class ProductImage implements ProductImageBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   product_image_id: number;
 

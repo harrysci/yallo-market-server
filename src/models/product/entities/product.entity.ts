@@ -6,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ProductBase } from '../interfaces/product-base.interface';
 import { OnsaleProduct } from './onsale-product.entity';
 import { ProcessedProduct } from './processed-product.entity';
 import { ProductImage } from './product-image.entity';
@@ -18,7 +19,7 @@ import { WeightedProduct } from './weighted-product.entity';
 @Entity({
   name: 'product',
 })
-export class Product {
+export class Product implements ProductBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   product_id: number;
 

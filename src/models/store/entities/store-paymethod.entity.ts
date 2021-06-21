@@ -9,7 +9,7 @@ import { Store } from './store.entity';
 @Entity({
   name: 'store_bank',
 })
-export class StorePaymethod {
+export class StorePaymethod implements StorePaymethodBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   store_paymethod_id: number;
 

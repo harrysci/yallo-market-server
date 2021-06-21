@@ -1,4 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ProcessedProductBase } from '../interfaces/processed-product-base.interface';
 import { Product } from './product.entity';
 
 /**
@@ -8,7 +9,7 @@ import { Product } from './product.entity';
 @Entity({
   name: 'processed_product',
 })
-export class ProcessedProduct {
+export class ProcessedProduct implements ProcessedProductBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   processed_product_id: number;
 

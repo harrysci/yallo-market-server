@@ -1,4 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { OnsaleProductBase } from '../interfaces/onsale-product-base.interface';
 import { Product } from './product.entity';
 
 /**
@@ -8,7 +9,7 @@ import { Product } from './product.entity';
 @Entity({
   name: 'onsale_product',
 })
-export class OnsaleProduct {
+export class OnsaleProduct implements OnsaleProductBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   onsale_product_id: number;
 

@@ -1,4 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { WeightedProductBase } from '../interfaces/weighted-product-base.interface';
 import { Product } from './product.entity';
 
 /**
@@ -8,7 +9,7 @@ import { Product } from './product.entity';
 @Entity({
   name: 'weighted_product',
 })
-export class WeightedProduct {
+export class WeightedProduct implements WeightedProductBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   weighted_product_id: number;
 
