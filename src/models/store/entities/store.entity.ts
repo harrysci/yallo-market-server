@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Owner } from '../../auth-owner/entities/owner.entity';
-import { Store_Bank } from './store_bank-entity';
-import { Store_Paymethod } from './store_paymethod-entity';
+import { Store_Bank } from './store_bank.entity';
+import { Store_Paymethod } from './store_paymethod.entity';
 
 /**
  * Entity Schema for Store

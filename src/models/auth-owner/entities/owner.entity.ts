@@ -1,4 +1,4 @@
-import { Store } from 'src/models/store/store-entity';
+import { Store } from 'src/models/store/entities/store.entity';
 import {
   Column,
   Entity,
