@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AuthService } from 'src/models/auth/auth.service';
+import { AuthCustomerService } from 'src/models/auth-customer/auth-customer.service';
 
 @Injectable()
 export class Seeder {
   constructor(
     private readonly logger: Logger,
-    private readonly authService: AuthService,
+    private readonly authCustomerService: AuthCustomerService,
   ) {}
   async seed() {
     /* */

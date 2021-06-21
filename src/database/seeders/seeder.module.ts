@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { Module } from '@nestjs/common';
-import { AuthModule } from 'src/models/auth/auth.module';
-import { AuthService } from 'src/models/auth/auth.service';
+import { AuthCustomerModule } from 'src/models/auth-customer/auth-customer.module';
+import { AuthCustomerService } from 'src/models/auth-customer/auth-customer.service';
 import { MysqlDatabaseProviderModule } from 'src/providers/database/mysql/provider.module';
 import { Seeder } from './seeder';
 
@@ -11,7 +11,7 @@ import { Seeder } from './seeder';
  * @module
  */
 @Module({
-  imports: [MysqlDatabaseProviderModule, AuthModule],
-  providers: [AuthService, Logger, Seeder],
+  imports: [MysqlDatabaseProviderModule, AuthCustomerModule],
+  providers: [AuthCustomerService, Logger, Seeder],
 })
 export class SeederModule {}

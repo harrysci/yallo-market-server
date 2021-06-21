@@ -10,7 +10,7 @@ import { GoogleUserProfile } from './interfaces/GoogleUserProfileType.interface'
 import { KakaoUserProfile } from './interfaces/KakaoUserProfileType.interface';
 
 @Injectable()
-export class AuthService {
+export class AuthCustomerService {
   /**
    * Create an instance of class.
    * @constructs

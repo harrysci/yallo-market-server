@@ -10,16 +10,22 @@ import { MysqlDatabaseProviderModule } from './providers/database/mysql/provider
 import { GCPMysqlDatabaseProviderModule } from './providers/database/mysql-dev/provider.module';
 
 /* Authentication Module */
-import { AuthModule } from './models/auth/auth.module';
+import { AuthCustomerModule } from './models/auth-customer/auth-customer.module';
+import { AuthOwnerController } from './models/auth-owner/auth-owner.controller';
+import { AuthOwnerModule } from './models/auth-owner/auth-owner.module';
+import { StoreController } from './models/store/store.controller';
+import { StoreModule } from './models/store/store.module';
 
 @Module({
   imports: [
     GCPMysqlDatabaseProviderModule,
     MysqlDatabaseProviderModule,
     AppConfigModule,
-    AuthModule,
+    AuthCustomerModule,
+    AuthOwnerModule,
+    StoreModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AuthOwnerController, StoreController],
   providers: [AppService],
 })
 export class AppModule {}

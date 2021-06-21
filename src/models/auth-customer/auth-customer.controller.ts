@@ -1,9 +1,9 @@
 import { Controller, Get, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthCustomerService } from './auth-customer.service';
 
 @Controller('auth')
-export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+export class AuthCustomerController {
+  constructor(private readonly authCustomerService: AuthCustomerService) {}
 
   @Get('profile')
   async getUserProfile() {
@@ -12,7 +12,7 @@ export class AuthController {
       accountType: 'KAKAO',
     };
 
-    return this.authService.searchOneUserProfile(req);
+    return this.authCustomerService.searchOneUserProfile(req);
   }
 
   @Post('profile')
@@ -22,6 +22,6 @@ export class AuthController {
       accountType: 'KAKAO',
     };
 
-    return this.authService.saveUserProfile(req);
+    return this.authCustomerService.saveUserProfile(req);
   }
 }
