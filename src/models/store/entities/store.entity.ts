@@ -9,6 +9,7 @@ import {
 import { Owner } from '../../auth-owner/entities/owner.entity';
 import { StoreBank } from './store_bank.entity';
 import { StorePaymethod } from './store_paymethod.entity';
+import { StoreBase } from '../interfaces/store-base.interface';
 
 /**
  * Entity Schema for Store
@@ -17,7 +18,7 @@ import { StorePaymethod } from './store_paymethod.entity';
 @Entity({
   name: 'store',
 })
-export class Store {
+export class Store implements StoreBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   store_id: number;
 

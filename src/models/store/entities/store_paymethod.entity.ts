@@ -1,4 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { StorePaymethodBase } from '../interfaces/store-paymethod-base.interface';
 import { Store } from './store.entity';
 
 /**

@@ -6,6 +6,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { OwnerBase } from '../interfaces/owner.interface';
 
 /**
  * Entity Schema for Owner
@@ -14,7 +15,7 @@ import {
 @Entity({
   name: 'owner',
 })
-export class Owner {
+export class Owner implements OwnerBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   owner_id: number;
 
