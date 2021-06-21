@@ -1,6 +1,6 @@
 import { Owner } from 'src/models/auth-owner/entities/owner.entity';
-import { Store_Bank } from '../entities/store_bank.entity';
-import { Store_Paymethod } from '../entities/store_paymethod.entity';
+import { StoreBank } from '../entities/store-bank.entity';
+import { StorePaymethod } from '../entities/store-paymethod.entity';
 
 /**
  * @interface StoreBase
@@ -25,6 +25,6 @@ export interface StoreBase {
   store_business_owner_birthday: Date;
   store_business_owner_name: string;
   store_business_image: string;
-  store_bank: Store_Bank[];
-  store_paymethod: Store_Paymethod[];
+  store_bank: StoreBank[];
+  store_paymethod: StorePaymethod[];
 }

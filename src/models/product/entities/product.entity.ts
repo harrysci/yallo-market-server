@@ -6,10 +6,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { OnsaleProduct } from './onsale_product.entity';
-import { ProcessedProduct } from './processed_product.entity';
-import { ProductImage } from './product_image.entity';
-import { WeightedProduct } from './weighted_product.entity';
+import { OnsaleProduct } from './onsale-product.entity';
+import { ProcessedProduct } from './processed-product.entity';
+import { ProductImage } from './product-image.entity';
+import { WeightedProduct } from './weighted-product.entity';
 
 /**
  * Entity Schema for Product
