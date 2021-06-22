@@ -15,6 +15,7 @@ import { AuthOwnerController } from './models/auth-owner/auth-owner.controller';
 import { AuthOwnerModule } from './models/auth-owner/auth-owner.module';
 import { StoreController } from './models/store/store.controller';
 import { StoreModule } from './models/store/store.module';
+import { ProductModule } from './models/product/product.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { StoreModule } from './models/store/store.module';
     AuthCustomerModule,
     AuthOwnerModule,
     StoreModule,
+    ProductModule
   ],
   controllers: [AppController, AuthOwnerController, StoreController],
   providers: [AppService],
