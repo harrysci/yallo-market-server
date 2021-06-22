@@ -25,7 +25,7 @@ export class Store implements StoreBase {
 
   // // Store(1) <-> Owner(1)
   @OneToOne(() => Owner)
-  @JoinColumn()
+  @JoinColumn({ name: 'owner_id' })
   owner: Owner;
 
   @Column({ type: 'char', length: 30 })

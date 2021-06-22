@@ -2,6 +2,7 @@ import { Store } from 'src/models/store/entities/store.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -29,6 +30,7 @@ export class Product implements ProductBase {
     // Store 가 삭제되어도 Product 는 삭제되지 않는다.
     onDelete: 'NO ACTION',
   })
+  @JoinColumn({ name: 'store_id' })
   store!: Store;
 
   @Column({ type: 'char', length: 30 })
