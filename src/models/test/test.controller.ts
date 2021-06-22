@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -29,5 +32,18 @@ export class TestController {
     );
 
     console.log(image);
+  }
+
+  @Get('download')
+  async downloadFile(@Query('path') path) {
+    const res = await this.imageStorageService.downloadImage(path);
+    console.log(res);
+    return res;
+  }
+
+  @Delete('remove')
+  async deleteFile(@Query('path') req) {
+    const res = await this.imageStorageService.deleteImage(req[0]);
+    return res;
   }
 }
