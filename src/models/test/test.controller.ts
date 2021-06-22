@@ -28,7 +28,8 @@ export class TestController {
   ) {
     const image = await this.imageStorageService.uploadImage(
       file,
-      'test/test/',
+      'ownerIdf',
+      3,
     );
 
     console.log(image);
