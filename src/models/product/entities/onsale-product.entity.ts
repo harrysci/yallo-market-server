@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { OnsaleProductBase } from '../interfaces/onsale-product-base.interface';
 import { Product } from './product.entity';
 
@@ -18,6 +24,7 @@ export class OnsaleProduct implements OnsaleProductBase {
     nullable: false,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'product_id' })
   product!: Product;
 
   @Column({ type: 'int' })
