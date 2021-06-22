@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { StorePaymethodBase } from '../interfaces/store-paymethod-base.interface';
 import { Store } from './store.entity';
 
@@ -18,11 +24,9 @@ export class StorePaymethod implements StorePaymethodBase {
     nullable: false,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'store_id' })
   store!: Store;
 
   @Column({ type: 'char', length: 30 })
-  store_bank_name: string;
-
-  @Column({ type: 'char', length: 30 })
-  store_account_number: string;
+  store_pay_method: string;
 }
