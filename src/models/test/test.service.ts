@@ -2,18 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { AuthOwnerService } from '../auth-owner/auth-owner.service';
 import * as AWS from 'aws-sdk';
 import { S3 } from 'aws-sdk';
+import { S3ConfigService } from 'src/config/aws/s3/configuration.service';
 
 @Injectable()
 export class TestService {
   private s3: any;
 
-  constructor() {
+  constructor(private readonly awsS3ConfigService: S3ConfigService) {
     this.s3 = new AWS.S3();
 
     AWS.config.update({
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      region: process.env.AWS_REGION,
+      accessKeyId: this.awsS3ConfigService.accessKey,
+      secretAccessKey: this.awsS3ConfigService.secretAccessKey,
+      region: this.awsS3ConfigService.region,
     });
   }
 
@@ -25,7 +26,6 @@ export class TestService {
       Body: file,
     };
 
-    console.log(params);
     return new Promise((resolve, reject) => {
       s3.upload(params, (err, data) => {
         if (err) {
@@ -39,7 +39,7 @@ export class TestService {
 
   async upload(file) {
     const { originalname } = file;
-    const bucketS3 = process.env.AWS_S3_BUCKET_NAME;
+    const bucketS3 = this.awsS3ConfigService.s3BucketName;
     await this.uploadS3(file.buffer, bucketS3, originalname);
   }
 }

@@ -1,26 +1,33 @@
 import {
   Body,
   Controller,
-  Get,
-  Param,
   Post,
-  Req,
   UploadedFile,
-  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { TestService } from './test.service';
 
-import * as MulterS3 from 'multer-s3';
+import { ImageStorageService } from '../image-storage/image-storage.service';
 
 @Controller('test')
 export class TestController {
-  constructor(private readonly testService: TestService) {}
+  constructor(
+    private readonly testService: TestService,
+    private readonly imageStorageService: ImageStorageService,
+  ) {}
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File, @Body() params: any) {
-    this.testService.upload(file);
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() params: any,
+  ) {
+    const image = await this.imageStorageService.uploadImage(
+      file,
+      'test/test/',
+    );
+
+    console.log(image);
   }
 }
