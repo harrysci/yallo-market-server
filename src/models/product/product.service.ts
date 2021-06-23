@@ -6,11 +6,7 @@ import { ProcessedProduct } from './entities/processed-product.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
-import { AxiosResponse } from 'axios';
-// 유통상품 지식뱅크 메서드에 사용되는 Dto
-import { postProductDto } from './dto/postProductDto.dto';
-import { requestApiDto } from './dto/requestApiDto.dto';
-import { distributePrdDto } from './dto/distributePrdDto.dto';
+
 @Injectable()
 export class ProductService {
   constructor(
@@ -40,7 +36,7 @@ export class ProductService {
     request: GET.
     header : Content-Type, yallomarket appkey,
     url: korchamurl/{barcode},
-  메서드 반환값 : -notion db명세 참조
+  메서드 반환값 : -notion db명세 참조 (AxiosRequest<Dto>)
   ************************************************
   */
   private async requestKorchamApi(barcode: string): Promise<any> {
