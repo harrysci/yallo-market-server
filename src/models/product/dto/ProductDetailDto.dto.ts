@@ -1,9 +1,10 @@
-import { OnsaleProduct } from '../entities/onsale-product.entity';
-import { ProcessedProduct } from '../entities/processed-product.entity';
-import { ProductImage } from '../entities/product-image.entity';
-import { WeightedProduct } from '../entities/weighted-product.entity';
+import { Store } from "src/models/store/entities/store.entity";
+import { OnsaleProduct } from "../entities/onsale-product.entity"
+import { ProcessedProduct } from "../entities/processed-product.entity"
+import { ProductImage } from "../entities/product-image.entity"
+import { WeightedProduct } from "../entities/weighted-product.entity"
 
-export class ProductListDto {
+export class ProductDetailDto {
   // product 공통 attributes
   product_id: number;
   product_barcode: string;

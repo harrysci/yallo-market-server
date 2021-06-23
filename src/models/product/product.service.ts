@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FindStoreProductDto } from './dto/FindStoreProduct.dto';
-import { ProductDto } from './dto/ProductDto.dto';
-import { ProductListDto } from './dto/ProductListDto.dto';
+import { ProductDetailDto } from './dto/ProductDetailDto.dto';
 import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { Product } from './entities/product.entity';
@@ -26,7 +25,7 @@ export class ProductService {
     private readonly onSaleProductRepository: Repository<OnsaleProduct>,
   ) {}
   
-  async getProductDetailInfo(req: FindStoreProductDto): Promise<ProductListDto>{
+  async getProductDetailInfo(req: FindStoreProductDto): Promise<ProductDetailDto>{
     /*조회 결과*/ 
     const productRawInfo=await this.productRepository.createQueryBuilder('product')
             .where('product.product_id=:id',{id:req.product_id})
@@ -37,7 +36,7 @@ export class ProductService {
             .leftJoinAndSelect('product.weighted_product', 'weighted_product')
             .getOne();
     /*정보 리스트 정제*/
-    const productDetailInfo: ProductListDto={
+    const productDetailInfo: ProductDetailDto={
       product_id:productRawInfo.product_id, 
       product_barcode: productRawInfo.product_barcode,
       product_name: productRawInfo.product_name,
