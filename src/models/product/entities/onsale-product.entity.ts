@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OnsaleProductBase } from '../interfaces/onsale-product-base.interface';
@@ -19,8 +19,8 @@ export class OnsaleProduct implements OnsaleProductBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   onsale_product_id: number;
 
-  // Product(1) <-> OnsaleProduct(*)
-  @ManyToOne((type) => Product, (product) => product.onsale_product, {
+  // Product(1) <-> OnsaleProduct(1)
+  @OneToOne(() => Product, {
     nullable: false,
     onDelete: 'CASCADE',
   })
