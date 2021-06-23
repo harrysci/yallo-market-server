@@ -6,7 +6,6 @@ import { WeightedProduct } from '../entities/weighted-product.entity';
 export class ProductListDto {
   // product 공통 attributes
   product_id: number;
-  store_id: number;
   product_barcode: string;
   product_name: string;
   product_original_price: number;
@@ -19,10 +18,9 @@ export class ProductListDto {
   product_category: string;
   product_created_at: Date;
   product_image: ProductImage[];
-  processed_product: ProcessedProduct[];
-  weighted_product: WeightedProduct[];
-  onsale_product: OnsaleProduct[];
-
+  //onsale_product attributes
+  onsale_product_id: number;
+  product_onsale_price: number;
   // processed_product attributes
   processed_product_id?: number;
   processed_product_name?: string;

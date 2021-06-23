@@ -26,25 +26,79 @@ export class ProductService {
     private readonly onSaleProductRepository: Repository<OnsaleProduct>,
   ) {}
   
-  async getAllProductInfo(): Promise<Product[]>{
-    return await this.productRepository.find();
-  }
-  // async getProductInfo(id: number): Promise<Product>{
-  //   return await this.productRepository.createQueryBuilder('product')
-  //           .where('product.product_id=:id',{id})
-  //           // .andWhere('product.store_id=:store_id', {store_id})
-  //           .leftJoinAndSelect('product.product_image','product_image')
-  //           .leftJoinAndSelect('product.processed_product', 'processed_product')
-  //           .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-  //           .getOne();
-  // }
-  async getStoreProduct(req: FindStoreProductDto): Promise<ProductDto>{
-    return await this.productRepository.createQueryBuilder('product')
+  async getProductDetailInfo(req: FindStoreProductDto): Promise<ProductListDto>{
+    /*조회 결과*/ 
+    const productRawInfo=await this.productRepository.createQueryBuilder('product')
             .where('product.product_id=:id',{id:req.product_id})
             .andWhere('product.store.store_id=:store_id', {store_id:req.store_id})
             .leftJoinAndSelect('product.product_image','product_image')
+            .leftJoinAndSelect('product.onsale_product','onsale_product')
             .leftJoinAndSelect('product.processed_product', 'processed_product')
             .leftJoinAndSelect('product.weighted_product', 'weighted_product')
             .getOne();
+    /*정보 리스트 정제*/
+    const productDetailInfo: ProductListDto={
+      product_id:productRawInfo.product_id, 
+      product_barcode: productRawInfo.product_barcode,
+      product_name: productRawInfo.product_name,
+      product_original_price: productRawInfo.product_original_price,
+      product_current_price: productRawInfo.product_current_price,
+      product_profit: productRawInfo.product_profit,
+      product_description: productRawInfo.product_description,
+      product_is_processed: productRawInfo.product_is_processed,
+      product_is_soldout: productRawInfo.product_is_soldout,
+      product_onsale: productRawInfo.product_onsale,
+      product_category: productRawInfo.product_category,
+      product_created_at: productRawInfo.product_created_at,
+      product_image: productRawInfo.product_image,
+      // processed_product attributes
+      onsale_product_id:
+        productRawInfo.onsale_product.length>0
+        ?productRawInfo.onsale_product[0].onsale_product_id
+        :null,
+      product_onsale_price:
+        productRawInfo.onsale_product.length>0
+        ?productRawInfo.onsale_product[0].product_onsale_price
+        :null,
+      processed_product_id:
+        productRawInfo.processed_product.length>0
+        ?productRawInfo.processed_product[0].processed_product_id
+        :null,
+      processed_product_name: productRawInfo.processed_product.length>0
+      ?productRawInfo.processed_product[0].processed_product_name
+      :null,
+      processed_product_company:productRawInfo.processed_product.length>0
+      ? productRawInfo.processed_product[0].processed_product_company
+      :null,
+      processed_product_standard_type: productRawInfo.processed_product.length>0
+      ?productRawInfo.processed_product[0].processed_product_standard_type
+      :null,
+      processed_product_standard_values: productRawInfo.processed_product.length>0
+      ?productRawInfo.processed_product[0].processed_product_standard_values
+      :null,
+      processed_product_composition: productRawInfo.processed_product.length>0
+      ?productRawInfo.processed_product[0].processed_product_composition
+      :null,
+      processed_product_volume:productRawInfo.processed_product.length>0
+      ? productRawInfo.processed_product[0].processed_product_volume
+      :null,
+      processed_product_adult:productRawInfo.processed_product.length>0
+      ? productRawInfo.processed_product[0].processed_product_adult
+      :null,
+      processed_product_caution:productRawInfo.processed_product.length>0
+      ? productRawInfo.processed_product[0].processed_product_caution
+      :null,
+      processed_product_information:productRawInfo.processed_product.length>0
+      ? productRawInfo.processed_product[0].processed_product_information
+      :null,
+      // weighted_product attributes
+      weighted_product_id:productRawInfo.weighted_product.length>0
+      ? productRawInfo.weighted_product[0].weighted_product_id
+      :null,
+      weighted_product_volume:productRawInfo.weighted_product.length>0
+      ? productRawInfo.weighted_product[0].weighted_product_volume
+      :null,
+    }
+    return productDetailInfo;
   }
 }
