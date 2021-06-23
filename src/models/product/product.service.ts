@@ -49,53 +49,56 @@ export class ProductService {
       product_onsale: productRawInfo.product_onsale,
       product_category: productRawInfo.product_category,
       product_created_at: productRawInfo.product_created_at,
-      product_image: productRawInfo.product_image,
+      
+      representative_image: productRawInfo.product_image[0].product_image,
+      detail_image:productRawInfo.product_image[1].product_image,
+      additional_image:productRawInfo.product_image[2].product_image,
       // processed_product attributes
       onsale_product_id:
-        productRawInfo.onsale_product == null
+        productRawInfo.onsale_product != null
         ?productRawInfo.onsale_product.onsale_product_id
         :null,
       product_onsale_price:
-        productRawInfo.onsale_product == null
-        ?productRawInfo.onsale_product[0].product_onsale_price
+        productRawInfo.onsale_product != null
+        ?productRawInfo.onsale_product.product_onsale_price
         :null,
       processed_product_id:
-        productRawInfo.processed_product == null
-        ?productRawInfo.processed_product[0].processed_product_id
+        productRawInfo.processed_product != null
+        ?productRawInfo.processed_product.processed_product_id
         :null,
-      processed_product_name: productRawInfo.processed_product == null
-      ?productRawInfo.processed_product[0].processed_product_name
+      processed_product_name: productRawInfo.processed_product != null
+      ?productRawInfo.processed_product.processed_product_name
       :null,
-      processed_product_company:productRawInfo.processed_product ==null
-      ? productRawInfo.processed_product[0].processed_product_company
+      processed_product_company:productRawInfo.processed_product !=null
+      ? productRawInfo.processed_product.processed_product_company
       :null,
-      processed_product_standard_type: productRawInfo.processed_product== null
-      ?productRawInfo.processed_product[0].processed_product_standard_type
+      processed_product_standard_type: productRawInfo.processed_product!= null
+      ?productRawInfo.processed_product.processed_product_standard_type
       :null,
-      processed_product_standard_values: productRawInfo.processed_product == null
-      ?productRawInfo.processed_product[0].processed_product_standard_values
+      processed_product_standard_values: productRawInfo.processed_product != null
+      ?productRawInfo.processed_product.processed_product_standard_values
       :null,
-      processed_product_composition: productRawInfo.processed_product == null
-      ?productRawInfo.processed_product[0].processed_product_composition
+      processed_product_composition: productRawInfo.processed_product != null
+      ?productRawInfo.processed_product.processed_product_composition
       :null,
-      processed_product_volume:productRawInfo.processed_product.length == null
-      ? productRawInfo.processed_product[0].processed_product_volume
+      processed_product_volume:productRawInfo.processed_product != null
+      ? productRawInfo.processed_product.processed_product_volume
       :null,
-      processed_product_adult:productRawInfo.processed_product.length== null
-      ? productRawInfo.processed_product[0].processed_product_adult
+      processed_product_adult:productRawInfo.processed_product!= null
+      ? productRawInfo.processed_product.processed_product_adult
       :null,
-      processed_product_caution:productRawInfo.processed_product.length== null
-      ? productRawInfo.processed_product[0].processed_product_caution
+      processed_product_caution:productRawInfo.processed_product!= null
+      ? productRawInfo.processed_product.processed_product_caution
       :null,
-      processed_product_information:productRawInfo.processed_product.length== null
-      ? productRawInfo.processed_product[0].processed_product_information
+      processed_product_information:productRawInfo.processed_product!= null
+      ? productRawInfo.processed_product.processed_product_information
       :null,
       // weighted_product attributes
-      weighted_product_id:productRawInfo.weighted_product.length== null
-      ? productRawInfo.weighted_product[0].weighted_product_id
+      weighted_product_id:productRawInfo.weighted_product!= null
+      ? productRawInfo.weighted_product.weighted_product_id
       :null,
-      weighted_product_volume:productRawInfo.weighted_product.length== null
-      ? productRawInfo.weighted_product[0].weighted_product_volume
+      weighted_product_volume:productRawInfo.weighted_product!= null
+      ? productRawInfo.weighted_product.weighted_product_volume
       :null,
     }
     return productDetailInfo;

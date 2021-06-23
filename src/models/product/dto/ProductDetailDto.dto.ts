@@ -18,10 +18,14 @@ export class ProductDetailDto {
   product_onsale: boolean;
   product_category: string;
   product_created_at: Date;
-  product_image: ProductImage[];
+  //product_image attributes
+  //product_image: ProductImage[];
+  representative_image: string;
+  detail_image: string;
+  additional_image: string;
   //onsale_product attributes
-  onsale_product_id: number;
-  product_onsale_price: number;
+  onsale_product_id?: number;
+  product_onsale_price?: number;
   // processed_product attributes
   processed_product_id?: number;
   processed_product_name?: string;
