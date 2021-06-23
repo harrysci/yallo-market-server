@@ -18,7 +18,7 @@ export class ProductController {
   //   console.log(id);
   //   return await this.productService.getProductInfo(id);
   // }
-  @Get('/:store_id/:product_id')
+  @Get('/Info')
   async getStoreProduct(@Body() req:FindStoreProductDto): Promise<Product>{
     console.log(req);
     return await this.productService.getStoreProduct(req);
