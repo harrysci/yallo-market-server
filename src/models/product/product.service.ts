@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GetProductListRes } from './dto/getProductListRes.dto';
+import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
 import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { Product } from './entities/product.entity';
@@ -27,7 +28,8 @@ export class ProductService {
    * @점주WebApp
    **********************************************************************************/
   async getProductList(storeId: number) {
-    const productRawList = await this.productRepository
+    /* Database 조회 결과 */
+    const selectProductListRawResult = await this.productRepository
       .createQueryBuilder('product')
       .where('product.store_id = :store_id', { store_id: storeId })
       .leftJoinAndSelect('product.onsale_product', 'onsale_product')
@@ -35,8 +37,9 @@ export class ProductService {
       .leftJoinAndSelect('product.processed_product', 'processed_product')
       .getMany();
 
+    /* 점주 및 점포 관리인 WEB 상품 정보 리스트 조회 결과로 변환*/
     const productList: GetProductListRes[] =
-      productRawList.map<GetProductListRes>((eachProduct) => ({
+      selectProductListRawResult.map<GetProductListRes>((eachProduct) => ({
         productId: eachProduct.product_id,
         productBarcode: eachProduct.product_barcode,
         productName: eachProduct.product_name,
@@ -57,7 +60,46 @@ export class ProductService {
     return productList;
   }
 
-  async updateProductInfo() {
+  async updateProductInfo(
+    productId: number,
+    updateProductInfo: UpdateProductInfoReq,
+  ) {
+    const updateProductRawResult = await this.productRepository
+      .createQueryBuilder('product')
+      .update(Product)
+      .where('product.product_id = :product_id', { product_id: productId })
+      .set({
+        product_barcode: updateProductInfo.productBarcode,
+        product_name: updateProductInfo.productName,
+        product_original_price: updateProductInfo.productOriginPrice,
+        product_current_price: updateProductInfo.productCurrentPrice,
+        product_profit: updateProductInfo.productProfit,
+        product_onsale: updateProductInfo.productOnSale,
+      })
+      .execute();
+
+    console.log(updateProductRawResult.affected);
+
+    const updateOnSaleRawResult = await this.onSaleProductRepository
+      .createQueryBuilder('onsale_product')
+      .update(OnsaleProduct)
+      .where('onsale_product.product_id = :product_id', {
+        product_id: productId,
+      })
+      .set({
+        product_onsale_price: updateProductInfo.productOnSalePrice,
+      })
+      .execute();
+
+    const updateOnSaleRawResult2 = await this.onSaleProductRepository
+      .createQueryBuilder('onsale_product')
+      .where('onsale_product.product_id = :product_id', {
+        product_id: productId,
+      })
+      .getOne();
+
+    console.log(productId, updateOnSaleRawResult2);
+
     return;
   }
 
