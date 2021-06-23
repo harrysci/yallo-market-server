@@ -20,7 +20,7 @@ export class StorePaymethod implements StorePaymethodBase {
   store_paymethod_id: number;
 
   // Store(1) <-> StorePaymethod(*)
-  @ManyToOne((type) => Store, (store) => store.store_paymethod, {
+  @ManyToOne(() => Store, (store) => store.store_paymethod, {
     nullable: false,
     onDelete: 'CASCADE',
   })

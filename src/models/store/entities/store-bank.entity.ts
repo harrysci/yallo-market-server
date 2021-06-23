@@ -20,7 +20,7 @@ export class StoreBank implements StoreBankBase {
   store_bank_id: number;
 
   // Store(1) <-> StoreBank(*)
-  @ManyToOne((type) => Store, (store) => store.store_bank, {
+  @ManyToOne(() => Store, (store) => store.store_bank, {
     nullable: false,
     onDelete: 'CASCADE',
   })
