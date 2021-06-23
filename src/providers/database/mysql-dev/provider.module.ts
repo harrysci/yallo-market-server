@@ -23,7 +23,7 @@ import { GCPMysqlConfigModule } from 'src/config/database/mysql-dev/configuratio
            */
           // User,
         ],
-        synchronize: false,
+        synchronize: true,
       }),
       inject: [GCPMysqlConfigService],
     } as TypeOrmModuleAsyncOptions),
