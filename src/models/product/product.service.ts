@@ -65,41 +65,65 @@ export class ProductService {
     productId: number,
     updateProductInfo: UpdateProductInfoReq,
   ) {
-    const updateProductRawResult = await this.productRepository
-      .createQueryBuilder('product')
-      .update(Product)
-      .where('product.product_id = :product_id', { product_id: productId })
-      .set({
-        product_barcode: updateProductInfo.productBarcode,
-        product_name: updateProductInfo.productName,
-        product_original_price: updateProductInfo.productOriginPrice,
-        product_current_price: updateProductInfo.productCurrentPrice,
-        product_profit: updateProductInfo.productProfit,
-        product_onsale: updateProductInfo.productOnSale,
-      })
-      .execute();
+    const updateProductRawResult = await this.productRepository.findOne({
+      join: {
+        alias: 'product',
+        innerJoinAndSelect: {
+          onsale_product: 'product.onsale_product',
+        },
+      },
+      where: {
+        product_id: updateProductInfo.productId,
+      },
+    });
 
-    console.log(updateProductRawResult.affected);
+    console.log(updateProductRawResult);
+    // .update(Product)
+    // .where('product.product_id = :product_id', { product_id: productId })
+    // .set({
+    //   product_barcode: updateProductInfo.productBarcode,
+    //   product_name: updateProductInfo.productName,
+    //   product_original_price: updateProductInfo.productOriginPrice,
+    //   product_current_price: updateProductInfo.productCurrentPrice,
+    //   product_profit: updateProductInfo.productProfit,
+    //   product_onsale: updateProductInfo.productOnSale,
+    // })
+    // .execute();
 
-    const updateOnSaleRawResult = await this.onSaleProductRepository
-      .createQueryBuilder('onsale_product')
-      .update(OnsaleProduct)
-      .where('onsale_product.product_id = :product_id', {
-        product_id: productId,
-      })
-      .set({
-        product_onsale_price: updateProductInfo.productOnSalePrice,
-      })
-      .execute();
+    // console.log(updateProductRawResult.affected);
 
-    const updateOnSaleRawResult2 = await this.onSaleProductRepository
-      .createQueryBuilder('onsale_product')
-      .where('onsale_product.product_id = :product_id', {
-        product_id: productId,
-      })
-      .getOne();
+    // const updateTest = await this.productRepository
+    //   .createQueryBuilder('product')
+    //   .innerJoinAndSelect('product.onsale_product', 'onsale_product')
+    //   .where('product.product_id = :product_id', { product_id: productId })
+    //   .subQuery()
+    //   .update(OnsaleProduct)
+    //   .set({
+    //     product_onsale_price: 12341111,
+    //   })
+    //   .execute();
 
-    console.log(productId, updateOnSaleRawResult2);
+    // console.log(updateTest);
+
+    // const updateOnSaleRawResult = await this.onSaleProductRepository
+    //   .createQueryBuilder('onsale_product')
+    //   .update(OnsaleProduct)
+    //   .where('onsale_product.product_id = :product_id', {
+    //     product_id: productId,
+    //   })
+    //   .set({
+    //     product_onsale_price: updateProductInfo.productOnSalePrice,
+    //   })
+    //   .execute();
+
+    // const updateOnSaleRawResult2 = await this.onSaleProductRepository
+    //   .createQueryBuilder('onsale_product')
+    //   .where('onsale_product.product_id = :product_id', {
+    //     product_id: productId,
+    //   })
+    //   .getOne();
+
+    // console.log(productId, updateOnSaleRawResult);
 
     return;
   }
