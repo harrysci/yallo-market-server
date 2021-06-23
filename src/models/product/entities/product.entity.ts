@@ -73,25 +73,25 @@ export class Product implements ProductBase {
 
   // Product(1) <-> ProcessedProduct(1)
   @OneToOne(() => ProcessedProduct, {
-    nullable: false,
-    onDelete: 'CASCADE',
+    nullable: true,
+    onDelete: 'NO ACTION',
   })
   @JoinColumn({ name: 'processed_product_id' })
-  processed_product!: ProcessedProduct;
+  processed_product: ProcessedProduct;
 
   // Product(1) <-> WeightedProduct(1)
   @OneToOne(() => WeightedProduct, {
-    nullable: false,
-    onDelete: 'CASCADE',
+    nullable: true,
+    onDelete: 'NO ACTION',
   })
   @JoinColumn({ name: 'weighted_product_id' })
-  weighted_product!: WeightedProduct;
+  weighted_product: WeightedProduct;
 
   // Product(1) <-> OnsaleProduct(1)
   @OneToOne(() => OnsaleProduct, {
-    nullable: false,
-    onDelete: 'CASCADE',
+    nullable: true,
+    onDelete: 'NO ACTION',
   })
   @JoinColumn({ name: 'onsale_product_id' })
-  onsale_product!: OnsaleProduct;
+  onsale_product: OnsaleProduct;
 }

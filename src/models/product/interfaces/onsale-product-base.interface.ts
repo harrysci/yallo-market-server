@@ -1,5 +1,3 @@
-import { Product } from '../entities/product.entity';
-
 /**
  * @interface OnsaleProductBase
  * product_image entity base interface

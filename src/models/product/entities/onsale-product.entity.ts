@@ -1,12 +1,5 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { OnsaleProductBase } from '../interfaces/onsale-product-base.interface';
-import { Product } from './product.entity';
 
 /**
  * Entity Schema for OnsaleProduct

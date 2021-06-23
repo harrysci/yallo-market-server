@@ -1,5 +1,3 @@
-import { Product } from '../entities/product.entity';
-
 /**
  * @interface ProcessedProductBase
  * processed_product entity base interface

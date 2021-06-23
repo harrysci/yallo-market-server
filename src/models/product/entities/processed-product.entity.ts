@@ -1,6 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ProcessedProductBase } from '../interfaces/processed-product-base.interface';
-import { Product } from './product.entity';
 
 /**
  * Entity Schema for ProcessedProduct

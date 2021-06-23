@@ -1,5 +1,3 @@
-import { Product } from '../entities/product.entity';
-
 /**
  * @interface WeightedProductBase
  * weighted_product entity base interface
