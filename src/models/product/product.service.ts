@@ -39,13 +39,6 @@ export class ProductService {
 
     console.log(selectProductListRawResult);
 
-    // const test = await this.onSaleProductRepository
-    // .createQueryBuilder('onsale_product')
-    // .innerJoinAndSelect('onsale_product.product', 'product')
-    // .getMany();
-
-    // console
-
     /* 점주 및 점포 관리인 WEB 상품 정보 리스트 조회 결과로 변환*/
     const productList: GetProductListRes[] =
       selectProductListRawResult.map<GetProductListRes>((eachProduct) => ({
