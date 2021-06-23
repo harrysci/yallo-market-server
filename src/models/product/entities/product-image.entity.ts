@@ -20,7 +20,7 @@ export class ProductImage implements ProductImageBase {
   product_image_id: number;
 
   // Product(1) <-> ProductImage(*)
-  @ManyToOne((type) => Product, (product) => product.product_image, {
+  @ManyToOne(() => Product, (product) => product.product_image, {
     nullable: false,
     onDelete: 'CASCADE',
   })

@@ -23,7 +23,7 @@ export class Store implements StoreBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   store_id: number;
 
-  // // Store(1) <-> Owner(1)
+  // Store(1) <-> Owner(1)
   @OneToOne(() => Owner)
   @JoinColumn({ name: 'owner_id' })
   owner: Owner;
@@ -77,17 +77,14 @@ export class Store implements StoreBase {
   store_business_image: string;
 
   // Store(1) <-> StoreBank(*)
-  @OneToMany((type) => StoreBank, (store_bank) => store_bank.store)
+  @OneToMany(() => StoreBank, (store_bank) => store_bank.store)
   store_bank!: StoreBank[];
 
   // Store(1) <-> StorePaymethod(*)
-  @OneToMany(
-    (type) => StorePaymethod,
-    (store_paymethod) => store_paymethod.store,
-  )
+  @OneToMany(() => StorePaymethod, (store_paymethod) => store_paymethod.store)
   store_paymethod!: StorePaymethod[];
 
   // Store(1) <-> Product(*)
-  @OneToMany((type) => Product, (product) => product.store)
+  @OneToMany(() => Product, (product) => product.store)
   product!: Product[];
 }

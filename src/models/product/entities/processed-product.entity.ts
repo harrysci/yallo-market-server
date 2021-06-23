@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProcessedProductBase } from '../interfaces/processed-product-base.interface';
@@ -19,8 +19,8 @@ export class ProcessedProduct implements ProcessedProductBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   processed_product_id: number;
 
-  // Product(1) <-> ProcessedProduct(*)
-  @ManyToOne((type) => Product, (product) => product.processed_product, {
+  // Product(1) <-> ProcessedProduct(1)
+  @OneToOne(() => Product, {
     nullable: false,
     onDelete: 'CASCADE',
   })
