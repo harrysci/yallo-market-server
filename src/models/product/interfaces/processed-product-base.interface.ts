@@ -15,6 +15,4 @@ export interface ProcessedProductBase {
   processed_product_adult: string;
   processed_product_caution: string;
   processed_product_information: string;
-
-  product: Product;
 }

@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ProcessedProductBase } from '../interfaces/processed-product-base.interface';
 import { Product } from './product.entity';
 
@@ -18,14 +12,6 @@ import { Product } from './product.entity';
 export class ProcessedProduct implements ProcessedProductBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   processed_product_id: number;
-
-  // Product(1) <-> ProcessedProduct(1)
-  @OneToOne(() => Product, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'product_id' })
-  product!: Product;
 
   @Column({ type: 'char', length: 30 })
   processed_product_name: string;
