@@ -41,7 +41,7 @@ import { OnsaleProduct } from 'src/models/product/entities/onsale-product.entity
           WeightedProduct,
           OnsaleProduct,
         ],
-        synchronize: true,
+        synchronize: false,
       }),
       inject: [MysqlConfigService],
     } as TypeOrmModuleAsyncOptions),
