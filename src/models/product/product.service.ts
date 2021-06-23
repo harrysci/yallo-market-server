@@ -38,10 +38,10 @@ export class ProductService {
   //           .leftJoinAndSelect('product.weighted_product', 'weighted_product')
   //           .getOne();
   // }
-  async getStoreProduct(req: FindStoreProductDto): Promise<Product>{
+  async getStoreProduct(req: FindStoreProductDto): Promise<ProductDto>{
     return await this.productRepository.createQueryBuilder('product')
             .where('product.product_id=:id',{id:req.product_id})
-            .andWhere('product.store_id=:store_id', {store_id:req.store_id})
+            .andWhere('product.store.store_id=:store_id', {store_id:req.store_id})
             .leftJoinAndSelect('product.product_image','product_image')
             .leftJoinAndSelect('product.processed_product', 'processed_product')
             .leftJoinAndSelect('product.weighted_product', 'weighted_product')

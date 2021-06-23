@@ -1,3 +1,4 @@
+import { Store } from "src/models/store/entities/store.entity";
 import { OnsaleProduct } from "../entities/onsale-product.entity"
 import { ProcessedProduct } from "../entities/processed-product.entity"
 import { ProductImage } from "../entities/product-image.entity"
@@ -6,7 +7,7 @@ import { WeightedProduct } from "../entities/weighted-product.entity"
 export class ProductDto {
   // product 공통 attributes
   product_id: number;
-  store_id: number;
+  store: Store;
   product_barcode: string;
   product_name: string;
   product_original_price: number;
