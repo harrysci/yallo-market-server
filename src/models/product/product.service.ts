@@ -52,49 +52,49 @@ export class ProductService {
       product_image: productRawInfo.product_image,
       // processed_product attributes
       onsale_product_id:
-        productRawInfo.onsale_product.length>0
-        ?productRawInfo.onsale_product[0].onsale_product_id
+        productRawInfo.onsale_product == null
+        ?productRawInfo.onsale_product.onsale_product_id
         :null,
       product_onsale_price:
-        productRawInfo.onsale_product.length>0
+        productRawInfo.onsale_product == null
         ?productRawInfo.onsale_product[0].product_onsale_price
         :null,
       processed_product_id:
-        productRawInfo.processed_product.length>0
+        productRawInfo.processed_product == null
         ?productRawInfo.processed_product[0].processed_product_id
         :null,
-      processed_product_name: productRawInfo.processed_product.length>0
+      processed_product_name: productRawInfo.processed_product == null
       ?productRawInfo.processed_product[0].processed_product_name
       :null,
-      processed_product_company:productRawInfo.processed_product.length>0
+      processed_product_company:productRawInfo.processed_product ==null
       ? productRawInfo.processed_product[0].processed_product_company
       :null,
-      processed_product_standard_type: productRawInfo.processed_product.length>0
+      processed_product_standard_type: productRawInfo.processed_product== null
       ?productRawInfo.processed_product[0].processed_product_standard_type
       :null,
-      processed_product_standard_values: productRawInfo.processed_product.length>0
+      processed_product_standard_values: productRawInfo.processed_product == null
       ?productRawInfo.processed_product[0].processed_product_standard_values
       :null,
-      processed_product_composition: productRawInfo.processed_product.length>0
+      processed_product_composition: productRawInfo.processed_product == null
       ?productRawInfo.processed_product[0].processed_product_composition
       :null,
-      processed_product_volume:productRawInfo.processed_product.length>0
+      processed_product_volume:productRawInfo.processed_product.length == null
       ? productRawInfo.processed_product[0].processed_product_volume
       :null,
-      processed_product_adult:productRawInfo.processed_product.length>0
+      processed_product_adult:productRawInfo.processed_product.length== null
       ? productRawInfo.processed_product[0].processed_product_adult
       :null,
-      processed_product_caution:productRawInfo.processed_product.length>0
+      processed_product_caution:productRawInfo.processed_product.length== null
       ? productRawInfo.processed_product[0].processed_product_caution
       :null,
-      processed_product_information:productRawInfo.processed_product.length>0
+      processed_product_information:productRawInfo.processed_product.length== null
       ? productRawInfo.processed_product[0].processed_product_information
       :null,
       // weighted_product attributes
-      weighted_product_id:productRawInfo.weighted_product.length>0
+      weighted_product_id:productRawInfo.weighted_product.length== null
       ? productRawInfo.weighted_product[0].weighted_product_id
       :null,
-      weighted_product_volume:productRawInfo.weighted_product.length>0
+      weighted_product_volume:productRawInfo.weighted_product.length== null
       ? productRawInfo.weighted_product[0].weighted_product_volume
       :null,
     }

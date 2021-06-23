@@ -5,10 +5,14 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProductBase } from '../interfaces/product-base.interface';
+import { OnsaleProduct } from './onsale-product.entity';
+import { ProcessedProduct } from './processed-product.entity';
 import { ProductImage } from './product-image.entity';
+import { WeightedProduct } from './weighted-product.entity';
 
 /**
  * Entity Schema for Product
@@ -66,4 +70,28 @@ export class Product implements ProductBase {
   // Product(1) <-> ProductImage(*)
   @OneToMany(() => ProductImage, (product_image) => product_image.product)
   product_image!: ProductImage[];
+
+  // Product(1) <-> ProcessedProduct(1)
+  @OneToOne(() => ProcessedProduct, {
+    nullable: true,
+    onDelete: 'NO ACTION',
+  })
+  @JoinColumn({ name: 'processed_product_id' })
+  processed_product: ProcessedProduct;
+
+  // Product(1) <-> WeightedProduct(1)
+  @OneToOne(() => WeightedProduct, {
+    nullable: true,
+    onDelete: 'NO ACTION',
+  })
+  @JoinColumn({ name: 'weighted_product_id' })
+  weighted_product: WeightedProduct;
+
+  // Product(1) <-> OnsaleProduct(1)
+  @OneToOne(() => OnsaleProduct, {
+    nullable: true,
+    onDelete: 'NO ACTION',
+  })
+  @JoinColumn({ name: 'onsale_product_id' })
+  onsale_product: OnsaleProduct;
 }

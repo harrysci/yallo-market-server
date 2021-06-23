@@ -1,5 +1,3 @@
-import { Product } from '../entities/product.entity';
-
 /**
  * @interface WeightedProductBase
  * weighted_product entity base interface
@@ -7,6 +5,4 @@ import { Product } from '../entities/product.entity';
 export interface WeightedProductBase {
   weighted_product_id: number;
   weighted_product_volume: string;
-
-  product: Product;
 }

@@ -1,5 +1,8 @@
 import { Store } from 'src/models/store/entities/store.entity';
+import { OnsaleProduct } from '../entities/onsale-product.entity';
+import { ProcessedProduct } from '../entities/processed-product.entity';
 import { ProductImage } from '../entities/product-image.entity';
+import { WeightedProduct } from '../entities/weighted-product.entity';
 
 /**
  * @interface ProductBase
@@ -19,6 +22,10 @@ export interface ProductBase {
   product_category: string;
   product_created_at: Date;
   product_image: ProductImage[];
+
+  processed_product?: ProcessedProduct;
+  weighted_product?: WeightedProduct;
+  onsale_product?: OnsaleProduct;
 
   store: Store;
 }
