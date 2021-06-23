@@ -14,7 +14,7 @@ export class ProductController {
   @Get('info-list-admin')
   async getProductListForOwnerWeb(
     @Query('storeId') storeId: number,
-  ): Promise<GetProductListRes[]> {
+  ): Promise<GetProductListRes[] | any> {
     return await this.productService.getProductList(storeId);
   }
 

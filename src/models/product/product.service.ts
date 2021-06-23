@@ -32,10 +32,19 @@ export class ProductService {
     const selectProductListRawResult = await this.productRepository
       .createQueryBuilder('product')
       .where('product.store_id = :store_id', { store_id: storeId })
-      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .innerJoinAndSelect('product.onsale_product', 'onsale_product')
+      .innerJoinAndSelect('product.weighted_product', 'weighted_product')
+      .innerJoinAndSelect('product.processed_product', 'processed_product')
       .getMany();
+
+    console.log(selectProductListRawResult);
+
+    // const test = await this.onSaleProductRepository
+    // .createQueryBuilder('onsale_product')
+    // .innerJoinAndSelect('onsale_product.product', 'product')
+    // .getMany();
+
+    // console
 
     /* 점주 및 점포 관리인 WEB 상품 정보 리스트 조회 결과로 변환*/
     const productList: GetProductListRes[] =
@@ -45,16 +54,15 @@ export class ProductService {
         productName: eachProduct.product_name,
         productOriginPrice: eachProduct.product_original_price,
         productCurrentPrice: eachProduct.product_current_price,
-        productOnSalePrice:
-          eachProduct.onsale_product.length > 0
-            ? eachProduct.onsale_product[0].product_onsale_price
-            : eachProduct.product_current_price,
+        productOnSalePrice: eachProduct.onsale_product
+          ? eachProduct.onsale_product.product_onsale_price
+          : eachProduct.product_current_price,
         productProfit: eachProduct.product_profit,
         productIsProcessed: eachProduct.product_is_processed,
         productOnSale: eachProduct.product_onsale,
         productVolume: eachProduct.product_is_processed
-          ? eachProduct.processed_product[0].processed_product_volume
-          : eachProduct.weighted_product[0].weighted_product_volume,
+          ? eachProduct.processed_product.processed_product_volume
+          : eachProduct.weighted_product.weighted_product_volume,
       }));
 
     return productList;
