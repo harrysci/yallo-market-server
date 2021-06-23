@@ -13,11 +13,11 @@ export class ProductController {
     const sheetName= workbook.SheetNames[0];
 
     const sheet= workbook.Sheets[sheetName];
-
+    console.log(sheetName);
     const rows= XLSX.utils.sheet_to_json(sheet, {
       defval:null,
     });
-    
+    return await this.productService.uploadExcel(rows);
   }
 
 }

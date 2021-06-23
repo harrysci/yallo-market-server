@@ -21,4 +21,8 @@ export class ProductService {
     @InjectRepository(OnsaleProduct)
     private readonly onSaleProductRepository: Repository<OnsaleProduct>,
   ) {}
+
+  async uploadExcel(rows){
+    const {}=rows;
+  }
 }
