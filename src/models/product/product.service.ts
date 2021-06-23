@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductDto } from './dto/ProductDto.dto';
+import { ProductListDto } from './dto/ProductListDto.dto';
 import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { Product } from './entities/product.entity';
@@ -49,6 +50,30 @@ export class ProductService {
   async getAllProductInfo(): Promise<Product[]>{
     return await this.productRepository.find();
   }
+  async getProductInfo(id: number): Promise<any>{
+    
+    const productData= await this.productRepository
+        .createQueryBuilder('product')
+        // .select(['product'])
+        // .innerJoin('product.product_id=:processed_product.processed_product_id',
+        // 'product')
+        //.where('processed_product.processed_product_id=:id',{id})
+        .innerJoinAndSelect('product.processed_product', 'processed_product')
+        .innerJoinAndSelect('product.processed_product', 'weighted_product')
+        // .andWhere('product.product_id = :id', { id})
+        .getOne();
+    // return await this.productRepository.findOne(productData);
+    console.log(productData);
+
+    // if(productData.product_is_processed==true){
+    //   return await this.productRepository.findOne(productData.product_id);
+    // } 
+    // else{
+    //   return await this.productRepository.findOne(productData.product_id);
+    // }
+    
+  }
+
   async saveProduct(product: Product): Promise<Product>{
     return await this.productRepository.save(product);
   }

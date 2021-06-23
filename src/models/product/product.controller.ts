@@ -16,6 +16,11 @@ export class ProductController {
     return await this.productService.getAllProductInfo();
   }
 
+  @Get('/:id')
+  async getProductInfo(@Param('id') id:number): Promise<Product>{
+    console.log(id);
+    return await this.productService.getProductInfo(id);
+  }
   @Put('/:id')
   async putProductInfo(@Param('id') @Body() product:Product): Promise<Product>{
     return this.productService.saveProduct(product);
