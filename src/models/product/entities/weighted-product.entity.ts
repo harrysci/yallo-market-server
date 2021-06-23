@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { WeightedProductBase } from '../interfaces/weighted-product-base.interface';
@@ -19,8 +19,8 @@ export class WeightedProduct implements WeightedProductBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   weighted_product_id: number;
 
-  // Product(1) <-> WeightedProduct(*)
-  @ManyToOne((type) => Product, (product) => product.weighted_product, {
+  // Product(1) <-> WeightedProduct(1)
+  @OneToOne(() => Product, {
     nullable: false,
     onDelete: 'CASCADE',
   })

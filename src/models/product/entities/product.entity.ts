@@ -8,10 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProductBase } from '../interfaces/product-base.interface';
-import { OnsaleProduct } from './onsale-product.entity';
-import { ProcessedProduct } from './processed-product.entity';
 import { ProductImage } from './product-image.entity';
-import { WeightedProduct } from './weighted-product.entity';
 
 /**
  * Entity Schema for Product
@@ -25,7 +22,7 @@ export class Product implements ProductBase {
   product_id: number;
 
   // Store(1) <-> Product(*)
-  @ManyToOne((type) => Store, (store) => store.product, {
+  @ManyToOne(() => Store, (store) => store.product, {
     nullable: false,
     // Store 가 삭제되어도 Product 는 삭제되지 않는다.
     onDelete: 'NO ACTION',
@@ -67,27 +64,6 @@ export class Product implements ProductBase {
   product_created_at: Date;
 
   // Product(1) <-> ProductImage(*)
-  @OneToMany((type) => ProductImage, (product_image) => product_image.product)
+  @OneToMany(() => ProductImage, (product_image) => product_image.product)
   product_image!: ProductImage[];
-
-  // Product(1) <-> ProcessedProduct(*)
-  @OneToMany(
-    (type) => ProcessedProduct,
-    (processed_product) => processed_product.product,
-  )
-  processed_product!: ProcessedProduct[];
-
-  // Product(1) <-> WeightedProduct(*)
-  @OneToMany(
-    (type) => WeightedProduct,
-    (weighted_product) => weighted_product.product,
-  )
-  weighted_product!: WeightedProduct[];
-
-  // Product(1) <-> OnsaleProduct(*)
-  @OneToMany(
-    (type) => OnsaleProduct,
-    (onsale_product) => onsale_product.product,
-  )
-  onsale_product!: OnsaleProduct[];
 }
