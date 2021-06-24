@@ -17,4 +17,21 @@ export class StoreService {
     @InjectRepository(StorePaymethod)
     private readonly storePaymethodRepository: Repository<StorePaymethod>,
   ) {}
+
+  /**
+   *
+   * @param ownerId
+   *  ownerId 에 해당하는 store 가 존재하는 경우 -> @return storeId
+   *  ownerId 에 해당하는 store 가 존재하지 않는 경우 -> @return -1
+   */
+  async getStoreIdByOwnerId(ownerId: number): Promise<number> {
+    const rawStore = await this.storeRepository
+      .createQueryBuilder('store')
+      .where('store.owner=:ownerId', { ownerId: ownerId })
+      .getOne();
+
+    const storeId: number = rawStore ? rawStore.store_id : -1;
+
+    return storeId;
+  }
 }
