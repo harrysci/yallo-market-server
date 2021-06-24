@@ -68,23 +68,26 @@ export class ProductService {
      *  -> 유통상품지식뱅크 DB에 해당 상품이 존재하지 않는 경우 @return false
      */
 
-    const storeId: number = await this.storeService.getStoreNameByOwnerId(
-      ownerId,
-    );
-    const rawBarcodeProductInfo = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store=:storeId', { storeId: storeId })
-      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-      .getOne();
+    const storeName: string | null =
+      await this.storeService.getStoreNameByOwnerId(ownerId);
 
-    const barcodeProductInfo: GetBarcodeProductRes =
-      rawBarcodeProductInfo == undefined
-        ? null
-        : {
-            storeName: rawBarcodeProductInfo.store,
-          };
+    if (storeName == null) return null;
+    else {
+      const rawBarcodeProductInfo = await this.productRepository
+        .createQueryBuilder('product')
+        .where('product.store=:storeName', { storeName: storeName })
+        .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+        .getOne();
 
-    return rawBarcodeProductInfo;
+      const barcodeProductInfo: GetBarcodeProductRes =
+        rawBarcodeProductInfo == undefined
+          ? null
+          : {
+              storeName: rawBarcodeProductInfo.store,
+            };
+
+      return rawBarcodeProductInfo;
+    }
   }
 
   async updateBarcodeProductInfo(
