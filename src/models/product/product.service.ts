@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GetProductListRes } from './dto/getProductListRes.dto';
@@ -8,6 +8,7 @@ import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
+import { KorchamConfigService } from '../../config/korcham/configuration.service';
 
 @Injectable()
 export class ProductService {
@@ -23,12 +24,14 @@ export class ProductService {
 
     @InjectRepository(OnsaleProduct)
     private readonly onSaleProductRepository: Repository<OnsaleProduct>,
+
+    private readonly httpService: HttpService,
+    private readonly korchamConfig: KorchamConfigService,
   ) {}
 
   /**********************************************************************************
    * @점주WebApp
    **********************************************************************************/
-
   /**
    * 점주 및 점포 관리인 웹 대시보드 상품 목록 조회
    * @param storeId 가게 id
@@ -230,5 +233,34 @@ export class ProductService {
     } catch {
       throw new Error('deleteProductInfo [Delete] Error');
     }
+  }
+
+  /*
+  ************************************************
+  한국 유통DB에 바코드정보 조회 메서드
+  ************************************************
+  메서드 입력값 : 바코드정보(barcode: string)
+  메서드동작 :  korcham API 에 GET요청후 리턴값반환
+  - KorchamAPI -
+    request: GET.
+    header : Content-Type, yallomarket appkey,
+    url: korchamurl/{barcode},
+  메서드 반환값 : -notion db명세 참조 (AxiosRequest<Dto>)
+  ************************************************
+  */
+  private async requestKorchamApi(barcode: string): Promise<any> {
+    const headerRequest = new Headers();
+    headerRequest.append('Content-Type', 'application/json:charset=utf-8');
+    headerRequest.append(
+      'Authorization',
+      `appkey: ${this.korchamConfig.appkey}`,
+    );
+
+    return await this.httpService.get(
+      `${this.korchamConfig.apiurl}/${barcode}`,
+      {
+        headers: headerRequest,
+      },
+    );
   }
 }
