@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { StoreBankBase } from '../interfaces/store-bank-base.interface';
 import { Store } from './store.entity';
 
@@ -14,10 +20,11 @@ export class StoreBank implements StoreBankBase {
   store_bank_id: number;
 
   // Store(1) <-> StoreBank(*)
-  @ManyToOne((type) => Store, (store) => store.store_bank, {
+  @ManyToOne(() => Store, (store) => store.store_bank, {
     nullable: false,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'store_id' })
   store!: Store;
 
   @Column({ type: 'char', length: 30 })

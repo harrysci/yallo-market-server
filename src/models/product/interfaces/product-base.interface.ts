@@ -22,9 +22,10 @@ export interface ProductBase {
   product_category: string;
   product_created_at: Date;
   product_image: ProductImage[];
-  processed_product: ProcessedProduct[];
-  weighted_product: WeightedProduct[];
-  onsale_product: OnsaleProduct[];
+
+  processed_product?: ProcessedProduct;
+  weighted_product?: WeightedProduct;
+  onsale_product?: OnsaleProduct;
 
   store: Store;
 }

@@ -2,8 +2,10 @@ import { Store } from 'src/models/store/entities/store.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProductBase } from '../interfaces/product-base.interface';
@@ -24,11 +26,12 @@ export class Product implements ProductBase {
   product_id: number;
 
   // Store(1) <-> Product(*)
-  @ManyToOne((type) => Store, (store) => store.product, {
+  @ManyToOne(() => Store, (store) => store.product, {
     nullable: false,
     // Store 가 삭제되어도 Product 는 삭제되지 않는다.
     onDelete: 'NO ACTION',
   })
+  @JoinColumn({ name: 'store_id' })
   store!: Store;
 
   @Column({ type: 'char', length: 30 })
@@ -65,27 +68,30 @@ export class Product implements ProductBase {
   product_created_at: Date;
 
   // Product(1) <-> ProductImage(*)
-  @OneToMany((type) => ProductImage, (product_image) => product_image.product)
+  @OneToMany(() => ProductImage, (product_image) => product_image.product)
   product_image!: ProductImage[];
 
-  // Product(1) <-> ProcessedProduct(*)
-  @OneToMany(
-    (type) => ProcessedProduct,
-    (processed_product) => processed_product.product,
-  )
-  processed_product!: ProcessedProduct[];
+  // Product(1) <-> ProcessedProduct(1)
+  @OneToOne(() => ProcessedProduct, {
+    nullable: true,
+    onDelete: 'NO ACTION',
+  })
+  @JoinColumn({ name: 'processed_product_id' })
+  processed_product: ProcessedProduct;
 
-  // Product(1) <-> WeightedProduct(*)
-  @OneToMany(
-    (type) => WeightedProduct,
-    (weighted_product) => weighted_product.product,
-  )
-  weighted_product!: WeightedProduct[];
+  // Product(1) <-> WeightedProduct(1)
+  @OneToOne(() => WeightedProduct, {
+    nullable: true,
+    onDelete: 'NO ACTION',
+  })
+  @JoinColumn({ name: 'weighted_product_id' })
+  weighted_product: WeightedProduct;
 
-  // Product(1) <-> OnsaleProduct(*)
-  @OneToMany(
-    (type) => OnsaleProduct,
-    (onsale_product) => onsale_product.product,
-  )
-  onsale_product!: OnsaleProduct[];
+  // Product(1) <-> OnsaleProduct(1)
+  @OneToOne(() => OnsaleProduct, {
+    nullable: true,
+    onDelete: 'NO ACTION',
+  })
+  @JoinColumn({ name: 'onsale_product_id' })
+  onsale_product: OnsaleProduct;
 }
