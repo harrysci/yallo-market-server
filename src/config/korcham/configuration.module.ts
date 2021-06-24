@@ -17,4 +17,4 @@ import { KorchamConfigService } from './configuration.service';
   providers: [ConfigService, KorchamConfigService],
   exports: [ConfigService, KorchamConfigService],
 })
-export class AppModule {}
+export class KorchamConfigModule {}

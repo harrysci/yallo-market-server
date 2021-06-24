@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpModule, HttpService, Module } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { ProductImage } from './entities/product-image.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { OnsaleProduct } from './entities/onsale-product.entity';
+import { KorchamConfigModule } from 'src/config/korcham/configuration.module';
 
 @Module({
   imports: [
@@ -17,6 +18,8 @@ import { OnsaleProduct } from './entities/onsale-product.entity';
       WeightedProduct,
       OnsaleProduct,
     ]),
+    HttpModule,
+    KorchamConfigModule,
   ],
   exports: [ProductService],
   providers: [ProductService],
