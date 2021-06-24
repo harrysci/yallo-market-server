@@ -7,8 +7,9 @@ import { ProcessedProduct } from './entities/processed-product.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { UploadExcelDataDto } from './dto/UploadExcelDataDto.dto';
-import {Express} from 'express';
-import { Store } from '../store/entities/store.entity';
+
+
+import { StoreService } from '../store/store.service';
 @Injectable()
 export class ProductService {
   constructor(
@@ -23,6 +24,8 @@ export class ProductService {
 
     @InjectRepository(OnsaleProduct)
     private readonly onSaleProductRepository: Repository<OnsaleProduct>,
+
+    private readonly storeService: StoreService,
   ) {}
 
   async uploadExcelFile(file: Express.Multer.File, store_id:number): Promise<UploadExcelDataDto>{
@@ -41,9 +44,9 @@ export class ProductService {
       defval: null,
     })
     console.log(jsonData[0]);
-    const ad= new Store(); 
+
+
     const ExcelData:UploadExcelDataDto={
-      
       product_barcode: jsonData[0]['바코드'],
       product_name: jsonData[0]['상품명'],
       product_original_price: jsonData[0]['원가'],
