@@ -14,8 +14,8 @@ export class StoreController {
     return await this.storeService.getStoreIdNameByOwnerId(ownerId);
   }
 
-  @Get('/getStore/:ownerId')
-  async getStore(@Param('ownerId') ownerId: number): Promise<Store> {
-    return await this.storeService.getStore(ownerId);
+  @Get('/getStore/:storeId')
+  async getStore(@Param('storeId') storeId: number): Promise<Store> {
+    return await this.storeService.getStore(storeId);
   }
 }
