@@ -8,6 +8,7 @@ import { CreateBarcodeWeightedProductDto } from './dto/CreateBarcodeWeightedProd
 import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
 import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
+import { ProductImage } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 
@@ -85,6 +86,16 @@ export class ProductService {
         .leftJoinAndSelect('product.onsale_product', 'onsale_product')
         .getOne();
 
+      const rawProductImageList = await this.productRepository
+        .createQueryBuilder('product')
+        .where('product.store=:storeId', { storeId: storeIdName.storeId })
+        .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+        .leftJoinAndSelect('product.product_image', 'product_image')
+        .getOne();
+
+      const productImageList: ProductImage[] =
+        rawProductImageList.product_image;
+
       const barcodeProductInfo: GetBarcodeProductRes =
         storeIdName && rawBarcodeProductInfo
           ? {
@@ -103,6 +114,7 @@ export class ProductService {
                     .processed_product_volume
                 : rawBarcodeProductInfo.weighted_product
                     .weighted_product_volume,
+              productImages: rawProductImageList ? productImageList : null,
             }
           : null;
 
