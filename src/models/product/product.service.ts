@@ -37,67 +37,70 @@ export class ProductService {
             .getOne();
     /*정보 리스트 정제*/
     const productDetailInfo: ProductDetailDto={
-      product_id:productRawInfo.product_id, 
-      product_barcode: productRawInfo.product_barcode,
-      product_name: productRawInfo.product_name,
-      product_original_price: productRawInfo.product_original_price,
-      product_current_price: productRawInfo.product_current_price,
-      product_profit: productRawInfo.product_profit,
-      product_description: productRawInfo.product_description,
-      product_is_processed: productRawInfo.product_is_processed,
-      product_is_soldout: productRawInfo.product_is_soldout,
-      product_onsale: productRawInfo.product_onsale,
-      product_category: productRawInfo.product_category,
-      product_created_at: productRawInfo.product_created_at,
+      productId:productRawInfo.product_id, 
+      productBarcode: productRawInfo.product_barcode,
+      productName: productRawInfo.product_name,
+      productOriginalPrice: productRawInfo.product_original_price,
+      productCurrentPrice: productRawInfo.product_current_price,
+      productProfit: productRawInfo.product_profit,
+      productDescription: productRawInfo.product_description,
+      productIsProcessed: productRawInfo.product_is_processed,
+      productIsSoldout: productRawInfo.product_is_soldout,
+      productOnsale: productRawInfo.product_onsale,
+      productCategory: productRawInfo.product_category,
+      productCreatedAt: productRawInfo.product_created_at,
       
-      representative_image: productRawInfo.product_image[0].product_image,
-      detail_image:productRawInfo.product_image[1].product_image,
-      additional_image:productRawInfo.product_image[2].product_image,
+      representativeProductImageId: productRawInfo.product_image[0].product_image_id,
+      representativeProductImage: productRawInfo.product_image[0].product_image,
+      detailProductImageId: productRawInfo.product_image[1].product_image_id,
+      detailProductImage:productRawInfo.product_image[1].product_image,
+      additionalProductImageId: productRawInfo.product_image[2].product_image_id,
+      additionalProductImage:productRawInfo.product_image[2].product_image,
       // processed_product attributes
-      onsale_product_id:
+      onsaleProductId:
         productRawInfo.onsale_product != null
         ?productRawInfo.onsale_product.onsale_product_id
         :null,
-      product_onsale_price:
+      productOnsalePrice:
         productRawInfo.onsale_product != null
         ?productRawInfo.onsale_product.product_onsale_price
         :null,
-      processed_product_id:
+      processedProductId:
         productRawInfo.processed_product != null
         ?productRawInfo.processed_product.processed_product_id
         :null,
-      processed_product_name: productRawInfo.processed_product != null
+      processedProductName: productRawInfo.processed_product != null
       ?productRawInfo.processed_product.processed_product_name
       :null,
-      processed_product_company:productRawInfo.processed_product !=null
+      processedProductCompany:productRawInfo.processed_product !=null
       ? productRawInfo.processed_product.processed_product_company
       :null,
-      processed_product_standard_type: productRawInfo.processed_product!= null
+      processedProductStandardType: productRawInfo.processed_product!= null
       ?productRawInfo.processed_product.processed_product_standard_type
       :null,
-      processed_product_standard_values: productRawInfo.processed_product != null
+      processedProductStandardValues: productRawInfo.processed_product != null
       ?productRawInfo.processed_product.processed_product_standard_values
       :null,
-      processed_product_composition: productRawInfo.processed_product != null
+      processedProductComposition: productRawInfo.processed_product != null
       ?productRawInfo.processed_product.processed_product_composition
       :null,
-      processed_product_volume:productRawInfo.processed_product != null
+      processedProductVolume:productRawInfo.processed_product != null
       ? productRawInfo.processed_product.processed_product_volume
       :null,
-      processed_product_adult:productRawInfo.processed_product!= null
+      processedProductAdult:productRawInfo.processed_product!= null
       ? productRawInfo.processed_product.processed_product_adult
       :null,
-      processed_product_caution:productRawInfo.processed_product!= null
+      processedProductCaution:productRawInfo.processed_product!= null
       ? productRawInfo.processed_product.processed_product_caution
       :null,
-      processed_product_information:productRawInfo.processed_product!= null
+      processedProductInformation:productRawInfo.processed_product!= null
       ? productRawInfo.processed_product.processed_product_information
       :null,
       // weighted_product attributes
-      weighted_product_id:productRawInfo.weighted_product!= null
+      weightedProductId:productRawInfo.weighted_product!= null
       ? productRawInfo.weighted_product.weighted_product_id
       :null,
-      weighted_product_volume:productRawInfo.weighted_product!= null
+      weightedProductVolume:productRawInfo.weighted_product!= null
       ? productRawInfo.weighted_product.weighted_product_volume
       :null,
     }

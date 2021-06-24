@@ -6,39 +6,45 @@ import { WeightedProduct } from "../entities/weighted-product.entity"
 
 export class ProductDetailDto {
   // product 공통 attributes
-  product_id: number;
-  product_barcode: string;
-  product_name: string;
-  product_original_price: number;
-  product_current_price: number;
-  product_profit: number;
-  product_description: string;
-  product_is_processed: boolean;
-  product_is_soldout: boolean;
-  product_onsale: boolean;
-  product_category: string;
-  product_created_at: Date;
+  productId: number;
+  productBarcode: string;
+  productName: string;
+  productOriginalPrice: number;
+  productCurrentPrice: number;
+  productProfit: number;
+  productDescription: string;
+  productIsProcessed: boolean;
+  productIsSoldout: boolean;
+  productOnsale: boolean;
+  productCategory: string;
+  productCreatedAt: Date;
   //product_image attributes
   //product_image: ProductImage[];
-  representative_image: string;
-  detail_image: string;
-  additional_image: string;
-  //onsale_product attributes
-  onsale_product_id?: number;
-  product_onsale_price?: number;
+  // product_image attributes
+  representativeProductImageId: number;
+  representativeProductImage: string;
+  detailProductImageId: number;
+  detailProductImage: string;
+  additionalProductImageId: number;
+  additionalProductImage: string;
+
   // processed_product attributes
-  processed_product_id?: number;
-  processed_product_name?: string;
-  processed_product_company?: string;
-  processed_product_standard_type?: string;
-  processed_product_standard_values?: string;
-  processed_product_composition?: string;
-  processed_product_volume?: string;
-  processed_product_adult?: string;
-  processed_product_caution?: string;
-  processed_product_information?: string;
+  processedProductId?: number;
+  processedProductName?: string;
+  processedProductCompany?: string;
+  processedProductStandardType?: string;
+  processedProductStandardValues?: string;
+  processedProductComposition?: string;
+  processedProductVolume?: string;
+  processedProductAdult?: string;
+  processedProductCaution?: string;
+  processedProductInformation?: string;
 
   // weighted_product attributes
-  weighted_product_id?: number;
-  weighted_product_volume?: string;
+  weightedProductId?: number;
+  weightedProductVolume?: string;
+
+  // onsale_product attributes
+  onsaleProductId?: number;
+  productOnsalePrice?: number;
 }
