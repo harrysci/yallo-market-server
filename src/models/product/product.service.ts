@@ -8,6 +8,7 @@ import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { UploadExcelDataDto } from './dto/UploadExcelDataDto.dto';
 import {Express} from 'express';
+import { Store } from '../store/entities/store.entity';
 @Injectable()
 export class ProductService {
   constructor(
@@ -40,8 +41,9 @@ export class ProductService {
       defval: null,
     })
     console.log(jsonData[0]);
+    const ad= new Store(); 
     const ExcelData:UploadExcelDataDto={
-      store_id:2,
+      
       product_barcode: jsonData[0]['바코드'],
       product_name: jsonData[0]['상품명'],
       product_original_price: jsonData[0]['원가'],
@@ -61,6 +63,9 @@ export class ProductService {
       
       
       product_volume: '100kg',
+      // processed_product:{
+
+      // }
       // product_created_at: 
       // product_image!: ProductImage[];
       // processed_product: ProcessedProduct;

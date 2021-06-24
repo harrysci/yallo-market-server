@@ -6,7 +6,7 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post('upload')
+  @Post('upload/:store_id')
   @UseInterceptors(FileInterceptor('file'))
   async uploadExcelFile(
     @UploadedFile() file:Express.Multer.File,
