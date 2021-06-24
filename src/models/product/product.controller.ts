@@ -50,7 +50,7 @@ export class ProductController {
   }
 
   // 바코드를 통한 상품 정보 갱신
-  @Patch('updateProductData/:ownerId/:barcode')
+  @Patch('/updateProductData/:ownerId/:barcode')
   async updateBarcodeProductInfo(
     @Param('ownerId') ownerId: number,
     @Param('barcode') barcode: string,
@@ -59,7 +59,7 @@ export class ProductController {
   }
 
   // 바코드를 통한 상품 정보 삭제
-  @Delete('deleteProductData/:ownerId/:barcode')
+  @Delete('/deleteProductData/:ownerId/:barcode')
   async deleteBarcodeProduct(
     @Param('ownerId') ownerId: number,
     @Param('barcode') barcode: string,

@@ -72,56 +72,67 @@ export class ProductService {
      *  -> 유통상품지식뱅크 DB에 해당 상품이 존재하지 않는 경우 @return false
      */
 
+    // 유통상품지식뱅크 DB 조회에 따른 return 처리 안함.
+
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
+    // ownerId 에 해당하는 store 가 존재하지 않는 경우
+    if (storeIdName == undefined) return null;
 
-    if (!storeIdName) return null;
-    else {
-      const rawBarcodeProductInfo = await this.productRepository
-        .createQueryBuilder('product')
-        .where('product.store=:storeId', { storeId: storeIdName.storeId })
-        .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-        .leftJoinAndSelect('product.processed_product', 'processed_product')
-        .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-        .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-        .getOne();
+    const isPresent = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.store=:storeId', { storeId: storeIdName.storeId })
+      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+      .getOne();
+    // ownerId 에 해당하는 store 에 해당 barcode 의 상품이 존재하지 않는 경우
+    if (isPresent == undefined) return null;
 
-      const rawProductImageList = await this.productRepository
-        .createQueryBuilder('product')
-        .where('product.store=:storeId', { storeId: storeIdName.storeId })
-        .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-        .leftJoinAndSelect('product.product_image', 'product_image')
-        .getOne();
+    const rawBarcodeProductInfo = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.store=:storeId', { storeId: storeIdName.storeId })
+      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+      .getOne();
 
-      const productImageList: ProductImage[] =
-        rawProductImageList.product_image;
+    const rawProductImageList = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.store=:storeId', { storeId: storeIdName.storeId })
+      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+      .leftJoinAndSelect('product.product_image', 'product_image')
+      .getOne();
 
-      const barcodeProductInfo: GetBarcodeProductRes =
-        storeIdName && rawBarcodeProductInfo
-          ? {
-              storeName: storeIdName.storeName,
-              productName: rawBarcodeProductInfo.product_name,
-              productBarcode: rawBarcodeProductInfo.product_barcode,
-              productCurrentPrice: rawBarcodeProductInfo.product_current_price,
-              productOnsale: rawBarcodeProductInfo.product_onsale,
-              productOnsalePrice: rawBarcodeProductInfo.onsale_product
-                ? rawBarcodeProductInfo.onsale_product.product_onsale_price
-                : null,
-              productCategory: rawBarcodeProductInfo.product_category,
-              productCreatedAt: rawBarcodeProductInfo.product_created_at,
-              productVolume: rawBarcodeProductInfo.processed_product
-                ? rawBarcodeProductInfo.processed_product
-                    .processed_product_volume
-                : rawBarcodeProductInfo.weighted_product
-                    .weighted_product_volume,
-              productImages: rawProductImageList ? productImageList : null,
-            }
-          : null;
+    const productImageList: ProductImage[] = rawProductImageList.product_image;
 
-      return barcodeProductInfo;
-    }
+    const barcodeProductInfo: GetBarcodeProductRes = !rawBarcodeProductInfo
+      ? null
+      : {
+          storeName: storeIdName.storeName,
+          productName: rawBarcodeProductInfo.product_name,
+          productBarcode: rawBarcodeProductInfo.product_barcode,
+          productCurrentPrice: rawBarcodeProductInfo.product_current_price,
+          productOnsale: rawBarcodeProductInfo.product_onsale,
+          productOnsalePrice: rawBarcodeProductInfo.onsale_product
+            ? rawBarcodeProductInfo.onsale_product.product_onsale_price
+            : null,
+          productCategory: rawBarcodeProductInfo.product_category,
+          productCreatedAt: rawBarcodeProductInfo.product_created_at,
+          productVolume: rawBarcodeProductInfo.processed_product
+            ? rawBarcodeProductInfo.processed_product.processed_product_volume
+            : rawBarcodeProductInfo.weighted_product.weighted_product_volume,
+          productImages: rawProductImageList ? productImageList : null,
+        };
+
+    return barcodeProductInfo;
   }
 
+  /**
+   * 바코드를 통한 상품 정보 삭제
+   * @param ownerId
+   * @param barcode
+   * @return barcodeProductInfo
+   */
   async updateBarcodeProductInfo(
     ownerId: number,
     barcode: string,
@@ -135,9 +146,18 @@ export class ProductService {
 
   async deleteBarcodeProduct(ownerId: number, barcode: string): Promise<any> {
     /**
-     * 1.
-     * 2.
-     * 3.
+     * 1. owner 테이블과 store 테이블 간 left join -> storeId 조회
+     * 2. product 테이블에서 storeId 와 barcode 를 통해 select
+     * 3. product 테이블에 해당 상품이 존재하는 경우
+     *  -> @return 
+     * 4. product 테이블에 해당 상품이 존재하지 않는 경우
+        -> @return 
      */
+
+    const getRetVal: GetBarcodeProductRes = await this.getBarcodeProductInfo(
+      ownerId,
+      barcode,
+    );
+    console.log(getRetVal);
   }
 }

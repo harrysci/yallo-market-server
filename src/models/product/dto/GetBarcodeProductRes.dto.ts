@@ -23,5 +23,5 @@ export class GetBarcodeProductRes {
   productCategory: string; // 상품 카테고리
   productCreatedAt: Date; // 얄로마켓 시스템 내 상품 게시일
   productVolume: string; // 규격
-  productImages: ProductImage[]; // 상품 대표 이미지
+  productImages?: ProductImage[]; // 상품 대표 이미지
 }
