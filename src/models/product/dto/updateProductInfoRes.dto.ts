@@ -14,7 +14,7 @@ import { IsBoolean, IsNumber, IsString } from 'class-validator';
  * 9. 제조 일자 (상세 정보 사진 대채)
  * 10. 유효 일자 (상세 정보 사진 대채)
  */
-export class UpdateProductInfoReq {
+export class UpdateProductInfoRes {
   @IsNumber()
   productId: number;
 
