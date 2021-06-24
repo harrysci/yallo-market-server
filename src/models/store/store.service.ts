@@ -31,8 +31,6 @@ export class StoreService {
       .where('store.owner=:ownerId', { ownerId: ownerId })
       .getOne();
 
-    console.log(rawStore);
-
     const storeIdName: StoreIdNameRes = !rawStore
       ? null
       : {
