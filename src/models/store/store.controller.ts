@@ -5,10 +5,10 @@ import { StoreService } from './store.service';
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
-  @Get('/getStoreId/:ownerId')
-  async getStoreIdByOwnerId(
+  @Get('/getStoreName/:ownerId')
+  async getStoreNameByOwnerId(
     @Param('ownerId') ownerId: number,
-  ): Promise<number> {
-    return await this.storeService.getStoreIdByOwnerId(ownerId);
+  ): Promise<string | null> {
+    return await this.storeService.getStoreNameByOwnerId(ownerId);
   }
 }

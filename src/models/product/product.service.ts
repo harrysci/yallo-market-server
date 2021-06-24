@@ -68,7 +68,7 @@ export class ProductService {
      *  -> 유통상품지식뱅크 DB에 해당 상품이 존재하지 않는 경우 @return false
      */
 
-    const storeId: number = await this.storeService.getStoreIdByOwnerId(
+    const storeId: number = await this.storeService.getStoreNameByOwnerId(
       ownerId,
     );
     const rawBarcodeProductInfo = await this.productRepository
