@@ -1,23 +1,19 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.service';
-import * as XLSX from 'xlsx';
+
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
+  @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async handleExcel(@UploadedFile() file){
-    const workbook= XLSX.read(file.buffer, {type: 'buffer'});
-    const sheetName= workbook.SheetNames[0];
-
-    const sheet= workbook.Sheets[sheetName];
-    console.log(sheetName);
-    const rows= XLSX.utils.sheet_to_json(sheet, {
-      defval:null,
-    });
-    return await this.productService.uploadExcel(rows);
+  async uploadExcelFile(
+    @UploadedFile() file:Express.Multer.File,
+    @Param('store_id') store_id:number ){
+    //this.logger.debug(rows);
+    
+    console.log(store_id);
+    return await this.productService.uploadExcelFile(file,store_id);
   }
-
 }
