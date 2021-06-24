@@ -20,12 +20,8 @@ export class ProductController {
 
   @Put('info-update')
   async updateProductInfoForOwnerWeb(
-    @Query('id') productId: number,
     @Body() updateProductInfo: UpdateProductInfoReq,
   ) {
-    return await this.productService.updateProductInfo(
-      productId,
-      updateProductInfo,
-    );
+    return await this.productService.updateProductInfo(updateProductInfo);
   }
 }

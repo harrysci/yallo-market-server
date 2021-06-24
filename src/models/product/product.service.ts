@@ -61,69 +61,52 @@ export class ProductService {
     return productList;
   }
 
-  async updateProductInfo(
-    productId: number,
-    updateProductInfo: UpdateProductInfoReq,
-  ) {
-    const updateProductRawResult = await this.productRepository.findOne({
-      join: {
-        alias: 'product',
-        innerJoinAndSelect: {
-          onsale_product: 'product.onsale_product',
-        },
-      },
-      where: {
+  async updateProductInfo(updateProductInfo: UpdateProductInfoReq) {
+    const selectProductRawResult = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.product_id = :product_id', {
         product_id: updateProductInfo.productId,
-      },
-    });
+      })
+      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .getOne();
 
-    console.log(updateProductRawResult);
-    // .update(Product)
-    // .where('product.product_id = :product_id', { product_id: productId })
-    // .set({
-    //   product_barcode: updateProductInfo.productBarcode,
-    //   product_name: updateProductInfo.productName,
-    //   product_original_price: updateProductInfo.productOriginPrice,
-    //   product_current_price: updateProductInfo.productCurrentPrice,
-    //   product_profit: updateProductInfo.productProfit,
-    //   product_onsale: updateProductInfo.productOnSale,
-    // })
-    // .execute();
+    selectProductRawResult.onsale_product = {
+      ...selectProductRawResult.onsale_product,
+      product_onsale_price: updateProductInfo.productOnSalePrice
+        ? updateProductInfo.productOnSalePrice
+        : updateProductInfo.productCurrentPrice,
+    };
 
-    // console.log(updateProductRawResult.affected);
+    if (selectProductRawResult.product_is_processed) {
+      selectProductRawResult.processed_product = {
+        ...selectProductRawResult.processed_product,
+        processed_product_volume: updateProductInfo.productVolume,
+      };
+    } else {
+      selectProductRawResult.weighted_product = {
+        ...selectProductRawResult.weighted_product,
+        weighted_product_volume: updateProductInfo.productVolume,
+      };
+    }
+    await this.productRepository.save(selectProductRawResult);
 
-    // const updateTest = await this.productRepository
-    //   .createQueryBuilder('product')
-    //   .innerJoinAndSelect('product.onsale_product', 'onsale_product')
-    //   .where('product.product_id = :product_id', { product_id: productId })
-    //   .subQuery()
-    //   .update(OnsaleProduct)
-    //   .set({
-    //     product_onsale_price: 12341111,
-    //   })
-    //   .execute();
-
-    // console.log(updateTest);
-
-    // const updateOnSaleRawResult = await this.onSaleProductRepository
-    //   .createQueryBuilder('onsale_product')
-    //   .update(OnsaleProduct)
-    //   .where('onsale_product.product_id = :product_id', {
-    //     product_id: productId,
-    //   })
-    //   .set({
-    //     product_onsale_price: updateProductInfo.productOnSalePrice,
-    //   })
-    //   .execute();
-
-    // const updateOnSaleRawResult2 = await this.onSaleProductRepository
-    //   .createQueryBuilder('onsale_product')
-    //   .where('onsale_product.product_id = :product_id', {
-    //     product_id: productId,
-    //   })
-    //   .getOne();
-
-    // console.log(productId, updateOnSaleRawResult);
+    await this.productRepository
+      .createQueryBuilder('prdouct')
+      .update(Product)
+      .where('product.product_id = :product_id', {
+        product_id: updateProductInfo.productId,
+      })
+      .set({
+        product_barcode: updateProductInfo.productBarcode,
+        product_name: updateProductInfo.productName,
+        product_original_price: updateProductInfo.productOriginPrice,
+        product_current_price: updateProductInfo.productCurrentPrice,
+        product_profit: updateProductInfo.productProfit,
+        product_onsale: updateProductInfo.productOnSale,
+      })
+      .execute();
 
     return;
   }
