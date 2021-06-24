@@ -52,13 +52,15 @@ export class ProductService {
   }
 
   /**
-   *
+   * 바코드를 통한 상품 정보 조회
    * @param ownerId
    * @param barcode
-   * @returns
+   * @return barcodeProductInfo
    */
-  async getBarcodeProductInfo(ownerId: number, barcode: string): Promise<any> {
-    // ): Promise<GetBarcodeProductRes | boolean> {
+  async getBarcodeProductInfo(
+    ownerId: number,
+    barcode: string,
+  ): Promise<GetBarcodeProductRes> {
     /**
      * 1. owner 테이블과 store 테이블 간 left join -> storeId 조회
      * 2. product 테이블에서 storeId 와 barcode 를 통해 select
@@ -72,22 +74,39 @@ export class ProductService {
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
 
-    if (storeIdName == null) return null;
+    if (!storeIdName) return null;
     else {
       const rawBarcodeProductInfo = await this.productRepository
         .createQueryBuilder('product')
-        .where('product.store=:storeName', { storeName: storeName })
+        .where('product.store=:storeId', { storeId: storeIdName.storeId })
         .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+        .leftJoinAndSelect('product.processed_product', 'processed_product')
+        .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+        .leftJoinAndSelect('product.onsale_product', 'onsale_product')
         .getOne();
 
       const barcodeProductInfo: GetBarcodeProductRes =
-        rawBarcodeProductInfo == undefined
-          ? null
-          : {
-              storeName: rawBarcodeProductInfo.store,
-            };
+        storeIdName && rawBarcodeProductInfo
+          ? {
+              storeName: storeIdName.storeName,
+              productName: rawBarcodeProductInfo.product_name,
+              productBarcode: rawBarcodeProductInfo.product_barcode,
+              productCurrentPrice: rawBarcodeProductInfo.product_current_price,
+              productOnsale: rawBarcodeProductInfo.product_onsale,
+              productOnsalePrice: rawBarcodeProductInfo.onsale_product
+                ? rawBarcodeProductInfo.onsale_product.product_onsale_price
+                : null,
+              productCategory: rawBarcodeProductInfo.product_category,
+              productCreatedAt: rawBarcodeProductInfo.product_created_at,
+              productVolume: rawBarcodeProductInfo.processed_product
+                ? rawBarcodeProductInfo.processed_product
+                    .processed_product_volume
+                : rawBarcodeProductInfo.weighted_product
+                    .weighted_product_volume,
+            }
+          : null;
 
-      return rawBarcodeProductInfo;
+      return barcodeProductInfo;
     }
   }
 

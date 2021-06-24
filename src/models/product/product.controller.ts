@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { CreateBarcodeProcessedProductDto } from './dto/CreateBarcodeProcessedProductDto.dto';
 import { CreateBarcodeWeightedProductDto } from './dto/CreateBarcodeWeightedProductDto.dto';
+import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
 import { ProductService } from './product.service';
 
 @Controller('product')
@@ -44,7 +45,7 @@ export class ProductController {
   async getBarcodeProductInfo(
     @Param('ownerId') ownerId: number,
     @Param('barcode') barcode: string,
-  ): Promise<any> {
+  ): Promise<GetBarcodeProductRes> {
     return await this.productService.getBarcodeProductInfo(ownerId, barcode);
   }
 
