@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { StoreIdNameRes } from './dto/StoreIdNameRes.dto';
 import { StoreBank } from './entities/store-bank.entity';
 import { StorePaymethod } from './entities/store-paymethod.entity';
 import { Store } from './entities/store.entity';
@@ -21,17 +22,24 @@ export class StoreService {
   /**
    *
    * @param ownerId
-   *  ownerId 에 해당하는 store 가 존재하는 경우 -> @return storeId
-   *  ownerId 에 해당하는 store 가 존재하지 않는 경우 -> @return -1
+   *  ownerId 에 해당하는 store 가 존재하는 경우 -> @return storeIdName
+   *  ownerId 에 해당하는 store 가 존재하지 않는 경우 -> @return null
    */
-  async getStoreNameByOwnerId(ownerId: number): Promise<string | null> {
+  async getStoreIdNameByOwnerId(ownerId: number): Promise<StoreIdNameRes> {
     const rawStore = await this.storeRepository
       .createQueryBuilder('store')
       .where('store.owner=:ownerId', { ownerId: ownerId })
       .getOne();
 
-    const storeName = rawStore ? rawStore.store_name : null;
+    console.log(rawStore);
 
-    return storeName;
+    const storeIdName: StoreIdNameRes = !rawStore
+      ? null
+      : {
+          storeId: rawStore.store_id,
+          storeName: rawStore.store_name,
+        };
+
+    return storeIdName;
   }
 }
