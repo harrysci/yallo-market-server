@@ -1,7 +1,7 @@
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 /**
- * @점주_및_점포관리인_WEB_개별상품정보_수정_요청
+ * @점주_및_점포관리인_WEB_개별상품정보_수정_응답
  * 1. 상품명    (product_name)
  * 2. 바코드    (product_barcode)
  * 3. 분류      (product_category)
@@ -16,7 +16,7 @@ import { IsBoolean, IsNumber, IsString } from 'class-validator';
  */
 export class UpdateProductInfoReq {
   @IsNumber()
-  readonly productId: number;
+  productId: number;
 
   @IsString()
   productBarcode: string;
@@ -37,7 +37,7 @@ export class UpdateProductInfoReq {
   productProfit: number;
 
   @IsBoolean()
-  readonly productIsProcessed: boolean;
+  productIsProcessed: boolean;
 
   @IsBoolean()
   productOnSale: boolean;

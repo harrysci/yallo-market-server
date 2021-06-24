@@ -37,8 +37,6 @@ export class ProductService {
       .innerJoinAndSelect('product.processed_product', 'processed_product')
       .getMany();
 
-    console.log(selectProductListRawResult);
-
     /* 점주 및 점포 관리인 WEB 상품 정보 리스트 조회 결과로 변환*/
     const productList: GetProductListRes[] =
       selectProductListRawResult.map<GetProductListRes>((eachProduct) => ({
@@ -108,10 +106,71 @@ export class ProductService {
       })
       .execute();
 
-    return;
+    const selectUpdatedProductRawResult = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.product_id = :product_id', {
+        product_id: updateProductInfo.productId,
+      })
+      .innerJoinAndSelect('product.onsale_product', 'onsale_product')
+      .innerJoinAndSelect('product.weighted_product', 'weighted_product')
+      .innerJoinAndSelect('product.processed_product', 'processed_product')
+      .getOne();
+
+    const updatedProductInfo = {
+      productId: selectUpdatedProductRawResult.product_id,
+      productBarcode: selectUpdatedProductRawResult.product_barcode,
+      productName: selectUpdatedProductRawResult.product_name,
+      productOriginPrice: selectUpdatedProductRawResult.product_original_price,
+      productCurrentPrice: selectUpdatedProductRawResult.product_current_price,
+      productOnSalePrice: selectUpdatedProductRawResult.onsale_product
+        ? selectUpdatedProductRawResult.onsale_product.product_onsale_price
+        : selectUpdatedProductRawResult.product_current_price,
+      productProfit: selectUpdatedProductRawResult.product_profit,
+      productIsProcessed: selectUpdatedProductRawResult.product_is_processed,
+      productOnSale: selectUpdatedProductRawResult.product_onsale,
+      productVolume: selectUpdatedProductRawResult.product_is_processed
+        ? selectUpdatedProductRawResult.processed_product
+            .processed_product_volume
+        : selectUpdatedProductRawResult.weighted_product
+            .weighted_product_volume,
+    };
+
+    return updatedProductInfo;
   }
 
-  async deleteProductInfo() {
+  async deleteProductInfo(productId: number): Promise<void> {
+    const selectTargetProductRawResult = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.product_id = :product_id', { product_id: productId })
+      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .getOne();
+
+    await this.productRepository.remove(selectTargetProductRawResult);
+
+    if (selectTargetProductRawResult.onsale_product) {
+      const target = await this.onSaleProductRepository.findOne({
+        onsale_product_id:
+          selectTargetProductRawResult.onsale_product.onsale_product_id,
+      });
+      await this.onSaleProductRepository.remove(target);
+    }
+    if (selectTargetProductRawResult.processed_product) {
+      const target = await this.processedProductRepository.findOne({
+        processed_product_id:
+          selectTargetProductRawResult.processed_product.processed_product_id,
+      });
+      await this.processedProductRepository.remove(target);
+    }
+    if (selectTargetProductRawResult.weighted_product) {
+      const target = await this.weightedProductRepository.findOne({
+        weighted_product_id:
+          selectTargetProductRawResult.weighted_product.weighted_product_id,
+      });
+      await this.weightedProductRepository.remove(target);
+    }
+
     return;
   }
 }

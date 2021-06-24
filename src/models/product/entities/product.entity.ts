@@ -75,7 +75,7 @@ export class Product implements ProductBase {
   @OneToOne(() => ProcessedProduct, {
     nullable: true,
     onDelete: 'NO ACTION',
-    cascade: ['insert', 'update'],
+    cascade: ['insert', 'update', 'remove'],
   })
   @JoinColumn({ name: 'processed_product_id' })
   processed_product: ProcessedProduct;
@@ -84,7 +84,7 @@ export class Product implements ProductBase {
   @OneToOne(() => WeightedProduct, {
     nullable: true,
     onDelete: 'NO ACTION',
-    cascade: ['insert', 'update'],
+    cascade: ['insert', 'update', 'remove'],
   })
   @JoinColumn({ name: 'weighted_product_id' })
   weighted_product: WeightedProduct;
@@ -93,7 +93,7 @@ export class Product implements ProductBase {
   @OneToOne(() => OnsaleProduct, {
     nullable: true,
     onDelete: 'NO ACTION',
-    cascade: ['insert', 'update'],
+    cascade: ['insert', 'update', 'remove'],
   })
   @JoinColumn({ name: 'onsale_product_id' })
   onsale_product: OnsaleProduct;

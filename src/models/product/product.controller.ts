@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { UpdateDateColumn } from 'typeorm';
 import { GetProductListRes } from './dto/getProductListRes.dto';
 import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
@@ -23,5 +31,10 @@ export class ProductController {
     @Body() updateProductInfo: UpdateProductInfoReq,
   ) {
     return await this.productService.updateProductInfo(updateProductInfo);
+  }
+
+  @Delete('info-delete')
+  async deleteProductInfoForOwnerWeb(@Query('productId') productId: number) {
+    return await this.productService.deleteProductInfo(productId);
   }
 }

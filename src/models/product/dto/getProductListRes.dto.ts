@@ -1,7 +1,7 @@
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 /**
- * @점주_및_점포관리인_WEB_상품목록_조회결과
+ * @점주_및_점포관리인_WEB_상품목록_조회_결과
  * 1. 상품명    (product_name)
  * 2. 바코드    (product_barcode)
  * 3. 분류      (product_category)
