@@ -9,6 +9,7 @@ import { ProcessedProduct } from './entities/processed-product.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
+import { ProductImage } from './entities/product-image.entity';
 
 @Injectable()
 export class ProductService {
@@ -24,6 +25,9 @@ export class ProductService {
 
     @InjectRepository(OnsaleProduct)
     private readonly onSaleProductRepository: Repository<OnsaleProduct>,
+
+    @InjectRepository(ProductImage)
+    private readonly productImageRepository: Repository<ProductImage>,
 
     private readonly httpService: HttpService,
     private readonly korchamConfig: KorchamConfigService,
@@ -198,6 +202,7 @@ export class ProductService {
       .leftJoinAndSelect('product.onsale_product', 'onsale_product')
       .leftJoinAndSelect('product.processed_product', 'processed_product')
       .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .leftJoinAndSelect('product.product_image', 'product_image')
       .getOne();
 
     if (!selectTargetProductRawResult) {
@@ -205,10 +210,21 @@ export class ProductService {
     }
 
     try {
-      /* 1. foreign key 를 가진 해당 product 삭제 */
+      /* 1. foreign key 의 대상(1:N) relation table raws 삭제 */
+      if (selectTargetProductRawResult.product_image.length === 0) {
+        await this.productImageRepository
+          .createQueryBuilder('product_image')
+          .delete()
+          .where('product_image.product_id = :product_id', {
+            product_id: selectTargetProductRawResult.product_id,
+          })
+          .execute();
+      }
+
+      /* 2. foreign key 를 가진 해당 product 삭제 */
       await this.productRepository.remove(selectTargetProductRawResult);
 
-      /* 2. foreign key 의 대상 relation table raw 삭제 */
+      /* 3. foreign key 의 대상(1:1) relation table raw 삭제 */
       if (selectTargetProductRawResult.onsale_product) {
         const target = await this.onSaleProductRepository.findOne({
           onsale_product_id:
