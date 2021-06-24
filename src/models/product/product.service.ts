@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { StoreIdNameRes } from '../store/dto/StoreIdNameRes.dto';
 import { StoreService } from '../store/store.service';
 import { CreateBarcodeProcessedProductDto } from './dto/CreateBarcodeProcessedProductDto.dto';
 import { CreateBarcodeWeightedProductDto } from './dto/CreateBarcodeWeightedProductDto.dto';
@@ -68,10 +69,10 @@ export class ProductService {
      *  -> 유통상품지식뱅크 DB에 해당 상품이 존재하지 않는 경우 @return false
      */
 
-    const storeName: string | null =
-      await this.storeService.getStoreNameByOwnerId(ownerId);
+    const storeIdName: StoreIdNameRes =
+      await this.storeService.getStoreIdNameByOwnerId(ownerId);
 
-    if (storeName == null) return null;
+    if (storeIdName == null) return null;
     else {
       const rawBarcodeProductInfo = await this.productRepository
         .createQueryBuilder('product')
