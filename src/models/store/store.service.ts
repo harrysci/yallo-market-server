@@ -40,4 +40,19 @@ export class StoreService {
 
     return storeIdName;
   }
+
+  /**
+   *
+   * @param ownerId
+   *  ownerId 에 해당하는 store 가 존재하는 경우 -> @return store
+   *  ownerId 에 해당하는 store 가 존재하지 않는 경우 -> @return null
+   */
+  async getStore(ownerId: number): Promise<Store> {
+    const store = await this.storeRepository
+      .createQueryBuilder('store')
+      .where('store.owner=:ownerId', { ownerId: ownerId })
+      .getOne();
+
+    return store;
+  }
 }
