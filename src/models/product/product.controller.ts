@@ -8,8 +8,8 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { CreateBarcodeProcessedProductDto } from './dto/CreateBarcodeProcessedProductDto.dto';
-import { CreateBarcodeWeightedProductDto } from './dto/CreateBarcodeWeightedProductDto.dto';
+import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
+import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
 import { Product } from './entities/product.entity';
 import { GetProductListRes } from './dto/getProductListRes.dto';
@@ -17,6 +17,8 @@ import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
 import { UpdateProductInfoRes } from './dto/updateProductInfoRes.dto';
 import { ProductService } from './product.service';
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
+import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
+import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
 
 @Controller('product')
 export class ProductController {
@@ -26,8 +28,8 @@ export class ProductController {
   @Post('/createProduct/:ownerId')
   async createBarcodeProcessedProduct(
     @Param('ownerId') ownerId: number,
-    @Body() productData: CreateBarcodeProcessedProductDto,
-  ): Promise<any> {
+    @Body() productData: CreateBarcodeProcessedProductReq,
+  ): Promise<CreateBarcodeProcessedProductRes> {
     return await this.productService.createBarcodeProcessedProduct(
       ownerId,
       productData,
@@ -38,8 +40,8 @@ export class ProductController {
   @Post('/createProduct/:ownerId')
   async createBarcodeWeightedProduct(
     @Param('ownerId') ownerId: number,
-    @Body() productData: CreateBarcodeWeightedProductDto,
-  ): Promise<any> {
+    @Body() productData: CreateBarcodeWeightedProductReq,
+  ): Promise<CreateBarcodeWeightedProductRes> {
     return await this.productService.createBarcodeWeightedProduct(
       ownerId,
       productData,
