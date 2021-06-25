@@ -7,7 +7,6 @@ import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
-import { ProductBase } from './interfaces/product-base.interface';
 
 @Injectable()
 export class ProductService {

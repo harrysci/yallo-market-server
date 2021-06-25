@@ -1,7 +1,6 @@
-import { Controller, Get, Query, Post, Body, Put, Param } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { FindStoreProductDto } from './dto/FindStoreProduct.dto';
 import { ProductDetailDto } from './dto/ProductDetailDto.dto';
-import { Product } from './entities/product.entity';
 import { ProductService } from './product.service';
 
 @Controller('product')
