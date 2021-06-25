@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  ParseIntPipe,
+  Put,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
 import { GetProductListRes } from './dto/getProductListRes.dto';
 import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
 import { UpdateProductInfoRes } from './dto/updateProductInfoRes.dto';
@@ -19,7 +28,7 @@ export class ProductController {
    */
   @Get('info-list-admin')
   async getProductListForOwnerWeb(
-    @Query('storeId') storeId: number,
+    @Query('storeId', ParseIntPipe) storeId: number,
   ): Promise<GetProductListRes[]> {
     return await this.productService.getProductList(storeId);
   }
@@ -31,7 +40,8 @@ export class ProductController {
    */
   @Put('info-update')
   async updateProductInfoForOwnerWeb(
-    @Body() updateProductInfo: UpdateProductInfoReq,
+    @Body(new ValidationPipe())
+    updateProductInfo: UpdateProductInfoReq,
   ): Promise<UpdateProductInfoRes> {
     return await this.productService.updateProductInfo(updateProductInfo);
   }
@@ -43,7 +53,7 @@ export class ProductController {
    */
   @Delete('info-delete')
   async deleteProductInfoForOwnerWeb(
-    @Query('productId') productId: number,
+    @Query('productId', ParseIntPipe) productId: number,
   ): Promise<void> {
     return await this.productService.deleteProductInfo(productId);
   }

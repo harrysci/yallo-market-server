@@ -10,6 +10,7 @@ import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
 import { ProductImage } from './entities/product-image.entity';
+import { empty } from 'rxjs';
 
 @Injectable()
 export class ProductService {
@@ -66,11 +67,11 @@ export class ProductService {
         productCurrentPrice: eachProduct.product_current_price,
         productOnSalePrice: eachProduct.onsale_product
           ? eachProduct.onsale_product.product_onsale_price
-          : eachProduct.product_current_price,
+          : null,
         productProfit: eachProduct.product_profit,
         productIsProcessed: eachProduct.product_is_processed,
         productOnSale: eachProduct.product_onsale,
-        productVolume: eachProduct.product_is_processed
+        productVolume: eachProduct.processed_product
           ? eachProduct.processed_product.processed_product_volume
           : eachProduct.weighted_product.weighted_product_volume,
       }));
@@ -107,14 +108,6 @@ export class ProductService {
      * 2. processed product 정보 수정
      * 3. weighted product 정보 수정
      */
-    if (selectProductRawResult.onsale_product) {
-      selectProductRawResult.onsale_product = {
-        ...selectProductRawResult.onsale_product,
-        product_onsale_price: updateProductInfo.productOnSalePrice
-          ? updateProductInfo.productOnSalePrice
-          : updateProductInfo.productCurrentPrice,
-      };
-    }
 
     if (selectProductRawResult.processed_product) {
       selectProductRawResult.processed_product = {
@@ -126,6 +119,46 @@ export class ProductService {
         ...selectProductRawResult.weighted_product,
         weighted_product_volume: updateProductInfo.productVolume,
       };
+    }
+
+    if (selectProductRawResult.onsale_product) {
+      selectProductRawResult.onsale_product = {
+        ...selectProductRawResult.onsale_product,
+        product_onsale_price: updateProductInfo.productOnSale
+          ? updateProductInfo.productOnSalePrice
+          : updateProductInfo.productCurrentPrice,
+      };
+    }
+
+    /*  */
+    if (
+      selectProductRawResult.onsale_product &&
+      updateProductInfo.productOnSale
+    ) {
+      /* 기존 OnSale 이면서 수정 정보가 OnSale 인 경우 */
+      selectProductRawResult.onsale_product = {
+        ...selectProductRawResult.onsale_product,
+        product_onsale_price: updateProductInfo.productOnSalePrice,
+      };
+    } else if (
+      /* 기존 OnSale 이면서 수정 정보가 OnSale 인 경우 */
+      selectProductRawResult.onsale_product &&
+      !updateProductInfo.productOnSale
+    ) {
+      // delete onsale and update to null
+      const deleteTarget = selectProductRawResult.onsale_product;
+      selectProductRawResult.onsale_product = null;
+      await this.productRepository.save(selectProductRawResult);
+      await this.onSaleProductRepository.remove(deleteTarget);
+    } else if (
+      !selectProductRawResult.onsale_product &&
+      updateProductInfo.productOnSale
+    ) {
+      const newOnsaleProduct = new OnsaleProduct();
+      newOnsaleProduct.product_onsale_price =
+        updateProductInfo.productOnSalePrice;
+
+      selectProductRawResult.onsale_product = newOnsaleProduct;
     }
 
     try {
@@ -176,15 +209,15 @@ export class ProductService {
         productProfit: selectUpdatedProductRawResult.product_profit,
         productIsProcessed: selectUpdatedProductRawResult.product_is_processed,
         productOnSale: selectUpdatedProductRawResult.product_onsale,
-        productVolume: selectUpdatedProductRawResult.product_is_processed
+        productVolume: selectUpdatedProductRawResult.processed_product
           ? selectUpdatedProductRawResult.processed_product
               .processed_product_volume
           : selectUpdatedProductRawResult.weighted_product
               .weighted_product_volume,
       };
       return updatedProductInfo;
-    } catch {
-      throw new Error('updateProductInfo [Update] Error');
+    } catch (e) {
+      throw new Error('updateProductInfo [Update] Error :' + e.message);
     }
   }
 
@@ -246,8 +279,8 @@ export class ProductService {
         });
         await this.weightedProductRepository.remove(target);
       }
-    } catch {
-      throw new Error('deleteProductInfo [Delete] Error');
+    } catch (e) {
+      throw new Error('deleteProductInfo [Delete] Error : ' + e.message);
     }
   }
 
