@@ -10,7 +10,6 @@ import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
 import { ProductImage } from './entities/product-image.entity';
-import { empty } from 'rxjs';
 
 @Injectable()
 export class ProductService {
@@ -194,7 +193,7 @@ export class ProductService {
           selectUpdatedProductRawResult.product_current_price,
         productOnSalePrice: selectUpdatedProductRawResult.onsale_product
           ? selectUpdatedProductRawResult.onsale_product.product_onsale_price
-          : selectUpdatedProductRawResult.product_current_price,
+          : null,
         productProfit: selectUpdatedProductRawResult.product_profit,
         productIsProcessed: selectUpdatedProductRawResult.product_is_processed,
         productOnSale: selectUpdatedProductRawResult.product_onsale,
