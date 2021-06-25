@@ -15,6 +15,8 @@ import { ProductImage } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
+import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
+import { UpdateBarcodeProductInfoRes } from './dto/updateBarcodeProductInfoRes.dto';
 
 @Injectable()
 export class ProductService {
@@ -136,22 +138,151 @@ export class ProductService {
     return barcodeProductInfo;
   }
 
+  /**
+   * 바코드를 통한 상품 정보 갱신
+   * @param ownerId
+   * @param barcode
+   * @return updatedProduct
+   */
   async updateBarcodeProductInfo(
     ownerId: number,
     barcode: string,
-  ): Promise<any> {
+    updateProductInfo: updateBarcodeProductInfoReq,
+  ): Promise<UpdateBarcodeProductInfoRes> {
     /**
-     * 1.
-     * 2.
-     * 3.
+     * 1. owner 테이블과 store 테이블 간 left join -> storeId 조회
+     * 2. product 테이블에서 storeId 와 barcode 를 통해 select
+     * 3. product 테이블에 해당 상품이 존재하는 경우 updateProductInfo 로 전달받은 정보를 갱신
+     * 4. 갱신한 상품을 product 테이블에서 조회하여 그 결과값을 반환하며 함수를 종료
      */
+
+    const storeIdName: StoreIdNameRes =
+      await this.storeService.getStoreIdNameByOwnerId(ownerId);
+    // ownerId 에 해당하는 store 가 존재하지 않는 경우
+    if (!storeIdName)
+      throw new Error(
+        `[deleteBarcodeProduct Error] no store was found by owner_id: ${ownerId}`,
+      );
+
+    const rawProduct: Product = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.store=:storeId', { storeId: storeIdName.storeId })
+      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .getOne();
+    if (!rawProduct)
+      throw new Error(
+        `[updateBarcodeProductInfo Error] no product was found by owner_id: ${ownerId}, store_id: ${storeIdName.storeId}, product_barcode: ${barcode}`,
+      );
+
+    // rawProduct 공산품 정보(updateProductInfo.processed_product) 수정
+    if (rawProduct.processed_product) {
+      rawProduct.processed_product = {
+        ...rawProduct.processed_product,
+        processed_product_volume: updateProductInfo.productVolume,
+      };
+    }
+    // rawProduct 저울상품 정보(updateProductInfo.weighted_product) 수정
+    else {
+      rawProduct.weighted_product = {
+        ...rawProduct.weighted_product,
+        weighted_product_volume: updateProductInfo.productVolume,
+      };
+    }
+    // rawProduct 상품 할인 정보(updateProductInfo.onsale_product) 수정
+    if (rawProduct.onsale_product || updateProductInfo.productOnSale) {
+      // 상품 할인을 유지하는 경우 -> updateProductInfo.onsale_product.product_onsale_price 로 상품 할인가 갱신
+      if (updateProductInfo.productOnSale) {
+        rawProduct.onsale_product = {
+          ...rawProduct.onsale_product,
+          product_onsale_price: updateProductInfo.productOnSalePrice,
+        };
+      }
+      // 상품 할인을 종료하는 경우 -> onsale_product 테이블에서 해당 상품의 할인 정보를 삭제
+      else {
+        const deleteTarget: OnsaleProduct =
+          await this.onSaleProductRepository.findOne({
+            onsale_product_id: rawProduct.onsale_product.onsale_product_id,
+          });
+
+        await this.onSaleProductRepository.remove(deleteTarget);
+      }
+    }
+
+    try {
+      // 공산품 정보, 저울상품 정보, 상품 할인 정보 수정 내역 적용
+      await this.productRepository.save(rawProduct);
+
+      // 상품 정보 수정
+      await this.productRepository
+        .createQueryBuilder('product')
+        .update(Product)
+        .where('product.product_id=:productId', {
+          productId: updateProductInfo.productId,
+        })
+        .set({
+          product_barcode: updateProductInfo.productBarcode,
+          product_name: updateProductInfo.productName,
+          product_original_price: updateProductInfo.productOriginPrice,
+          product_current_price: updateProductInfo.productCurrentPrice,
+          product_profit: updateProductInfo.productOnSale
+            ? // 상품이 할인 중인 경우
+              ((updateProductInfo.productOnSalePrice -
+                updateProductInfo.productOriginPrice) /
+                updateProductInfo.productOnSalePrice) *
+              100
+            : // 상품이 할인 중이지 않은 경우
+              ((updateProductInfo.productCurrentPrice -
+                updateProductInfo.productOriginPrice) /
+                updateProductInfo.productCurrentPrice) *
+              100,
+          product_onsale: updateProductInfo.productOnSale,
+        })
+        .execute();
+
+      // 수정된 상품 정보 조회
+      // const rawUpdatedProduct: Product = await this.productRepository
+      //   .createQueryBuilder('product')
+      //   .where('product.productId = :productId', {
+      //     productId: updateProductInfo.productId,
+      //   })
+      //   .leftJoinAndSelect('product.processed_product', 'processed_product')
+      //   .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      //   .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+      //   .getOne();
+
+      // const updatedProduct: UpdateProductInfoRes = {
+      //   productId: rawUpdatedProduct.product_id,
+      //   productBarcode: rawUpdatedProduct.product_barcode,
+      //   productName: rawUpdatedProduct.product_name,
+      //   productOriginPrice: rawUpdatedProduct.product_original_price,
+      //   productCurrentPrice: rawUpdatedProduct.product_current_price,
+      //   productOnSalePrice: rawUpdatedProduct.onsale_product
+      //     ? rawUpdatedProduct.onsale_product.product_onsale_price
+      //     : null,
+      //   productProfit: rawUpdatedProduct.product_profit,
+      //   productIsProcessed: rawUpdatedProduct.product_is_processed,
+      //   productOnSale: rawUpdatedProduct.product_onsale,
+      //   productVolume: rawUpdatedProduct.product_is_processed
+      //     ? rawUpdatedProduct.processed_product.processed_product_volume
+      //     : rawUpdatedProduct.weighted_product.weighted_product_volume,
+      // };
+
+      const updatedProduct = null;
+      return updatedProduct;
+    } catch {
+      throw new Error(
+        `[updateBarcodeProductInfo Error] update error by ${ownerId}, store_id: ${storeIdName.storeId}, product_barcode: ${barcode}`,
+      );
+    }
   }
 
   /**
    * 바코드를 통한 상품 정보 삭제
    * @param ownerId
    * @param barcode
-   * @return rawProduct
+   * @return rawProduct (삭제한 상품 정보)
    */
   async deleteBarcodeProduct(
     ownerId: number,
@@ -160,7 +291,7 @@ export class ProductService {
     /**
      * 1. owner 테이블과 store 테이블 간 left join -> storeId 조회
      * 2. product 테이블에서 storeId 와 barcode 를 통해 select
-     * 3. product 테이블에 해당 상품이 존재하는 경우 상품을 삭제한 뒤 함수를 종료한다.
+     * 3. product 테이블에 해당 상품이 존재하는 경우 상품을 삭제한 뒤 함수를 종료
      */
 
     const storeIdName: StoreIdNameRes =
@@ -335,7 +466,7 @@ export class ProductService {
 
       /* product 정보 수정 */
       await this.productRepository
-        .createQueryBuilder('prdouct')
+        .createQueryBuilder('product')
         .update(Product)
         .where('product.product_id = :product_id', {
           product_id: updateProductInfo.productId,

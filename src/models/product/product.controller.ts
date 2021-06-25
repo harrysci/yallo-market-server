@@ -6,7 +6,6 @@ import {
   Put,
   Query,
   Param,
-  Patch,
   Post,
 } from '@nestjs/common';
 import { CreateBarcodeProcessedProductDto } from './dto/CreateBarcodeProcessedProductDto.dto';
@@ -17,6 +16,7 @@ import { GetProductListRes } from './dto/getProductListRes.dto';
 import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
 import { UpdateProductInfoRes } from './dto/updateProductInfoRes.dto';
 import { ProductService } from './product.service';
+import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
 
 @Controller('product')
 export class ProductController {
@@ -56,12 +56,17 @@ export class ProductController {
   }
 
   // 바코드를 통한 상품 정보 갱신
-  @Patch('/updateProductData/:ownerId/:barcode')
+  @Put('/updateProductData/:ownerId/:barcode')
   async updateBarcodeProductInfo(
     @Param('ownerId') ownerId: number,
     @Param('barcode') barcode: string,
-  ): Promise<any> {
-    return await this.productService.updateBarcodeProductInfo(ownerId, barcode);
+    @Body() updateProductInfo: updateBarcodeProductInfoReq,
+  ): Promise<updateBarcodeProductInfoReq> {
+    return await this.productService.updateBarcodeProductInfo(
+      ownerId,
+      barcode,
+      updateProductInfo,
+    );
   }
 
   // 바코드를 통한 상품 정보 삭제
