@@ -6,8 +6,7 @@ import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
-import { UploadExcelDataDto } from './dto/UploadExcelDataDto.dto';
-
+import { UploadExcelArrayDto } from './dto/UploadExcelArrayDto.dto';
 
 import { StoreService } from '../store/store.service';
 @Injectable()
@@ -28,7 +27,7 @@ export class ProductService {
     private readonly storeService: StoreService,
   ) {}
 
-  async uploadExcelFile(file: Express.Multer.File, store_id:number): Promise<Product>{
+  async uploadExcelFile(file: Express.Multer.File, store_id:number): Promise<void>{
     const workBook: XLSX.WorkBook=XLSX.read(file.buffer, {
       type: 'buffer',
       cellDates: true,
@@ -43,64 +42,59 @@ export class ProductService {
     const jsonData=XLSX.utils.sheet_to_json(sheet, {
       defval: null,
     })
-    console.log(jsonData[0]);
-    /*store 객체생성*/
+    //console.log(jsonData);
+    const ExcelData=new Product();
     const newStore = await this.storeService.getStore(store_id);
-
-    const ExcelData= new Product();
-    ExcelData.store=newStore;
-    ExcelData.product_barcode= jsonData[0]['바코드'].toString();
-    ExcelData.product_name= jsonData[0]['상품명'];
-    ExcelData.product_original_price= jsonData[0]['원가'];
-    ExcelData.product_current_price= jsonData[0]['판가'];
-    ExcelData.product_description= '맛있다';
-    ExcelData.product_profit=jsonData[0]['원가']/jsonData[0]['판가'];
-    ExcelData.product_is_processed=
-        ExcelData.product_barcode.slice(0,3)=='880'
-        ? true: false;
-    ExcelData.product_is_soldout=
-        jsonData[0]['재고']==0
-        ? true: false;
-    ExcelData.product_onsale=false;
-    ExcelData.product_category= jsonData[0]['분류이름'];
     
-    if(ExcelData.product_is_processed){
-    }
-    else{
-
-    }
-
-      
-      // product_barcode: jsonData[0]['바코드'],
-      // product_name: jsonData[0]['상품명'],
-      // product_original_price: jsonData[0]['원가'],
-      // product_current_price: jsonData[0]['판가'],
-      
-      // product_description: '맛있다',
-      // product_onsale_price: 0,
-      // product_category: jsonData[0]['분류이름'],
-      // product_profit: jsonData[0]['원가']/jsonData[0]['판가'],
-      // product_is_processed: 
-      //   jsonData[0]['바코드']=='880'
-      //   ? true: false,
-      // product_is_soldout: 
-      //   jsonData[0]['재고']==0
-      //   ? true: false,
-      // product_onsale: false,
-      
-      
-      // product_volume: '100kg',
-      // processed_product:{
-
-      // }
-      // product_created_at: 
-      // product_image!: ProductImage[];
-      // processed_product: ProcessedProduct;
-      // weighted_product: WeightedProduct;
-      // onsale_product: OnsaleProduct;
-
-    console.log(ExcelData);
-    return await this.productRepository.save(ExcelData);
-    
+    const ExcelDataArray=Array().fill(ExcelData).map(async (each)=>{
+      jsonData.map((iter)=>{
+        console.log(iter['바코드']);
+        if(iter['바코드'].toString()!=null){
+          each.store=newStore;
+          each.product_barcode=iter['바코드'].toString();
+          each.product_name= iter['상품명'];
+          each.product_original_price= iter['원가'];
+          each.product_current_price= iter['판가'];
+          each.product_description= iter['상품상세설명'];
+          each.product_profit=100*((iter['판가']-iter['원가'])/iter['원가']);
+          each.product_is_processed=
+          each.product_barcode.slice(0,3)=='880'
+          ? true: false;
+          each.product_is_soldout=
+          iter['재고']==0
+          ? true: false;
+          each.product_onsale=false;
+          each.product_category= iter['분류이름'];
+          if(each.product_is_processed){
+            const processedData=new ProcessedProduct();
+            processedData.
+            processed_product_name=iter['상품명'];
+            processedData.
+            processed_product_adult="N";
+            processedData.
+            processed_product_company=iter['상품회사']
+            processedData.
+            processed_product_standard_type=iter['규격'];
+            processedData.
+            processed_product_standard_values=iter['규격'];
+            processedData.
+            processed_product_composition=iter['상품구성'];
+            processedData.
+            processed_product_volume=iter['총중량'];
+            processedData.
+            processed_product_caution=iter['주의사항'];
+            each.processed_product=processedData;
+        }
+        else{
+          const weightedData=new WeightedProduct();
+          weightedData.
+          weighted_product_volume=iter['상품의 양'];
+          each.weighted_product=weightedData;
+        }
+        }
+      })
+    })
+      //await this.productRepository.save(each);
+    console.log(ExcelDataArray);
   }
 }
