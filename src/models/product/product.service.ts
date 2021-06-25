@@ -43,15 +43,11 @@ export class ProductService {
     const jsonData=XLSX.utils.sheet_to_json(sheet, {
       defval: null,
     })
-    //console.log(jsonData);
-
-    
-    // const ExcelDataArray=new UploadExcelArrayDto().ExcelProductData;
+    /*store 정보*/
     const newStore = await this.storeService.getStore(store_id);
     jsonData.map(async (iter)=>{
+      /*save할 data*/
       const ExcelData=new Product();
-      //const ExcelDataArray=[ExcelData];
-      console.log(iter['바코드']);
       if(iter['바코드']!=null){
         ExcelData.store=newStore;
         ExcelData.product_barcode=iter['바코드'].toString();
@@ -97,19 +93,13 @@ export class ProductService {
         }
         const onsaleData=new OnsaleProduct();
         onsaleData.product_onsale_price=iter['할인판가']?
-        iter['할인판가']:1000;
+        iter['할인판가']:0;
         ExcelData.onsale_product=onsaleData;
-        //ExcelDataArray.map((each)=>{each=ExcelData});
-        
-        //ExcelDataArray.push(ExcelData);
-        //console.log(ExcelDataArray);
-        console.log(ExcelData);
-        //console.log(ExcelDataArray);
+
         await this.productRepository.save(ExcelData);
       }
-      
-      
     })
+    /*Array사용시 저장할 Promise함수*/
     //Promise.all(ExcelDataArray).then(async function(values){
       //console.log(values);
       //await this.productRepository.save(values);
