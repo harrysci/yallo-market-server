@@ -104,11 +104,10 @@ export class ProductService {
     }
 
     /**
-     * 1. on sale product 정보 수정
-     * 2. processed product 정보 수정
-     * 3. weighted product 정보 수정
+     * 1. processed product 정보 수정
+     * 2. weighted product 정보 수정
+     * 3. on sale product 정보 수정
      */
-
     if (selectProductRawResult.processed_product) {
       selectProductRawResult.processed_product = {
         ...selectProductRawResult.processed_product,
@@ -121,16 +120,6 @@ export class ProductService {
       };
     }
 
-    if (selectProductRawResult.onsale_product) {
-      selectProductRawResult.onsale_product = {
-        ...selectProductRawResult.onsale_product,
-        product_onsale_price: updateProductInfo.productOnSale
-          ? updateProductInfo.productOnSalePrice
-          : updateProductInfo.productCurrentPrice,
-      };
-    }
-
-    /*  */
     if (
       selectProductRawResult.onsale_product &&
       updateProductInfo.productOnSale
@@ -145,7 +134,6 @@ export class ProductService {
       selectProductRawResult.onsale_product &&
       !updateProductInfo.productOnSale
     ) {
-      // delete onsale and update to null
       const deleteTarget = selectProductRawResult.onsale_product;
       selectProductRawResult.onsale_product = null;
       await this.productRepository.save(selectProductRawResult);
@@ -154,6 +142,7 @@ export class ProductService {
       !selectProductRawResult.onsale_product &&
       updateProductInfo.productOnSale
     ) {
+      /* 기존 OnSale 이 아니면서 수정 정보가 OnSale 인 경우 */
       const newOnsaleProduct = new OnsaleProduct();
       newOnsaleProduct.product_onsale_price =
         updateProductInfo.productOnSalePrice;
