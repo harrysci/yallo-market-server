@@ -11,6 +11,9 @@ import { IsBoolean, IsNumber, IsString, IsDate } from 'class-validator';
  *  7. 상품 매진 여부 (product_is_soldout)
  *  8. 매입 단가 (product_original_price)
  *  9. 상품 설명 (product_description)
+ * 10. 대표 이미지 (product_image, is_representative)
+ * 11. 상세정보 이미지 (product_image, is_detail)
+ * 12. 추가 이미지 (product_image, is_additional)
  */
 export class CreateBarcodeWeightedProductReq {
   @IsString()
@@ -41,4 +44,13 @@ export class CreateBarcodeWeightedProductReq {
 
   @IsString()
   productDescription: string;
+
+  @IsString()
+  representativeProductImage: string;
+
+  @IsString()
+  detailProductImage: string;
+
+  @IsString()
+  additionalProductImage: string;
 }

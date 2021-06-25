@@ -16,10 +16,10 @@ import { KorchamConfigService } from '../../config/korcham/configuration.service
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
 import { UpdateBarcodeProductInfoRes } from './dto/updateBarcodeProductInfoRes.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
-import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
-import { StoreBase } from '../store/interfaces/store-base.interface';
+import { Store } from '../store/entities/store.entity';
+import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 
 @Injectable()
 export class ProductService {
@@ -90,8 +90,25 @@ export class ProductService {
       );
 
     const store: Store = await this.storeService.getStore(storeIdName.storeId);
-    const createdProduct: Product = {
-      // store_id: storeIdName.storeId,
+    const weighted_product = this.weightedProductRepository.create({
+      weighted_product_volume: productData.productVolume,
+    });
+    await this.weightedProductRepository.save(weighted_product);
+
+    /**
+     * 중복 검사
+     * 1. 같은 store_id 에 같은 barcode 로 등록하려는 경우 -> throw error
+     */
+    const dupCheck = await this.productRepository.findOne({
+      store: store,
+      product_barcode: productData.productBarcode,
+    });
+    if (dupCheck)
+      throw new Error(
+        `[createBarcodeWeightedProduct Error] duplicated product with owner_id: ${ownerId}, store_id: ${storeIdName.storeId}, product_barcode: ${productData.productBarcode}`,
+      );
+
+    const product = this.productRepository.create({
       product_barcode: productData.productBarcode,
       product_name: productData.productName,
       product_original_price: productData.productOriginPrice,
@@ -104,14 +121,86 @@ export class ProductService {
       product_is_processed: productData.productIsProcessed,
       product_is_soldout: productData.productIsSoldout,
       product_onsale: false,
-      product_category: null,
+      product_category: '미분류',
       product_created_at: productData.productCreatedAt,
-      product_image: null,
 
-      store: null,
+      store: store,
       onsale_product: null,
       processed_product: null,
-      weighted_product: null,
+      weighted_product: weighted_product,
+    });
+    await this.productRepository.save(product);
+
+    /**
+     * 상품 이미지 저장
+     * 1. 대표 이미지
+     * 2. 상세 이미지
+     * 3. 추가 이미지
+     */
+    const representativeImage: ProductImage =
+      this.productImageRepository.create({
+        is_additional: false,
+        is_detail: false,
+        is_representative: true,
+        product: product,
+        product_image: productData.representativeProductImage,
+      });
+    await this.productImageRepository.save(representativeImage);
+
+    const detailImage: ProductImage = this.productImageRepository.create({
+      is_additional: false,
+      is_detail: true,
+      is_representative: false,
+      product: product,
+      product_image: productData.detailProductImage,
+    });
+    await this.productImageRepository.save(detailImage);
+
+    const additionalImage: ProductImage = this.productImageRepository.create({
+      is_additional: true,
+      is_detail: false,
+      is_representative: false,
+      product: product,
+      product_image: productData.additionalProductImage,
+    });
+    await this.productImageRepository.save(additionalImage);
+
+    // 등록 상품 조회
+    const rawCreatedProduct: Product = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.store=:storeId', { storeId: storeIdName.storeId })
+      .andWhere('product.product_barcode=:barcode', {
+        barcode: productData.productBarcode,
+      })
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .leftJoinAndSelect('product.product_image', 'product_image')
+      .getOne();
+    if (!rawCreatedProduct)
+      throw new Error(
+        `[createBarcodeWeightedProduct Error] no product was found by owner_id: ${ownerId}, store_id: ${storeIdName.storeId}, product_barcode: ${productData.productBarcode}`,
+      );
+
+    const createdProduct: CreateBarcodeWeightedProductRes = {
+      productId: rawCreatedProduct.product_id,
+      productBarcode: rawCreatedProduct.product_barcode,
+      productName: rawCreatedProduct.product_name,
+      productOriginalPrice: rawCreatedProduct.product_original_price,
+      productCurrentPrice: rawCreatedProduct.product_current_price,
+      productProfit: rawCreatedProduct.product_profit,
+      productDescription: rawCreatedProduct.product_description,
+      productIsProcessed: rawCreatedProduct.product_is_processed,
+      productIsSoldout: rawCreatedProduct.product_is_soldout,
+      productOnsale: rawCreatedProduct.product_onsale,
+      productCategory: rawCreatedProduct.product_category,
+      productCreatedAt: rawCreatedProduct.product_created_at,
+      representativeProductImage:
+        rawCreatedProduct.product_image[0].product_image,
+      detailProductImage: rawCreatedProduct.product_image[1].product_image,
+      additionalProductImage: rawCreatedProduct.product_image[2].product_image,
+      weightedProductId: rawCreatedProduct.weighted_product.weighted_product_id,
+      weightedProductVolume:
+        rawCreatedProduct.weighted_product.weighted_product_volume,
     };
 
     return createdProduct;
@@ -290,8 +379,6 @@ export class ProductService {
         .leftJoinAndSelect('product.weighted_product', 'weighted_product')
         .getOne();
 
-      console.log(rawUpdatedProduct);
-
       const updatedProduct: UpdateBarcodeProductInfoRes = {
         productId: rawUpdatedProduct.product_id,
         productIsProcessed: rawUpdatedProduct.product_is_processed,
@@ -307,8 +394,6 @@ export class ProductService {
         productOriginPrice: rawUpdatedProduct.product_original_price,
         productDescription: rawUpdatedProduct.product_description,
       };
-
-      console.log(updatedProduct);
 
       return updatedProduct;
     } catch {

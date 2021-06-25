@@ -2,17 +2,15 @@ import { IsBoolean, IsNumber, IsString, IsDate } from 'class-validator';
 
 /**
  * @점주_및_점포관리인_App_상품정보_입력_요청
- *  1. 바코드 (product_barcode)
- *  2. 상품명 (product_name)
- *  3. 판매 단가 (product_current_price)
- *  4. 공산품 여부 (product_is_processed)
- *  5. 상품 게시일 (product_created_at)
- *  6. 규격 (processed_product_standard_values or weighted_product_volume)
- *  7. 상품 매진 여부 (product_is_soldout)
- *  8. 매입 단가 (product_original_price)
- *  9. 상품 설명 (product_description)
  */
 export class CreateBarcodeProcessedProductRes {
+  // product 공통 attributes
+  @IsNumber()
+  productId: number;
+
+  @IsNumber()
+  storeId: number;
+
   @IsString()
   productBarcode: string;
 
@@ -20,25 +18,70 @@ export class CreateBarcodeProcessedProductRes {
   productName: string;
 
   @IsNumber()
+  productOriginalPrice: number;
+
+  @IsNumber()
   productCurrentPrice: number;
+
+  @IsNumber()
+  productProfit: number;
+
+  @IsString()
+  productDescription: string;
 
   @IsBoolean()
   productIsProcessed: boolean;
 
-  @IsDate()
-  productCreatedAt: Date;
-
-  @IsString()
-  productVolume: string;
-
   @IsBoolean()
   productIsSoldout: boolean;
 
-  // 매입처 DB 칼럼에 없음.
-
-  @IsNumber()
-  productOriginPrice: number;
+  @IsBoolean()
+  productOnsale: boolean;
 
   @IsString()
-  productDescription: string;
+  productCategory: string;
+
+  @IsDate()
+  productCreatedAt: Date;
+
+  // product_image attributes
+  @IsString()
+  representativeProductImage: string;
+
+  @IsString()
+  detailProductImage: string;
+
+  @IsString()
+  additionalProductImage: string;
+
+  // processed_product attributes
+  @IsNumber()
+  processedProductId?: number;
+
+  @IsString()
+  processedProductName?: string;
+
+  @IsString()
+  processedProductCompany?: string;
+
+  @IsString()
+  processedProductStandardType?: string;
+
+  @IsString()
+  processedProductStandardValues?: string;
+
+  @IsString()
+  processedProductComposition?: string;
+
+  @IsString()
+  processedProductVolume?: string;
+
+  @IsString()
+  processedProductAdult?: string;
+
+  @IsString()
+  processedProductCaution?: string;
+
+  @IsString()
+  processedProductInformation?: string;
 }

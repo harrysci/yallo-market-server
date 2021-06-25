@@ -25,7 +25,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   // processed product 생성
-  @Post('/createProduct/:ownerId')
+  @Post('/createProcessedProduct/:ownerId')
   async createBarcodeProcessedProduct(
     @Param('ownerId') ownerId: number,
     @Body() productData: CreateBarcodeProcessedProductReq,
@@ -37,7 +37,7 @@ export class ProductController {
   }
 
   // weighted product 생성
-  @Post('/createProduct/:ownerId')
+  @Post('/createWeightedProduct/:ownerId')
   async createBarcodeWeightedProduct(
     @Param('ownerId') ownerId: number,
     @Body() productData: CreateBarcodeWeightedProductReq,
