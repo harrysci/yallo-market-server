@@ -28,6 +28,7 @@ import { ProductModule } from './models/product/product.module';
     StoreModule,
     ProductModule,
     TestModule,
+    ProductModule,
   ],
   controllers: [AppController, AuthOwnerController, StoreController],
   providers: [AppService],
