@@ -247,6 +247,7 @@ export class ProductService {
 
       /* 3. foreign key 의 대상(1:1) relation table raw 삭제 */
       if (selectTargetProductRawResult.onsale_product) {
+        /* 3-1. onSaleProduct 가 존재하는 경우 삭제 */
         const target = await this.onSaleProductRepository.findOne({
           onsale_product_id:
             selectTargetProductRawResult.onsale_product.onsale_product_id,
@@ -254,6 +255,7 @@ export class ProductService {
         await this.onSaleProductRepository.remove(target);
       }
       if (selectTargetProductRawResult.processed_product) {
+        /* 3-2. processedProduct 가 존재하는 경우 삭제 */
         const target = await this.processedProductRepository.findOne({
           processed_product_id:
             selectTargetProductRawResult.processed_product.processed_product_id,
@@ -261,6 +263,7 @@ export class ProductService {
         await this.processedProductRepository.remove(target);
       }
       if (selectTargetProductRawResult.weighted_product) {
+        /* 3-2. weightedProduct 가 존재하는 경우 삭제 */
         const target = await this.weightedProductRepository.findOne({
           weighted_product_id:
             selectTargetProductRawResult.weighted_product.weighted_product_id,
