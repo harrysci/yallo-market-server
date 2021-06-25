@@ -15,7 +15,6 @@ import { ProductImage } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
-import { ProductImage } from './entities/product-image.entity';
 
 @Injectable()
 export class ProductService {
@@ -36,6 +35,8 @@ export class ProductService {
     private readonly productImageRepository: Repository<ProductImage>,
 
     private readonly storeService: StoreService,
+    private readonly httpService: HttpService,
+    private readonly korchamConfig: KorchamConfigService,
   ) {}
 
   async createBarcodeProcessedProduct(
@@ -231,9 +232,7 @@ export class ProductService {
     }
 
     return rawProduct;
-    private readonly httpService: HttpService,
-    private readonly korchamConfig: KorchamConfigService,
-  ) {}
+  }
 
   /**********************************************************************************
    * @점주WebApp

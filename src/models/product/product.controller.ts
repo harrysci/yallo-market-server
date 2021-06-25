@@ -3,7 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  Put, 
+  Put,
   Query,
   Param,
   Patch,
@@ -71,6 +71,8 @@ export class ProductController {
     @Param('barcode') barcode: string,
   ): Promise<Product> {
     return await this.productService.deleteBarcodeProduct(ownerId, barcode);
+  }
+
   /**********************************************************************************
    * @점주WebApp
    **********************************************************************************/
