@@ -8,9 +8,6 @@ export class CreateBarcodeProcessedProductRes {
   @IsNumber()
   productId: number;
 
-  @IsNumber()
-  storeId: number;
-
   @IsString()
   productBarcode: string;
 
