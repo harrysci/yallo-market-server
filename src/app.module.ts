@@ -7,7 +7,7 @@ import { AppConfigModule } from './config/app/configuration.module';
 
 /* MySQL Database Module */
 import { MysqlDatabaseProviderModule } from './providers/database/mysql/provider.module';
-import { GCPMysqlDatabaseProviderModule } from './providers/database/mysql-dev/provider.module';
+// import { GCPMysqlDatabaseProviderModule } from './providers/database/mysql-dev/provider.module';
 
 /* Authentication Module */
 import { AuthCustomerModule } from './models/auth-customer/auth-customer.module';
@@ -15,15 +15,18 @@ import { AuthOwnerController } from './models/auth-owner/auth-owner.controller';
 import { AuthOwnerModule } from './models/auth-owner/auth-owner.module';
 import { StoreController } from './models/store/store.controller';
 import { StoreModule } from './models/store/store.module';
+import { ProductModule } from './models/product/product.module';
+
 
 @Module({
   imports: [
-    GCPMysqlDatabaseProviderModule,
+    // GCPMysqlDatabaseProviderModule,
     MysqlDatabaseProviderModule,
     AppConfigModule,
     AuthCustomerModule,
     AuthOwnerModule,
     StoreModule,
+    ProductModule
   ],
   controllers: [AppController, AuthOwnerController, StoreController],
   providers: [AppService],
