@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StoreIdNameRes } from '../store/dto/StoreIdNameRes.dto';
 import { StoreService } from '../store/store.service';
-import { CreateBarcodeProcessedProductDto } from './dto/CreateBarcodeProcessedProductDto.dto';
-import { CreateBarcodeWeightedProductDto } from './dto/CreateBarcodeWeightedProductDto.dto';
 import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
 import { GetProductListRes } from './dto/getProductListRes.dto';
 import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
@@ -17,6 +15,11 @@ import { WeightedProduct } from './entities/weighted-product.entity';
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
 import { UpdateBarcodeProductInfoRes } from './dto/updateBarcodeProductInfoRes.dto';
+import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
+import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
+import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
+import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
+import { StoreBase } from '../store/interfaces/store-base.interface';
 
 @Injectable()
 export class ProductService {
@@ -41,26 +44,77 @@ export class ProductService {
     private readonly korchamConfig: KorchamConfigService,
   ) {}
 
+  /**
+   * 바코드를 통한 공산품 생성
+   * @param ownerId
+   * @param productData
+   * @return createdProduct
+   */
   async createBarcodeProcessedProduct(
     ownerId: number,
-    productData: CreateBarcodeProcessedProductDto,
-  ): Promise<any> {
+    productData: CreateBarcodeProcessedProductReq,
+  ): Promise<CreateBarcodeProcessedProductRes> {
     /**
      * 1.
      * 2.
      * 3.
      */
+
+    const createdProduct: CreateBarcodeProcessedProductRes = null;
+
+    return createdProduct;
   }
 
+  /**
+   * 바코드를 통한 저울 상품 생성
+   * @param ownerId
+   * @param productData
+   * @return createdProduct
+   */
   async createBarcodeWeightedProduct(
     ownerId: number,
-    productData: CreateBarcodeWeightedProductDto,
-  ): Promise<any> {
+    productData: CreateBarcodeWeightedProductReq,
+  ): Promise<CreateBarcodeWeightedProductRes> {
     /**
      * 1.
      * 2.
      * 3.
      */
+
+    const storeIdName: StoreIdNameRes =
+      await this.storeService.getStoreIdNameByOwnerId(ownerId);
+    // ownerId 에 해당하는 store 가 존재하지 않는 경우
+    if (!storeIdName)
+      throw new Error(
+        `[createBarcodeWeightedProduct Error] no store was found by owner_id: ${ownerId}`,
+      );
+
+    const store: Store = await this.storeService.getStore(storeIdName.storeId);
+    const createdProduct: Product = {
+      // store_id: storeIdName.storeId,
+      product_barcode: productData.productBarcode,
+      product_name: productData.productName,
+      product_original_price: productData.productOriginPrice,
+      product_current_price: productData.productCurrentPrice,
+      product_profit:
+        ((productData.productCurrentPrice - productData.productOriginPrice) /
+          productData.productCurrentPrice) *
+        100,
+      product_description: productData.productDescription,
+      product_is_processed: productData.productIsProcessed,
+      product_is_soldout: productData.productIsSoldout,
+      product_onsale: false,
+      product_category: null,
+      product_created_at: productData.productCreatedAt,
+      product_image: null,
+
+      store: null,
+      onsale_product: null,
+      processed_product: null,
+      weighted_product: null,
+    };
+
+    return createdProduct;
   }
 
   /**
