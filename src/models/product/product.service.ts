@@ -170,6 +170,7 @@ export class ProductService {
       .andWhere('product.product_barcode=:barcode', { barcode: barcode })
       .leftJoinAndSelect('product.processed_product', 'processed_product')
       .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
       .getOne();
     if (!rawProduct)
       throw new Error(
@@ -190,25 +191,6 @@ export class ProductService {
         weighted_product_volume: updateProductInfo.productVolume,
       };
     }
-    // rawProduct 상품 할인 정보(updateProductInfo.onsale_product) 수정
-    if (rawProduct.onsale_product || updateProductInfo.productOnSale) {
-      // 상품 할인을 유지하는 경우 -> updateProductInfo.onsale_product.product_onsale_price 로 상품 할인가 갱신
-      if (updateProductInfo.productOnSale) {
-        rawProduct.onsale_product = {
-          ...rawProduct.onsale_product,
-          product_onsale_price: updateProductInfo.productOnSalePrice,
-        };
-      }
-      // 상품 할인을 종료하는 경우 -> onsale_product 테이블에서 해당 상품의 할인 정보를 삭제
-      else {
-        const deleteTarget: OnsaleProduct =
-          await this.onSaleProductRepository.findOne({
-            onsale_product_id: rawProduct.onsale_product.onsale_product_id,
-          });
-
-        await this.onSaleProductRepository.remove(deleteTarget);
-      }
-    }
 
     try {
       // 공산품 정보, 저울상품 정보, 상품 할인 정보 수정 내역 적용
@@ -224,52 +206,56 @@ export class ProductService {
         .set({
           product_barcode: updateProductInfo.productBarcode,
           product_name: updateProductInfo.productName,
-          product_original_price: updateProductInfo.productOriginPrice,
           product_current_price: updateProductInfo.productCurrentPrice,
-          product_profit: updateProductInfo.productOnSale
+          product_category: updateProductInfo.productCategory,
+          product_created_at: updateProductInfo.productCreatedAt,
+          product_is_soldout: updateProductInfo.productIsSoldout,
+          product_original_price: updateProductInfo.productOriginPrice,
+          product_description: updateProductInfo.productDescription,
+          product_profit: rawProduct.product_onsale
             ? // 상품이 할인 중인 경우
-              ((updateProductInfo.productOnSalePrice -
+              ((rawProduct.onsale_product.product_onsale_price -
                 updateProductInfo.productOriginPrice) /
-                updateProductInfo.productOnSalePrice) *
+                rawProduct.onsale_product.product_onsale_price) *
               100
             : // 상품이 할인 중이지 않은 경우
               ((updateProductInfo.productCurrentPrice -
                 updateProductInfo.productOriginPrice) /
                 updateProductInfo.productCurrentPrice) *
               100,
-          product_onsale: updateProductInfo.productOnSale,
         })
         .execute();
 
       // 수정된 상품 정보 조회
-      // const rawUpdatedProduct: Product = await this.productRepository
-      //   .createQueryBuilder('product')
-      //   .where('product.productId = :productId', {
-      //     productId: updateProductInfo.productId,
-      //   })
-      //   .leftJoinAndSelect('product.processed_product', 'processed_product')
-      //   .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-      //   .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-      //   .getOne();
+      const rawUpdatedProduct: Product = await this.productRepository
+        .createQueryBuilder('product')
+        .where('product.product_id = :productId', {
+          productId: updateProductInfo.productId,
+        })
+        .leftJoinAndSelect('product.processed_product', 'processed_product')
+        .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+        .getOne();
 
-      // const updatedProduct: UpdateProductInfoRes = {
-      //   productId: rawUpdatedProduct.product_id,
-      //   productBarcode: rawUpdatedProduct.product_barcode,
-      //   productName: rawUpdatedProduct.product_name,
-      //   productOriginPrice: rawUpdatedProduct.product_original_price,
-      //   productCurrentPrice: rawUpdatedProduct.product_current_price,
-      //   productOnSalePrice: rawUpdatedProduct.onsale_product
-      //     ? rawUpdatedProduct.onsale_product.product_onsale_price
-      //     : null,
-      //   productProfit: rawUpdatedProduct.product_profit,
-      //   productIsProcessed: rawUpdatedProduct.product_is_processed,
-      //   productOnSale: rawUpdatedProduct.product_onsale,
-      //   productVolume: rawUpdatedProduct.product_is_processed
-      //     ? rawUpdatedProduct.processed_product.processed_product_volume
-      //     : rawUpdatedProduct.weighted_product.weighted_product_volume,
-      // };
+      console.log(rawUpdatedProduct);
 
-      const updatedProduct = null;
+      const updatedProduct: UpdateBarcodeProductInfoRes = {
+        productId: rawUpdatedProduct.product_id,
+        productIsProcessed: rawUpdatedProduct.product_is_processed,
+        productBarcode: rawUpdatedProduct.product_barcode,
+        productName: rawUpdatedProduct.product_name,
+        productCurrentPrice: rawUpdatedProduct.product_current_price,
+        productCategory: rawUpdatedProduct.product_category,
+        productCreatedAt: rawUpdatedProduct.product_created_at,
+        productVolume: rawUpdatedProduct.product_is_processed
+          ? rawUpdatedProduct.processed_product.processed_product_volume
+          : rawUpdatedProduct.weighted_product.weighted_product_volume,
+        productIsSoldout: rawUpdatedProduct.product_is_soldout,
+        productOriginPrice: rawUpdatedProduct.product_original_price,
+        productDescription: rawUpdatedProduct.product_description,
+      };
+
+      console.log(updatedProduct);
+
       return updatedProduct;
     } catch {
       throw new Error(
