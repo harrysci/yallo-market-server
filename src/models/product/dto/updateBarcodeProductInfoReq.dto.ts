@@ -34,7 +34,7 @@ export class updateBarcodeProductInfoReq {
   productCategory: string;
 
   @IsDate()
-  productCreatedAt: Date;
+  readonly productCreatedAt: Date;
 
   @IsString()
   productVolume: string;

@@ -14,7 +14,6 @@ import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
-import { UpdateBarcodeProductInfoRes } from './dto/updateBarcodeProductInfoRes.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
 import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
@@ -352,281 +351,245 @@ export class ProductService {
    * 바코드를 통한 상품 정보 조회
    * @param ownerId
    * @param barcode
-   * @return barcodeProductInfo
+   * @returns
+   * 1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> product:GetBarcodeProductRes
+   * 2. 존재하지 않는 경우
+   *  (2-1). 유통상품지식뱅크 DB 에서 조회가 되는 경우 -> true
+   *  (2-2). 유통상품지식뱅크 DB 에서 조회가 되지 않는 경우 -> false
    */
   async getBarcodeProductInfo(
     ownerId: number,
     barcode: string,
-  ): Promise<GetBarcodeProductRes> {
+  ): Promise<GetBarcodeProductRes | boolean> {
+    const rawProduct: Product = await this.getImageProductByOwnerIdAndBarcode(
+      ownerId,
+      barcode,
+    );
+
     /**
-     * 1. owner 테이블과 store 테이블 간 left join -> storeId 조회
-     * 2. product 테이블에서 storeId 와 barcode 를 통해 select
-     * 3. product 테이블에 해당 상품이 존재하는 경우
-     *  -> @return barcodeProductInfo
-     * 4. product 테이블에 해당 상품이 존재하지 않는 경우
-     *  -> 유통상품지식뱅크 DB에 해당 상품이 존재하는 경우 @return true
-     *  -> 유통상품지식뱅크 DB에 해당 상품이 존재하지 않는 경우 @return false
+     * 해당 product 가 존재하는 경우 -> product 를 GetBarcodeProductRes 로 formatting 후 반환
+     * 해당 product 가 존재하지 않는 경우 -> 유통상품지식뱅크 DB 조회 후 존재 여부 boolean 반환
      */
+    if (rawProduct) {
+      // GetBarcodeProductRes 로 formatting
+      const product: GetBarcodeProductRes = {
+        productBarcode: rawProduct.product_barcode,
+        productCategory: rawProduct.product_category,
+        productCreatedAt: rawProduct.product_created_at,
+        productCurrentPrice: rawProduct.product_current_price,
+        productName: rawProduct.product_name,
+        productOnsale: rawProduct.product_onsale,
+        productVolume: rawProduct.product_is_processed
+          ? // 공산품인 경우 -> processed_product.processed_product_volume
+            rawProduct.processed_product.processed_product_volume
+          : // 저울상품인 경우 -> weighted_product.weighted_product_volume
+            rawProduct.weighted_product.weighted_product_volume,
+        storeName: rawProduct.store.store_name,
+        productImages: rawProduct.product_image,
+        productOnsalePrice: rawProduct.onsale_product.product_onsale_price,
+      };
 
-    // 유통상품지식뱅크 DB 조회에 따른 return 처리 안함.
+      return product;
+    } else {
+      const isPresent: any = await this.requestKorchamApi(barcode);
 
-    const storeIdName: StoreIdNameRes =
-      await this.storeService.getStoreIdNameByOwnerId(ownerId);
-    // ownerId 에 해당하는 store 가 존재하지 않는 경우
-    if (storeIdName == undefined) return null;
+      if (isPresent) return true;
+    }
 
-    const isPresent = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store=:storeId', { storeId: storeIdName.storeId })
-      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-      .getOne();
-    // ownerId 에 해당하는 store 에 해당 barcode 의 상품이 존재하지 않는 경우
-    if (isPresent == undefined) return null;
-
-    const rawBarcodeProductInfo = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store=:storeId', { storeId: storeIdName.storeId })
-      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-      .leftJoinAndSelect('product.processed_product', 'processed_product')
-      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-      .getOne();
-
-    const rawProductImageList = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store=:storeId', { storeId: storeIdName.storeId })
-      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-      .leftJoinAndSelect('product.product_image', 'product_image')
-      .getOne();
-
-    const productImageList: ProductImage[] = rawProductImageList.product_image;
-
-    const barcodeProductInfo: GetBarcodeProductRes = !rawBarcodeProductInfo
-      ? null
-      : {
-          storeName: storeIdName.storeName,
-          productName: rawBarcodeProductInfo.product_name,
-          productBarcode: rawBarcodeProductInfo.product_barcode,
-          productCurrentPrice: rawBarcodeProductInfo.product_current_price,
-          productOnsale: rawBarcodeProductInfo.product_onsale,
-          productOnsalePrice: rawBarcodeProductInfo.onsale_product
-            ? rawBarcodeProductInfo.onsale_product.product_onsale_price
-            : null,
-          productCategory: rawBarcodeProductInfo.product_category,
-          productCreatedAt: rawBarcodeProductInfo.product_created_at,
-          productVolume: rawBarcodeProductInfo.processed_product
-            ? rawBarcodeProductInfo.processed_product.processed_product_volume
-            : rawBarcodeProductInfo.weighted_product.weighted_product_volume,
-          productImages: rawProductImageList ? productImageList : null,
-        };
-
-    return barcodeProductInfo;
+    return false;
   }
 
   /**
    * 바코드를 통한 상품 정보 갱신
    * @param ownerId
    * @param barcode
-   * @return updatedProduct
+   * @param updateProductInfo
+   * @returns
+   * 1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> updatedProduct:updateBarcodeProductInfoRes
+   * 2. 존재하지 않는 경우 -> [deleteBarcodeProduct Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
+   * 3. 삭제에 실패한 경우 -> [deleteBarcodeProduct Error] deletion error
    */
   async updateBarcodeProductInfo(
     ownerId: number,
     barcode: string,
     updateProductInfo: updateBarcodeProductInfoReq,
-  ): Promise<UpdateBarcodeProductInfoRes> {
+  ): Promise<any> {
+    const rawProduct: Product = await this.getProductByOwnerIdAndBarcode(
+      ownerId,
+      barcode,
+    );
+
     /**
-     * 1. owner 테이블과 store 테이블 간 left join -> storeId 조회
-     * 2. product 테이블에서 storeId 와 barcode 를 통해 select
-     * 3. product 테이블에 해당 상품이 존재하는 경우 updateProductInfo 로 전달받은 정보를 갱신
-     * 4. 갱신한 상품을 product 테이블에서 조회하여 그 결과값을 반환하며 함수를 종료
+     * 해당 product 가 존재하는 경우 -> updateProductInfo 로 전달받은 정보로 상품정보를 갱신하고 DB 에서 상품을 조회한 결과를 반환
+     * 해당 product 가 존재하지 않는 경우 -> throw Error
      */
+    if (rawProduct) {
+      /**
+       * 공산품인 경우 -> processed_product 정보 갱신
+       * 저울상품인 경우 -> weighted_product 정보 갱신
+       */
+      if (rawProduct.product_is_processed) {
+        rawProduct.processed_product = {
+          ...rawProduct.processed_product,
+          processed_product_volume: updateProductInfo.productVolume,
+        };
+      } else {
+        rawProduct.weighted_product = {
+          ...rawProduct.weighted_product,
+          weighted_product_volume: updateProductInfo.productVolume,
+        };
+      }
 
-    const storeIdName: StoreIdNameRes =
-      await this.storeService.getStoreIdNameByOwnerId(ownerId);
-    // ownerId 에 해당하는 store 가 존재하지 않는 경우
-    if (!storeIdName)
+      /**
+       * 갱신된 상품 정보 DB 저장
+       */
+      try {
+        // processed_product, weighted_product 저장
+        await this.productRepository.save(rawProduct);
+
+        // product 저장
+        await this.productRepository
+          .createQueryBuilder('product')
+          .update(Product)
+          .where('product.product_id=:productId', {
+            productId: updateProductInfo.productId,
+          })
+          .set({
+            product_barcode: updateProductInfo.productBarcode,
+            product_name: updateProductInfo.productName,
+            product_current_price: updateProductInfo.productCurrentPrice,
+            product_category: updateProductInfo.productCategory,
+            product_created_at: updateProductInfo.productCreatedAt,
+            product_is_soldout: updateProductInfo.productIsSoldout,
+            product_original_price: updateProductInfo.productOriginPrice,
+            product_description: updateProductInfo.productDescription,
+            product_profit: rawProduct.product_onsale
+              ? // 상품이 할인 중인 경우
+                ((rawProduct.onsale_product.product_onsale_price -
+                  updateProductInfo.productOriginPrice) /
+                  rawProduct.onsale_product.product_onsale_price) *
+                100
+              : // 상품이 할인 중이지 않은 경우
+                ((updateProductInfo.productCurrentPrice -
+                  updateProductInfo.productOriginPrice) /
+                  updateProductInfo.productCurrentPrice) *
+                100,
+          })
+          .execute();
+      } catch {
+        throw new Error(
+          `[updateBarcodeProductInfo Error] update error by ${ownerId}, product_barcode: ${barcode}`,
+        );
+      }
+    } else {
       throw new Error(
-        `[deleteBarcodeProduct Error] no store was found by owner_id: ${ownerId}`,
-      );
-
-    const rawProduct: Product = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store=:storeId', { storeId: storeIdName.storeId })
-      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-      .leftJoinAndSelect('product.processed_product', 'processed_product')
-      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-      .getOne();
-    if (!rawProduct)
-      throw new Error(
-        `[updateBarcodeProductInfo Error] no product was found by owner_id: ${ownerId}, store_id: ${storeIdName.storeId}, product_barcode: ${barcode}`,
-      );
-
-    // rawProduct 공산품 정보(updateProductInfo.processed_product) 수정
-    if (rawProduct.processed_product) {
-      rawProduct.processed_product = {
-        ...rawProduct.processed_product,
-        processed_product_volume: updateProductInfo.productVolume,
-      };
-    }
-    // rawProduct 저울상품 정보(updateProductInfo.weighted_product) 수정
-    else {
-      rawProduct.weighted_product = {
-        ...rawProduct.weighted_product,
-        weighted_product_volume: updateProductInfo.productVolume,
-      };
-    }
-
-    try {
-      // 공산품 정보, 저울상품 정보, 상품 할인 정보 수정 내역 적용
-      await this.productRepository.save(rawProduct);
-
-      // 상품 정보 수정
-      await this.productRepository
-        .createQueryBuilder('product')
-        .update(Product)
-        .where('product.product_id=:productId', {
-          productId: updateProductInfo.productId,
-        })
-        .set({
-          product_barcode: updateProductInfo.productBarcode,
-          product_name: updateProductInfo.productName,
-          product_current_price: updateProductInfo.productCurrentPrice,
-          product_category: updateProductInfo.productCategory,
-          product_created_at: updateProductInfo.productCreatedAt,
-          product_is_soldout: updateProductInfo.productIsSoldout,
-          product_original_price: updateProductInfo.productOriginPrice,
-          product_description: updateProductInfo.productDescription,
-          product_profit: rawProduct.product_onsale
-            ? // 상품이 할인 중인 경우
-              ((rawProduct.onsale_product.product_onsale_price -
-                updateProductInfo.productOriginPrice) /
-                rawProduct.onsale_product.product_onsale_price) *
-              100
-            : // 상품이 할인 중이지 않은 경우
-              ((updateProductInfo.productCurrentPrice -
-                updateProductInfo.productOriginPrice) /
-                updateProductInfo.productCurrentPrice) *
-              100,
-        })
-        .execute();
-
-      // 수정된 상품 정보 조회
-      const rawUpdatedProduct: Product = await this.productRepository
-        .createQueryBuilder('product')
-        .where('product.product_id = :productId', {
-          productId: updateProductInfo.productId,
-        })
-        .leftJoinAndSelect('product.processed_product', 'processed_product')
-        .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-        .getOne();
-
-      const updatedProduct: UpdateBarcodeProductInfoRes = {
-        productId: rawUpdatedProduct.product_id,
-        productIsProcessed: rawUpdatedProduct.product_is_processed,
-        productBarcode: rawUpdatedProduct.product_barcode,
-        productName: rawUpdatedProduct.product_name,
-        productCurrentPrice: rawUpdatedProduct.product_current_price,
-        productCategory: rawUpdatedProduct.product_category,
-        productCreatedAt: rawUpdatedProduct.product_created_at,
-        productVolume: rawUpdatedProduct.product_is_processed
-          ? rawUpdatedProduct.processed_product.processed_product_volume
-          : rawUpdatedProduct.weighted_product.weighted_product_volume,
-        productIsSoldout: rawUpdatedProduct.product_is_soldout,
-        productOriginPrice: rawUpdatedProduct.product_original_price,
-        productDescription: rawUpdatedProduct.product_description,
-      };
-
-      return updatedProduct;
-    } catch {
-      throw new Error(
-        `[updateBarcodeProductInfo Error] update error by ${ownerId}, store_id: ${storeIdName.storeId}, product_barcode: ${barcode}`,
+        `[updateBarcodeProductInfo Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}`,
       );
     }
+
+    const rawUpdatedProduct: Product =
+      await this.getImageProductByOwnerIdAndBarcode(
+        ownerId,
+        updateProductInfo.productBarcode,
+      );
+
+    // updateBarcodeProductInfoRes 로 formatting
+    const updatedProduct: UpdateProductInfoRes = {
+      productBarcode: rawUpdatedProduct.product_barcode,
+      productCurrentPrice: rawUpdatedProduct.product_current_price,
+      productId: rawUpdatedProduct.product_id,
+      productIsProcessed: rawUpdatedProduct.product_is_processed,
+      productName: rawUpdatedProduct.product_name,
+      productOnSale: rawUpdatedProduct.product_onsale,
+      productOnSalePrice: rawUpdatedProduct.onsale_product.onsale_product_id,
+      productOriginPrice: rawUpdatedProduct.product_original_price,
+      productProfit: rawUpdatedProduct.product_profit,
+      productVolume: rawUpdatedProduct.product_is_processed
+        ? // 공산품인 경우 -> processed_product.processed_product_volume
+          rawProduct.processed_product.processed_product_volume
+        : // 저울상품인 경우 -> weighted_product.weighted_product_volume
+          rawProduct.weighted_product.weighted_product_volume,
+    };
+
+    return updatedProduct;
   }
 
   /**
    * 바코드를 통한 상품 정보 삭제
    * @param ownerId
    * @param barcode
-   * @return rawProduct (삭제한 상품 정보)
+   * @returns
+   * 1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> 상품을 삭제하고 해당 상품 정보 반환 (rawProduct:Product)
+   * 2. 존재하지 않는 경우 -> [updateBarcodeProductInfo Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
+   * 3. 갱신에 실패한 경우 -> [updateBarcodeProductInfo Error] update error by ${ownerId}, product_barcode: ${barcode}
    */
   async deleteBarcodeProduct(
     ownerId: number,
     barcode: string,
   ): Promise<Product> {
+    const rawProduct: Product = await this.getImageProductByOwnerIdAndBarcode(
+      ownerId,
+      barcode,
+    );
+
     /**
-     * 1. owner 테이블과 store 테이블 간 left join -> storeId 조회
-     * 2. product 테이블에서 storeId 와 barcode 를 통해 select
-     * 3. product 테이블에 해당 상품이 존재하는 경우 상품을 삭제한 뒤 함수를 종료
+     * 해당 product 가 존재하는 경우 -> 상품 삭제
+     * 해당 product 가 존재하지 않는 경우 -> throw Error
      */
+    if (rawProduct) {
+      try {
+        // product_image 테이블에서 상품 이미지 삭제
+        if (rawProduct.product_image.length) {
+          await this.productImageRepository
+            .createQueryBuilder('product_image')
+            .delete()
+            .from(ProductImage)
+            .where('product_image.product_id=:productId', {
+              productId: rawProduct.product_id,
+            })
+            .execute();
+        }
 
-    const storeIdName: StoreIdNameRes =
-      await this.storeService.getStoreIdNameByOwnerId(ownerId);
-    // ownerId 에 해당하는 store 가 존재하지 않는 경우
-    if (!storeIdName)
+        // product 테이블에서 상품 삭제
+        await this.productRepository.remove(rawProduct);
+
+        // processed_product 테이블에서 공산품 상세정보 삭제
+        if (rawProduct.processed_product) {
+          const deleteTarget: ProcessedProduct =
+            await this.processedProductRepository.findOne({
+              processed_product_id:
+                rawProduct.processed_product.processed_product_id,
+            });
+          await this.processedProductRepository.remove(deleteTarget);
+        }
+
+        // weighted_product 테이블에서 저울 식품 상세정보 삭제
+        if (rawProduct.weighted_product) {
+          const deleteTarget: WeightedProduct =
+            await this.weightedProductRepository.findOne({
+              weighted_product_id:
+                rawProduct.weighted_product.weighted_product_id,
+            });
+
+          await this.weightedProductRepository.remove(deleteTarget);
+        }
+
+        // onsale_product 테이블에서 상품 할인정보 삭제
+        if (rawProduct.onsale_product) {
+          const deleteTarget: OnsaleProduct =
+            await this.onSaleProductRepository.findOne({
+              onsale_product_id: rawProduct.onsale_product.onsale_product_id,
+            });
+
+          await this.onSaleProductRepository.remove(deleteTarget);
+        }
+      } catch {
+        throw new Error('[deleteBarcodeProduct Error] deletion error');
+      }
+    } else {
       throw new Error(
-        `[deleteBarcodeProduct Error] no store was found by owner_id: ${ownerId}`,
+        `[deleteBarcodeProduct Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}`,
       );
-
-    const rawProduct: Product = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store=:storeId', { storeId: storeIdName.storeId })
-      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-      .leftJoinAndSelect('product.product_image', 'product_image')
-      .leftJoinAndSelect('product.processed_product', 'processed_product')
-      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-      .getOne();
-
-    try {
-      // product_image 테이블에서 상품 이미지 삭제
-      if (rawProduct.product_image.length)
-        await this.productImageRepository
-          .createQueryBuilder('product_image')
-          .delete()
-          .from(ProductImage)
-          .where('product_image.product_id=:productId', {
-            productId: rawProduct.product_id,
-          })
-          .execute();
-
-      // product 테이블에서 상품 삭제
-      await this.productRepository.remove(rawProduct);
-
-      // processed_product 테이블에서 공산 식품 상세정보 삭제
-      if (rawProduct.processed_product) {
-        const deleteTarget: ProcessedProduct =
-          await this.processedProductRepository.findOne({
-            processed_product_id:
-              rawProduct.processed_product.processed_product_id,
-          });
-
-        await this.processedProductRepository.remove(deleteTarget);
-      }
-
-      // weighted_product 테이블에서 저울 식품 상세정보 삭제
-      if (rawProduct.weighted_product) {
-        const deleteTarget: WeightedProduct =
-          await this.weightedProductRepository.findOne({
-            weighted_product_id:
-              rawProduct.weighted_product.weighted_product_id,
-          });
-
-        await this.weightedProductRepository.remove(deleteTarget);
-      }
-
-      // onsale_product 테이블에서 상품 할인정보 삭제
-      if (rawProduct.onsale_product) {
-        const deleteTarget: OnsaleProduct =
-          await this.onSaleProductRepository.findOne({
-            onsale_product_id: rawProduct.onsale_product.onsale_product_id,
-          });
-
-        await this.onSaleProductRepository.remove(deleteTarget);
-      }
-    } catch {
-      throw new Error('[deleteBarcodeProduct Error] delete error');
     }
 
     return rawProduct;
@@ -877,5 +840,64 @@ export class ProductService {
         headers: headerRequest,
       },
     );
+  }
+
+  /**
+   ************************************************
+   *
+   *
+   ************************************************
+   */
+  private async getProductByOwnerIdAndBarcode(
+    ownerId: number,
+    barcode: string,
+  ): Promise<Product> {
+    const storeIdName: StoreIdNameRes =
+      await this.storeService.getStoreIdNameByOwnerId(ownerId);
+    if (!storeIdName)
+      throw new Error(
+        `[getImageProductByOwnerIdAndBarcode Error] no store was found by owner_id: ${ownerId}`,
+      );
+
+    const product = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.store=:storeId', { storeId: storeIdName.storeId })
+      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+      .getOne();
+
+    return product;
+  }
+
+  /**
+   *
+   */
+  private async getImageProductByOwnerIdAndBarcode(
+    ownerId: number,
+    barcode: string,
+  ): Promise<Product> {
+    const storeIdName: StoreIdNameRes =
+      await this.storeService.getStoreIdNameByOwnerId(ownerId);
+    if (!storeIdName)
+      throw new Error(
+        `[getImageProductByOwnerIdAndBarcode Error] no store was found by owner_id: ${ownerId}`,
+      );
+
+    const product = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.store=:storeId', { storeId: storeIdName.storeId })
+      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+      .leftJoinAndSelect('product.product_image', 'product_image')
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+      .getOne();
+
+    if (storeIdName)
+      product.store = await this.storeService.getStore(storeIdName.storeId);
+
+    return product;
   }
 }

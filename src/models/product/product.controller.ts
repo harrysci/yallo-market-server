@@ -48,22 +48,33 @@ export class ProductController {
     );
   }
 
-  // 바코드를 통한 상품 정보 조회
+  /**
+   * 바코드를 통한 상품 정보 조회
+   * @param ownerId
+   * @param barcode
+   * @returns
+   */
   @Get('/readProductData/:ownerId/:barcode')
   async getBarcodeProductInfo(
     @Param('ownerId') ownerId: number,
     @Param('barcode') barcode: string,
-  ): Promise<GetBarcodeProductRes> {
+  ): Promise<GetBarcodeProductRes | boolean> {
     return await this.productService.getBarcodeProductInfo(ownerId, barcode);
   }
 
-  // 바코드를 통한 상품 정보 갱신
+  /**
+   * 바코드를 통한 상품 정보 갱신
+   * @param ownerId
+   * @param barcode
+   * @param updateProductInfo
+   * @returns
+   */
   @Put('/updateProductData/:ownerId/:barcode')
   async updateBarcodeProductInfo(
     @Param('ownerId') ownerId: number,
     @Param('barcode') barcode: string,
     @Body() updateProductInfo: updateBarcodeProductInfoReq,
-  ): Promise<updateBarcodeProductInfoReq> {
+  ): Promise<UpdateProductInfoRes> {
     return await this.productService.updateBarcodeProductInfo(
       ownerId,
       barcode,
@@ -71,7 +82,12 @@ export class ProductController {
     );
   }
 
-  // 바코드를 통한 상품 정보 삭제
+  /**
+   * 바코드를 통한 상품 정보 삭제
+   * @param ownerId
+   * @param barcode
+   * @returns
+   */
   @Delete('/deleteProductData/:ownerId/:barcode')
   async deleteBarcodeProduct(
     @Param('ownerId') ownerId: number,
@@ -120,6 +136,3 @@ export class ProductController {
     return await this.productService.deleteProductInfo(productId);
   }
 }
-
-// service 구현
-// Promise type 변경

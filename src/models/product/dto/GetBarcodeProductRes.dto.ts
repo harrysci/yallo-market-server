@@ -14,14 +14,14 @@
 import { ProductImage } from '../entities/product-image.entity';
 
 export class GetBarcodeProductRes {
-  storeName: string; // 점포 이름
-  productName: string; // 상품명
-  productBarcode: string; // 바코드
-  productCurrentPrice: number; // 상품 현재 판매가
-  productOnsale: boolean; // 상품 할인 여부
-  productOnsalePrice?: number; // 상품 할인가
-  productCategory: string; // 상품 카테고리
-  productCreatedAt: Date; // 얄로마켓 시스템 내 상품 게시일
-  productVolume: string; // 규격
-  productImages?: ProductImage[]; // 상품 대표 이미지
+  storeName: string;
+  productName: string;
+  productBarcode: string;
+  productCurrentPrice: number;
+  productOnsale: boolean;
+  productOnsalePrice?: number;
+  productCategory: string;
+  productCreatedAt: Date;
+  productVolume: string;
+  productImages?: ProductImage[];
 }
