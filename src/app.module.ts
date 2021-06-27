@@ -26,6 +26,7 @@ import { ProductModule } from './models/product/product.module';
     AuthCustomerModule,
     AuthOwnerModule,
     StoreModule,
+    ProductModule,
     TestModule,
     ProductModule,
   ],
