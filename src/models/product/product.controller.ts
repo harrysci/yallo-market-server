@@ -1,6 +1,7 @@
+import { Controller, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   Body,
-  Controller,
   Delete,
   Get,
   Put,
@@ -26,6 +27,16 @@ import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedPr
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Post('upload/:store_id')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadExcelFile(
+    @UploadedFile() file:Express.Multer.File,
+    @Param('store_id') store_id:number ){
+    //this.logger.debug(rows);
+    
+    console.log(store_id);
+    return await this.productService.uploadExcelFile(file,store_id);
+    }
   // processed product 생성
   @Post('/createProcessedProduct/:ownerId')
   async createBarcodeProcessedProduct(
@@ -107,6 +118,7 @@ export class ProductController {
    * @param storeId 가게 id
    * @returns GetProductListRes[], 웹 요청 상품 정보 리스트 반환
    */
+    
   @Get('info-list-admin')
   async getProductListForOwnerWeb(
     @Query('storeId', ParseIntPipe) storeId: number,
@@ -138,4 +150,5 @@ export class ProductController {
   ): Promise<void> {
     return await this.productService.deleteProductInfo(productId);
   }
+
 }
