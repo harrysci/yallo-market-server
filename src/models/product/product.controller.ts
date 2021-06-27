@@ -7,6 +7,8 @@ import {
   Query,
   Param,
   Post,
+  ParseIntPipe,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
@@ -107,7 +109,7 @@ export class ProductController {
    */
   @Get('info-list-admin')
   async getProductListForOwnerWeb(
-    @Query('storeId') storeId: number,
+    @Query('storeId', ParseIntPipe) storeId: number,
   ): Promise<GetProductListRes[]> {
     return await this.productService.getProductList(storeId);
   }
@@ -119,7 +121,8 @@ export class ProductController {
    */
   @Put('info-update')
   async updateProductInfoForOwnerWeb(
-    @Body() updateProductInfo: UpdateProductInfoReq,
+    @Body(new ValidationPipe())
+    updateProductInfo: UpdateProductInfoReq,
   ): Promise<UpdateProductInfoRes> {
     return await this.productService.updateProductInfo(updateProductInfo);
   }
@@ -131,7 +134,7 @@ export class ProductController {
    */
   @Delete('info-delete')
   async deleteProductInfoForOwnerWeb(
-    @Query('productId') productId: number,
+    @Query('productId', ParseIntPipe) productId: number,
   ): Promise<void> {
     return await this.productService.deleteProductInfo(productId);
   }

@@ -623,11 +623,11 @@ export class ProductService {
         productCurrentPrice: eachProduct.product_current_price,
         productOnSalePrice: eachProduct.onsale_product
           ? eachProduct.onsale_product.product_onsale_price
-          : eachProduct.product_current_price,
+          : null,
         productProfit: eachProduct.product_profit,
         productIsProcessed: eachProduct.product_is_processed,
         productOnSale: eachProduct.product_onsale,
-        productVolume: eachProduct.product_is_processed
+        productVolume: eachProduct.processed_product
           ? eachProduct.processed_product.processed_product_volume
           : eachProduct.weighted_product.weighted_product_volume,
       }));
@@ -660,19 +660,10 @@ export class ProductService {
     }
 
     /**
-     * 1. on sale product 정보 수정
-     * 2. processed product 정보 수정
-     * 3. weighted product 정보 수정
+     * 1. processed product 정보 수정
+     * 2. weighted product 정보 수정
+     * 3. on sale product 정보 수정
      */
-    if (selectProductRawResult.onsale_product) {
-      selectProductRawResult.onsale_product = {
-        ...selectProductRawResult.onsale_product,
-        product_onsale_price: updateProductInfo.productOnSalePrice
-          ? updateProductInfo.productOnSalePrice
-          : updateProductInfo.productCurrentPrice,
-      };
-    }
-
     if (selectProductRawResult.processed_product) {
       selectProductRawResult.processed_product = {
         ...selectProductRawResult.processed_product,
@@ -683,6 +674,36 @@ export class ProductService {
         ...selectProductRawResult.weighted_product,
         weighted_product_volume: updateProductInfo.productVolume,
       };
+    }
+
+    if (
+      selectProductRawResult.onsale_product &&
+      updateProductInfo.productOnSale
+    ) {
+      /* 기존 OnSale 이면서 수정 정보가 OnSale 인 경우 */
+      selectProductRawResult.onsale_product = {
+        ...selectProductRawResult.onsale_product,
+        product_onsale_price: updateProductInfo.productOnSalePrice,
+      };
+    } else if (
+      /* 기존 OnSale 이면서 수정 정보가 OnSale 인 경우 */
+      selectProductRawResult.onsale_product &&
+      !updateProductInfo.productOnSale
+    ) {
+      const deleteTarget = selectProductRawResult.onsale_product;
+      selectProductRawResult.onsale_product = null;
+      await this.productRepository.save(selectProductRawResult);
+      await this.onSaleProductRepository.remove(deleteTarget);
+    } else if (
+      !selectProductRawResult.onsale_product &&
+      updateProductInfo.productOnSale
+    ) {
+      /* 기존 OnSale 이 아니면서 수정 정보가 OnSale 인 경우 */
+      const newOnsaleProduct = new OnsaleProduct();
+      newOnsaleProduct.product_onsale_price =
+        updateProductInfo.productOnSalePrice;
+
+      selectProductRawResult.onsale_product = newOnsaleProduct;
     }
 
     try {
@@ -729,19 +750,19 @@ export class ProductService {
           selectUpdatedProductRawResult.product_current_price,
         productOnSalePrice: selectUpdatedProductRawResult.onsale_product
           ? selectUpdatedProductRawResult.onsale_product.product_onsale_price
-          : selectUpdatedProductRawResult.product_current_price,
+          : null,
         productProfit: selectUpdatedProductRawResult.product_profit,
         productIsProcessed: selectUpdatedProductRawResult.product_is_processed,
         productOnSale: selectUpdatedProductRawResult.product_onsale,
-        productVolume: selectUpdatedProductRawResult.product_is_processed
+        productVolume: selectUpdatedProductRawResult.processed_product
           ? selectUpdatedProductRawResult.processed_product
               .processed_product_volume
           : selectUpdatedProductRawResult.weighted_product
               .weighted_product_volume,
       };
       return updatedProductInfo;
-    } catch {
-      throw new Error('updateProductInfo [Update] Error');
+    } catch (e) {
+      throw new Error('updateProductInfo [Update] Error :' + e.message);
     }
   }
 
@@ -783,6 +804,7 @@ export class ProductService {
 
       /* 3. foreign key 의 대상(1:1) relation table raw 삭제 */
       if (selectTargetProductRawResult.onsale_product) {
+        /* 3-1. onSaleProduct 가 존재하는 경우 삭제 */
         const target = await this.onSaleProductRepository.findOne({
           onsale_product_id:
             selectTargetProductRawResult.onsale_product.onsale_product_id,
@@ -790,6 +812,7 @@ export class ProductService {
         await this.onSaleProductRepository.remove(target);
       }
       if (selectTargetProductRawResult.processed_product) {
+        /* 3-2. processedProduct 가 존재하는 경우 삭제 */
         const target = await this.processedProductRepository.findOne({
           processed_product_id:
             selectTargetProductRawResult.processed_product.processed_product_id,
@@ -797,14 +820,15 @@ export class ProductService {
         await this.processedProductRepository.remove(target);
       }
       if (selectTargetProductRawResult.weighted_product) {
+        /* 3-2. weightedProduct 가 존재하는 경우 삭제 */
         const target = await this.weightedProductRepository.findOne({
           weighted_product_id:
             selectTargetProductRawResult.weighted_product.weighted_product_id,
         });
         await this.weightedProductRepository.remove(target);
       }
-    } catch {
-      throw new Error('deleteProductInfo [Delete] Error');
+    } catch (e) {
+      throw new Error('deleteProductInfo [Delete] Error : ' + e.message);
     }
   }
 
