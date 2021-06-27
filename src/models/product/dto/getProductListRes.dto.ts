@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 /**
  * @점주_및_점포관리인_WEB_상품목록_조회_결과
@@ -25,12 +25,13 @@ export class GetProductListRes {
   productName: string;
 
   @IsNumber()
-  productOriginPrice: number;
+  productOriginPrice: number | null;
 
   @IsNumber()
   productCurrentPrice: number;
 
   @IsNumber()
+  @IsOptional()
   productOnSalePrice: number;
 
   @IsNumber()
