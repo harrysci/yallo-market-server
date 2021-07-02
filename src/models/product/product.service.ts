@@ -123,13 +123,55 @@ export class ProductService {
    * @param storeId
    * @returns
    */
-  // async getImageProductList(storeId: number): Promise<GetBarcodeProductRes> {
-  async getImageProductList(storeId: number): Promise<any> {
-    const rawProductList: Product[] = await this.getImageProductListByStoreId(
-      storeId,
-    );
+  async getImageProductList(storeId: number): Promise<GetBarcodeProductRes[]> {
+    const store: Store = await this.storeService.getStore(storeId);
 
-    return rawProductList;
+    if (!store)
+      throw new Error(
+        `[getImageProductListByStoreId Error] no store was found by store_id: ${storeId}`,
+      );
+
+    const rawProductList = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.store=:storeId', { storeId: store.store_id })
+      .leftJoinAndSelect('product.product_image', 'product_image')
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+      .getMany();
+
+    // volume 값이 존재하지 않는 경우의 예외 처리
+    const productVolumeList: string[] = [];
+    rawProductList.map((each) => {
+      if (each.processed_product) {
+        productVolumeList.push(each.processed_product.processed_product_volume);
+      } else if (each.weighted_product) {
+        productVolumeList.push(each.weighted_product.weighted_product_volume);
+      } else {
+        productVolumeList.push('');
+      }
+    });
+
+    // GetBarcodeProductRes[] 형식으로 formatting
+    const productList: GetBarcodeProductRes[] =
+      rawProductList.map<GetBarcodeProductRes>((eachProduct, index) => ({
+        productBarcode: eachProduct.product_barcode,
+        productCategory: eachProduct.product_category,
+        productCreatedAt: eachProduct.product_created_at,
+        productCurrentPrice: eachProduct.product_current_price,
+        productName: eachProduct.product_name,
+        productOnsale: eachProduct.product_onsale,
+        productVolume: productVolumeList[index],
+        storeName: store.store_name,
+        productImages: eachProduct.product_image
+          ? eachProduct.product_image
+          : null,
+        productOnsalePrice: eachProduct.onsale_product
+          ? eachProduct.onsale_product.product_onsale_price
+          : eachProduct.product_current_price,
+      }));
+
+    return productList;
   }
 
   /**
@@ -1035,28 +1077,6 @@ export class ProductService {
 
     if (storeIdName)
       product.store = await this.storeService.getStore(storeIdName.storeId);
-
-    return product;
-  }
-
-  private async getImageProductListByStoreId(
-    storeId: number,
-  ): Promise<Product[]> {
-    const store: Store = await this.storeService.getStore(storeId);
-
-    if (!store)
-      throw new Error(
-        `[getImageProductListByStoreId Error] no store was found by store_id: ${storeId}`,
-      );
-
-    const product = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store=:storeId', { storeId: store.store_id })
-      .leftJoinAndSelect('product.product_image', 'product_image')
-      .leftJoinAndSelect('product.processed_product', 'processed_product')
-      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-      .getMany();
 
     return product;
   }

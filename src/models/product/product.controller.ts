@@ -45,7 +45,9 @@ export class ProductController {
    * @returns
    */
   @Get('/getImageProductList/:storeId')
-  async getImageProductList(@Param('storeId') storeId: number): Promise<any> {
+  async getImageProductList(
+    @Param('storeId') storeId: number,
+  ): Promise<GetBarcodeProductRes[]> {
     return await this.productService.getImageProductList(storeId);
   }
 
