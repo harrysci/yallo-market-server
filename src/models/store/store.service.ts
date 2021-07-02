@@ -52,7 +52,7 @@ export class StoreService {
       .createQueryBuilder('store')
       .where('store.store_id=:storeId', { storeId: storeId })
       .getOne();
-      
+
     return store;
   }
 }
