@@ -7,6 +7,7 @@ import { ProductImage } from './entities/product-image.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { OnsaleProduct } from './entities/onsale-product.entity';
+import { StoreModule } from '../store/store.module';
 import { KorchamConfigModule } from 'src/config/korcham/configuration.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { KorchamConfigModule } from 'src/config/korcham/configuration.module';
       WeightedProduct,
       OnsaleProduct,
     ]),
+    StoreModule,
     HttpModule,
     KorchamConfigModule,
   ],
