@@ -22,6 +22,7 @@ import { ProductService } from './product.service';
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
+import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
 
 @Controller('product')
 export class ProductController {
@@ -40,14 +41,14 @@ export class ProductController {
   }
 
   /**
-   * store_id 를 통한 상품 정보 조회
+   * store_id 를 통한 상품 정보 목록 조회
    * @param storeId
    * @returns
    */
-  @Get('/getImageProductList/:storeId')
+  @Get('/getProductList/:storeId')
   async getImageProductList(
     @Param('storeId') storeId: number,
-  ): Promise<GetBarcodeProductRes[]> {
+  ): Promise<GetImageProductListRes[]> {
     return await this.productService.getImageProductList(storeId);
   }
 
