@@ -142,8 +142,6 @@ export class ProductService {
       .leftJoinAndSelect('product.onsale_product', 'onsale_product')
       .getMany();
 
-    console.log(rawImageProductList);
-
     const imageProductList: GetImageProductListRes[] =
       rawImageProductList.map<GetImageProductListRes>((each) => ({
         productId: each.product_id,
@@ -596,7 +594,7 @@ export class ProductService {
     ownerId: number,
     barcode: string,
     updateProductInfo: updateBarcodeProductInfoReq,
-  ): Promise<any> {
+  ): Promise<UpdateProductInfoRes> {
     const rawProduct: Product = await this.getProductByOwnerIdAndBarcode(
       ownerId,
       barcode,
@@ -684,7 +682,12 @@ export class ProductService {
       productIsProcessed: rawUpdatedProduct.product_is_processed,
       productName: rawUpdatedProduct.product_name,
       productOnSale: rawUpdatedProduct.product_onsale,
-      productOnSalePrice: rawUpdatedProduct.onsale_product.onsale_product_id,
+      productOnSalePrice:
+        rawUpdatedProduct.onsale_product &&
+        rawUpdatedProduct.product_onsale &&
+        rawUpdatedProduct.onsale_product.product_onsale_price
+          ? rawUpdatedProduct.onsale_product.product_onsale_price
+          : null,
       productOriginPrice: rawUpdatedProduct.product_original_price,
       productProfit: rawUpdatedProduct.product_profit,
       productVolume: rawUpdatedProduct.product_is_processed
@@ -1132,8 +1135,9 @@ export class ProductService {
       .leftJoinAndSelect('product.onsale_product', 'onsale_product')
       .getOne();
 
-    if (storeIdName)
+    if (storeIdName) {
       product.store = await this.storeService.getStore(storeIdName.storeId);
+    }
 
     return product;
   }
