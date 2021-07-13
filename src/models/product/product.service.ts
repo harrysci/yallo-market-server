@@ -296,7 +296,7 @@ export class ProductService {
         product_is_processed: productData.productIsProcessed,
         product_is_soldout: productData.productIsSoldout,
         product_onsale: false,
-        product_category: '미분류',
+        product_category: '가공상품',
         product_created_at: productData.productCreatedAt,
 
         store: store,
