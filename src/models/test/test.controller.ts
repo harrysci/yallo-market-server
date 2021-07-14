@@ -38,7 +38,7 @@ export class TestController {
   @Get('download')
   async downloadFile(@Query('path') path) {
     const res = await this.imageStorageService.downloadImage(path);
-    console.log(res);
+    // console.log(res);
     return res;
   }
 

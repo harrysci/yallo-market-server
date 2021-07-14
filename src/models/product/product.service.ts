@@ -56,7 +56,7 @@ export class ProductService {
     });
     /*첫번째 sheet이름 사용*/
     const sheetName = workBook?.SheetNames[0];
-    console.log(sheetName);
+    // console.log(sheetName);
     /*sheet의 전체 정보*/
     const sheet: XLSX.WorkSheet = workBook.Sheets[sheetName];
     /*json 파일 변환*/
