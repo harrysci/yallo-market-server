@@ -22,6 +22,7 @@ import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProd
 import { Store } from '../store/entities/store.entity';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { promises } from 'fs';
+import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
 @Injectable()
 export class ProductService {
   constructor(
@@ -55,7 +56,7 @@ export class ProductService {
     });
     /*첫번째 sheet이름 사용*/
     const sheetName = workBook?.SheetNames[0];
-    console.log(sheetName);
+    // console.log(sheetName);
     /*sheet의 전체 정보*/
     const sheet: XLSX.WorkSheet = workBook.Sheets[sheetName];
     /*json 파일 변환*/
@@ -123,55 +124,109 @@ export class ProductService {
    * @param storeId
    * @returns
    */
-  async getImageProductList(storeId: number): Promise<GetBarcodeProductRes[]> {
-    const store: Store = await this.storeService.getStore(storeId);
+  async getImageProductList(
+    storeId: number,
+  ): Promise<GetImageProductListRes[]> {
+    /**
+     * 1. product 와 product_image, processed_product, weighted_product, onsale_product 를 left join -> rawImageProductList 에 저장
+     * 2. rawImageProductList 를 GetImageProductListRes 형태에 맞게 formatting
+     * 3. imageProductList return
+     */
 
-    if (!store)
-      throw new Error(
-        `[getImageProductListByStoreId Error] no store was found by store_id: ${storeId}`,
-      );
-
-    const rawProductList = await this.productRepository
+    const rawImageProductList = await this.productRepository
       .createQueryBuilder('product')
-      .where('product.store=:storeId', { storeId: store.store_id })
+      .where('product.store_id=:store_id', { store_id: storeId })
       .leftJoinAndSelect('product.product_image', 'product_image')
       .leftJoinAndSelect('product.processed_product', 'processed_product')
       .leftJoinAndSelect('product.weighted_product', 'weighted_product')
       .leftJoinAndSelect('product.onsale_product', 'onsale_product')
       .getMany();
 
-    // volume 값이 존재하지 않는 경우의 예외 처리
-    const productVolumeList: string[] = [];
-    rawProductList.map((each) => {
-      if (each.processed_product) {
-        productVolumeList.push(each.processed_product.processed_product_volume);
-      } else if (each.weighted_product) {
-        productVolumeList.push(each.weighted_product.weighted_product_volume);
-      } else {
-        productVolumeList.push('');
-      }
-    });
+    const imageProductList: GetImageProductListRes[] =
+      rawImageProductList.map<GetImageProductListRes>((each) => ({
+        productId: each.product_id,
+        storeId: storeId,
+        productBarcode: each.product_barcode,
+        productName: each.product_name,
+        productOriginalPrice: each.product_original_price,
+        productCurrentPrice: each.product_current_price,
+        productProfit: each.product_profit,
+        productDescription: each.product_description,
+        productIsProcessed: each.product_is_processed,
+        productIsSoldout: each.product_is_soldout,
+        productOnsale: each.product_onsale,
+        productCategory: each.product_category,
+        productCreatedAt: each.product_created_at,
 
-    // GetBarcodeProductRes[] 형식으로 formatting
-    const productList: GetBarcodeProductRes[] =
-      rawProductList.map<GetBarcodeProductRes>((eachProduct, index) => ({
-        productBarcode: eachProduct.product_barcode,
-        productCategory: eachProduct.product_category,
-        productCreatedAt: eachProduct.product_created_at,
-        productCurrentPrice: eachProduct.product_current_price,
-        productName: eachProduct.product_name,
-        productOnsale: eachProduct.product_onsale,
-        productVolume: productVolumeList[index],
-        storeName: store.store_name,
-        productImages: eachProduct.product_image
-          ? eachProduct.product_image
-          : null,
-        productOnsalePrice: eachProduct.onsale_product
-          ? eachProduct.onsale_product.product_onsale_price
-          : eachProduct.product_current_price,
+        representativeProductImageId: each.product_image[0].product_image_id,
+        representativeProductImage: each.product_image[0].product_image,
+        detailProductImageId: each.product_image[1].product_image_id,
+        detailProductImage: each.product_image[1].product_image,
+        additionalProductImageId: each.product_image[2].product_image_id,
+        additionalProductImage: each.product_image[2].product_image,
+
+        processedProductId:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_id,
+
+        processedProductName:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_name,
+        processedProductCompany:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_company,
+        processedProductStandardType:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_standard_type,
+        processedProductStandardValues:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_standard_values,
+        processedProductComposition:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_composition,
+        processedProductVolume:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_volume,
+        processedProductAdult:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_adult,
+        processedProductCaution:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_caution,
+        processedProductInformation:
+          each.product_is_processed == false
+            ? null
+            : each.processed_product.processed_product_information,
+
+        weightedProductId:
+          each.product_is_processed == true
+            ? null
+            : each.weighted_product.weighted_product_id,
+        weightedProductVolume:
+          each.product_is_processed == true
+            ? null
+            : each.weighted_product.weighted_product_volume,
+
+        OnsaleProductId:
+          each.product_onsale == true
+            ? each.onsale_product.onsale_product_id
+            : null,
+        productOnsalePrice:
+          each.product_onsale == true
+            ? each.onsale_product.product_onsale_price
+            : null,
       }));
 
-    return productList;
+    return imageProductList;
   }
 
   /**
@@ -241,7 +296,7 @@ export class ProductService {
         product_is_processed: productData.productIsProcessed,
         product_is_soldout: productData.productIsSoldout,
         product_onsale: false,
-        product_category: '미분류',
+        product_category: '가공상품',
         product_created_at: productData.productCreatedAt,
 
         store: store,
@@ -539,7 +594,7 @@ export class ProductService {
     ownerId: number,
     barcode: string,
     updateProductInfo: updateBarcodeProductInfoReq,
-  ): Promise<any> {
+  ): Promise<UpdateProductInfoRes> {
     const rawProduct: Product = await this.getProductByOwnerIdAndBarcode(
       ownerId,
       barcode,
@@ -627,7 +682,12 @@ export class ProductService {
       productIsProcessed: rawUpdatedProduct.product_is_processed,
       productName: rawUpdatedProduct.product_name,
       productOnSale: rawUpdatedProduct.product_onsale,
-      productOnSalePrice: rawUpdatedProduct.onsale_product.onsale_product_id,
+      productOnSalePrice:
+        rawUpdatedProduct.onsale_product &&
+        rawUpdatedProduct.product_onsale &&
+        rawUpdatedProduct.onsale_product.product_onsale_price
+          ? rawUpdatedProduct.onsale_product.product_onsale_price
+          : null,
       productOriginPrice: rawUpdatedProduct.product_original_price,
       productProfit: rawUpdatedProduct.product_profit,
       productVolume: rawUpdatedProduct.product_is_processed
@@ -1075,8 +1135,9 @@ export class ProductService {
       .leftJoinAndSelect('product.onsale_product', 'onsale_product')
       .getOne();
 
-    if (storeIdName)
+    if (storeIdName) {
       product.store = await this.storeService.getStore(storeIdName.storeId);
+    }
 
     return product;
   }
