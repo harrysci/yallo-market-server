@@ -4,6 +4,7 @@
         "Paymethod",
         "apiurl",
         "appkey",
+        "defval",
         "korchamurl",
         "onsale",
         "soldout"

@@ -22,6 +22,7 @@ import { ProductService } from './product.service';
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
+import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
 
 @Controller('product')
 export class ProductController {
@@ -30,13 +31,27 @@ export class ProductController {
   @Post('upload/:store_id')
   @UseInterceptors(FileInterceptor('file'))
   async uploadExcelFile(
-    @UploadedFile() file:Express.Multer.File,
-    @Param('store_id') store_id:number ){
+    @UploadedFile() file: Express.Multer.File,
+    @Param('store_id') store_id: number,
+  ) {
     //this.logger.debug(rows);
-    
+
     console.log(store_id);
-    return await this.productService.uploadExcelFile(file,store_id);
-    }
+    return await this.productService.uploadExcelFile(file, store_id);
+  }
+
+  /**
+   * store_id 를 통한 상품 정보 목록 조회
+   * @param storeId
+   * @returns
+   */
+  @Get('/getProductList/:storeId')
+  async getImageProductList(
+    @Param('storeId') storeId: number,
+  ): Promise<GetImageProductListRes[]> {
+    return await this.productService.getImageProductList(storeId);
+  }
+
   // processed product 생성
   @Post('/createProcessedProduct/:ownerId')
   async createBarcodeProcessedProduct(
@@ -118,7 +133,7 @@ export class ProductController {
    * @param storeId 가게 id
    * @returns GetProductListRes[], 웹 요청 상품 정보 리스트 반환
    */
-    
+
   @Get('info-list-admin')
   async getProductListForOwnerWeb(
     @Query('storeId', ParseIntPipe) storeId: number,
@@ -150,5 +165,4 @@ export class ProductController {
   ): Promise<void> {
     return await this.productService.deleteProductInfo(productId);
   }
-
 }
