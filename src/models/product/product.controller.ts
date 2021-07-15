@@ -34,9 +34,6 @@ export class ProductController {
     @UploadedFile() file: Express.Multer.File,
     @Param('store_id') store_id: number,
   ) {
-    //this.logger.debug(rows);
-
-    console.log(store_id);
     return await this.productService.uploadExcelFile(file, store_id);
   }
 
