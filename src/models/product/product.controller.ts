@@ -1,3 +1,4 @@
+/* nestjs core library */
 import { Controller, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -11,6 +12,7 @@ import {
   ParseIntPipe,
   ValidationPipe,
 } from '@nestjs/common';
+
 import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
