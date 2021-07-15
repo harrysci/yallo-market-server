@@ -1,3 +1,4 @@
+/* nestjs core library */
 import { Controller, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -11,6 +12,7 @@ import {
   ParseIntPipe,
   ValidationPipe,
 } from '@nestjs/common';
+
 import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
@@ -34,9 +36,6 @@ export class ProductController {
     @UploadedFile() file: Express.Multer.File,
     @Param('store_id') store_id: number,
   ) {
-    //this.logger.debug(rows);
-
-    console.log(store_id);
     return await this.productService.uploadExcelFile(file, store_id);
   }
 
