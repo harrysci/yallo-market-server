@@ -13,7 +13,6 @@ import { ProcessedProduct } from './entities/processed-product.entity';
 import { ProductImage } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
-import { UploadExcelArrayDto } from './dto/UploadExcelArrayDto.dto';
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
@@ -21,8 +20,8 @@ import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedPr
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
 import { Store } from '../store/entities/store.entity';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
-import { promises } from 'fs';
 import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
+import { raw } from 'express';
 @Injectable()
 export class ProductService {
   constructor(
@@ -551,33 +550,39 @@ export class ProductService {
      * 해당 product 가 존재하는 경우 -> product 를 GetBarcodeProductRes 로 formatting 후 반환
      * 해당 product 가 존재하지 않는 경우 -> 유통상품지식뱅크 DB 조회 후 존재 여부 boolean 반환
      */
-    if (rawProduct) {
-      // GetBarcodeProductRes 로 formatting
-      const product: GetBarcodeProductRes = {
-        productBarcode: rawProduct.product_barcode,
-        productCategory: rawProduct.product_category,
-        productCreatedAt: rawProduct.product_created_at,
-        productCurrentPrice: rawProduct.product_current_price,
-        productName: rawProduct.product_name,
-        productOnsale: rawProduct.product_onsale,
-        productVolume: rawProduct.product_is_processed
-          ? // 공산품인 경우 -> processed_product.processed_product_volume
-            rawProduct.processed_product.processed_product_volume
-          : // 저울상품인 경우 -> weighted_product.weighted_product_volume
-            rawProduct.weighted_product.weighted_product_volume,
-        storeName: rawProduct.store.store_name,
-        productImages: rawProduct.product_image,
-        productOnsalePrice: rawProduct.onsale_product.product_onsale_price,
-      };
+    try {
+      if (rawProduct) {
+        // GetBarcodeProductRes 로 formatting
+        const product: GetBarcodeProductRes = {
+          productBarcode: rawProduct.product_barcode,
+          productCategory: rawProduct.product_category,
+          productCreatedAt: rawProduct.product_created_at,
+          productCurrentPrice: rawProduct.product_current_price,
+          productName: rawProduct.product_name,
+          productOnsale: rawProduct.product_onsale,
+          productVolume: rawProduct.product_is_processed
+            ? // 공산품인 경우 -> processed_product.processed_product_volume
+              rawProduct.processed_product.processed_product_volume
+            : // 저울상품인 경우 -> weighted_product.weighted_product_volume
+              rawProduct.weighted_product.weighted_product_volume,
+          storeName: rawProduct.store.store_name,
+          productImages: rawProduct.product_image,
+          productOnsalePrice: rawProduct.product_onsale
+            ? rawProduct.onsale_product.product_onsale_price
+            : null,
+        };
 
-      return product;
-    } else {
-      const isPresent: any = await this.requestKorchamApi(barcode);
+        return product;
+      } else {
+        const isPresent: any = await this.requestKorchamApi(barcode);
 
-      if (isPresent) return true;
+        if (isPresent) return true;
+      }
+
+      return false;
+    } catch (err) {
+      console.log('nsbsdabdsba', err.message);
     }
-
-    return false;
   }
 
   /**
@@ -1089,21 +1094,29 @@ export class ProductService {
   ): Promise<Product> {
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
-    if (!storeIdName)
+
+    if (!storeIdName || storeIdName === undefined) {
       throw new Error(
         `[getImageProductByOwnerIdAndBarcode Error] no store was found by owner_id: ${ownerId}`,
       );
+    }
 
-    const product = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store=:storeId', { storeId: storeIdName.storeId })
-      .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-      .leftJoinAndSelect('product.processed_product', 'processed_product')
-      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-      .getOne();
+    try {
+      const product = await this.productRepository
+        .createQueryBuilder('product')
+        .where('product.store=:storeId', { storeId: storeIdName.storeId })
+        .andWhere('product.product_barcode=:barcode', { barcode: barcode })
+        .leftJoinAndSelect('product.processed_product', 'processed_product')
+        .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+        .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+        .getOne();
 
-    return product;
+      return product;
+    } catch {
+      throw new Error(
+        `[getProductByOwnerIdAndBarcode Error] some error found by owner_id: ${ownerId} and barcode: ${barcode}`,
+      );
+    }
   }
 
   /**
@@ -1120,6 +1133,7 @@ export class ProductService {
   ): Promise<Product> {
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
+
     if (!storeIdName)
       throw new Error(
         `[getImageProductByOwnerIdAndBarcode Error] no store was found by owner_id: ${ownerId}`,
@@ -1135,10 +1149,17 @@ export class ProductService {
       .leftJoinAndSelect('product.onsale_product', 'onsale_product')
       .getOne();
 
-    if (storeIdName) {
-      product.store = await this.storeService.getStore(storeIdName.storeId);
+    if (!product) {
+      throw new Error(
+        `[getImageProductByOwnerIdAndBarcode Error] no product was found by owner_id: ${ownerId} and barcode: ${barcode}`,
+      );
     }
 
-    return product;
+    const resProduct: Product = {
+      ...product,
+      store: await this.storeService.getStore(storeIdName.storeId),
+    };
+
+    return resProduct;
   }
 }

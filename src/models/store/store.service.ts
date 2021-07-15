@@ -26,19 +26,25 @@ export class StoreService {
    *  ownerId 에 해당하는 store 가 존재하지 않는 경우 -> @return null
    */
   async getStoreIdNameByOwnerId(ownerId: number): Promise<StoreIdNameRes> {
-    const rawStore = await this.storeRepository
-      .createQueryBuilder('store')
-      .where('store.owner=:ownerId', { ownerId: ownerId })
-      .getOne();
+    try {
+      const rawStore = await this.storeRepository
+        .createQueryBuilder('store')
+        .where('store.owner=:ownerId', { ownerId: ownerId })
+        .getOne();
 
-    const storeIdName: StoreIdNameRes = !rawStore
-      ? null
-      : {
-          storeId: rawStore.store_id,
-          storeName: rawStore.store_name,
-        };
+      const storeIdName: StoreIdNameRes = !rawStore
+        ? null
+        : {
+            storeId: rawStore.store_id,
+            storeName: rawStore.store_name,
+          };
 
-    return storeIdName;
+      return storeIdName;
+    } catch {
+      throw new Error(
+        `[getStoreIdNameByOwnerId Error] no store was found by owner_id: ${ownerId}`,
+      );
+    }
   }
 
   /**
