@@ -88,15 +88,21 @@ export class ImageStorageService {
   /**
    * @name getImageUrl
    * 전달받은 s3 경로에 존재하는 이미지의 http url 을 리턴하는 메소드
-   * @param path s3 bucket 내의 경로 및 파일 이름
+   * @param pathCase s3 폴더 위치를 선택하기 위한 이미지의 소속 경우 명시
+   * @param pathKey 이미지가 위치한 db table primary key
+   * @param mimeType 이미지 확장자 타입 (jpg, png, ... )
    * @returns 저장된 이미지 파일 접속 url 링크
    */
-  async getImageUrl(path: string): Promise<S3GetImageUrlRes> {
+  async getImageUrl(
+    pathCase: PathCase,
+    pathKey: string,
+    mimeType: string,
+  ): Promise<S3GetImageUrlRes> {
     const awsS3 = this.s3;
     const bucket = this.getS3Bucket();
     const params = {
       Bucket: bucket,
-      Key: path,
+      Key: this.s3PathSelector(pathCase, pathKey, mimeType),
     };
 
     return new Promise<S3GetImageUrlRes>((resolve, reject) => {
