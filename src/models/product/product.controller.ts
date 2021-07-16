@@ -51,7 +51,12 @@ export class ProductController {
     return await this.productService.getImageProductList(storeId);
   }
 
-  // processed product 생성
+  /**
+   * @name 가공상품_생성
+   * @param ownerId 점주 id (pk)
+   * @param productData 상품 정보
+   * @returns CreateBarcodeProcessedProductRes
+   */
   @Post('/createProcessedProduct/:ownerId')
   async createBarcodeProcessedProduct(
     @Param('ownerId') ownerId: number,
@@ -63,7 +68,12 @@ export class ProductController {
     );
   }
 
-  // weighted product 생성
+  /**
+   * @name 저울상품_생성
+   * @param ownerId 점주 id (pk)
+   * @param productData 상품 정보
+   * @returns CreateBarcodeWeightedProductRes
+   */
   @Post('/createWeightedProduct/:ownerId')
   async createBarcodeWeightedProduct(
     @Param('ownerId') ownerId: number,

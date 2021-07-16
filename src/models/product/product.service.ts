@@ -21,7 +21,7 @@ import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProd
 import { Store } from '../store/entities/store.entity';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
-import { raw } from 'express';
+
 @Injectable()
 export class ProductService {
   constructor(
