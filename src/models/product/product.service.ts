@@ -1,30 +1,45 @@
 import { HttpService, Injectable } from '@nestjs/common';
+
+/* typeorm */
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+/* Excel file 처리 */
 import * as XLSX from 'xlsx';
-import { StoreIdNameRes } from '../store/dto/StoreIdNameRes.dto';
+
+/* External Provider */
 import { StoreService } from '../store/store.service';
-import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
-import { GetProductListRes } from './dto/getProductListRes.dto';
-import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
-import { UpdateProductInfoRes } from './dto/updateProductInfoRes.dto';
+import { KorchamConfigService } from '../../config/korcham/configuration.service';
+import { ImageStorageService } from '../image-storage/image-storage.service';
+import { S3UploadImageRes } from '../image-storage/interfaces/s3UploadImageRes.interface';
+
+/* Entities */
 import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { ProductImage } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
-import { KorchamConfigService } from '../../config/korcham/configuration.service';
+import { Store } from '../store/entities/store.entity';
+
+/* req,res dto */
+import { StoreIdNameRes } from '../store/dto/StoreIdNameRes.dto';
+import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
+import { GetProductListRes } from './dto/getProductListRes.dto';
+import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
+import { UpdateProductInfoRes } from './dto/updateProductInfoRes.dto';
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
 import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
-import { Store } from '../store/entities/store.entity';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
-import { ImageStorageService } from '../image-storage/image-storage.service';
-import dummy from './dummy/dummyBase64';
-import { S3UploadImageRes } from '../image-storage/interfaces/s3UploadImageRes.interface';
 
+/* test dummy data */
+import dummy from './dummy/dummyBase64';
+
+/**
+ * @name 상품_Provider_Class
+ */
 @Injectable()
 export class ProductService {
   constructor(
@@ -45,7 +60,7 @@ export class ProductService {
     private readonly storeService: StoreService,
     private readonly httpService: HttpService,
     private readonly korchamConfig: KorchamConfigService,
-    private readonly imageStorageService: ImageStorageService,
+    private readonly imageStorageService: ImageStorageService, // s3 image storage service
   ) {}
 
   async uploadExcelFile(
@@ -366,6 +381,10 @@ export class ProductService {
       };
 
       /* s3 이미지 저장 */
+      /**
+       * @exception base64 이미지 dummy 처리
+       * dummy 데이터는 base64 string (.png)
+       */
       const dummyImage = dummy;
       const repImageFromS3: S3UploadImageRes =
         await this.imageStorageService.uploadImageWithBase64(
@@ -528,6 +547,10 @@ export class ProductService {
       };
 
       /* s3 이미지 저장 */
+      /**
+       * @exception base64 이미지 dummy 처리
+       * dummy 데이터는 base64 string (.png)
+       */
       const dummyImage = dummy;
       const repImageFromS3: S3UploadImageRes =
         await this.imageStorageService.uploadImageWithBase64(

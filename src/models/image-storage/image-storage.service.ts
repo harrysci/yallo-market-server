@@ -5,7 +5,6 @@ import { S3UploadImageRes } from './interfaces/s3UploadImageRes.interface';
 import { S3DownloadImageRes } from './interfaces/s3DownloadImageRes.interface';
 import { S3GetImageUrlRes } from './interfaces/s3GetImageUrlRes.interface';
 import { PathCase } from '../store/constants/pathCase.type';
-import dummy from '../product/dummy/dummyBase64';
 
 @Injectable()
 export class ImageStorageService {
