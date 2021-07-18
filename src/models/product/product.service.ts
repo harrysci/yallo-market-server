@@ -22,6 +22,7 @@ import { Store } from '../store/entities/store.entity';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
 import { ImageStorageService } from '../image-storage/image-storage.service';
+import dummy from './dummy/dummyBase64';
 
 @Injectable()
 export class ProductService {
@@ -358,6 +359,20 @@ export class ProductService {
 
       /* s3 이미지 저장 */
       // await this.imageStorageService.uploadImage()
+      const dummyImage = dummy;
+      const imgUrl = await this.imageStorageService.uploadImageWithBase64(
+        dummyImage,
+        'productRep',
+        123,
+      );
+      console.log(imgUrl.Location);
+
+      const reImgUrl = await this.imageStorageService.getImageUrl(
+        'productRep',
+        '123',
+        'png',
+      );
+      console.log(reImgUrl.url);
 
       // 상품 대표 이미지 생성 및 저장
       const representativeImage: ProductImage =

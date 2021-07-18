@@ -5,6 +5,7 @@ import { S3UploadImageRes } from './interfaces/s3UploadImageRes.interface';
 import { S3DownloadImageRes } from './interfaces/s3DownloadImageRes.interface';
 import { S3GetImageUrlRes } from './interfaces/s3GetImageUrlRes.interface';
 import { PathCase } from '../store/constants/pathCase.type';
+import dummy from '../product/dummy/dummyBase64';
 
 @Injectable()
 export class ImageStorageService {
@@ -45,6 +46,37 @@ export class ImageStorageService {
       Bucket: bucket,
       Key: this.s3PathSelector(pathCase, String(pathKey), fileMimeType),
       Body: file.buffer,
+    };
+
+    return new Promise<S3UploadImageRes>((resolve, reject) => {
+      awsS3.upload(params, (err, data: S3UploadImageRes) => {
+        if (err) {
+          reject('[S3 Image Upload Fail ...] ' + err.message);
+        } else {
+          console.log('[S3 Image Upload SUCCESS] ');
+          resolve(data);
+        }
+      });
+    });
+  }
+
+  async uploadImageWithBase64(
+    base64ImageString: string,
+    pathCase: PathCase,
+    pathKey: number,
+  ) {
+    const awsS3 = this.s3;
+    const bucket: string = this.getS3Bucket();
+    const fileMimeType = 'png';
+
+    const imgBuffer = Buffer.from(base64ImageString, 'base64');
+
+    console.log(bucket);
+
+    const params = {
+      Bucket: bucket,
+      Key: this.s3PathSelector(pathCase, String(pathKey), fileMimeType),
+      Body: imgBuffer,
     };
 
     return new Promise<S3UploadImageRes>((resolve, reject) => {
