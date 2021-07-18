@@ -21,7 +21,7 @@ import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
 import { Store } from '../store/entities/store.entity';
 
-/* req,res dto */
+/* Req,Res dto */
 import { StoreIdNameRes } from '../store/dto/StoreIdNameRes.dto';
 import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
 import { GetProductListRes } from './dto/getProductListRes.dto';

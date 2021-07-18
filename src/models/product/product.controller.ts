@@ -13,14 +13,19 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
+/* Entities */
+import { Product } from './entities/product.entity';
+
+/* External Provider */
+import { ProductService } from './product.service';
+
+/* Req,Res dto */
 import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
-import { Product } from './entities/product.entity';
 import { GetProductListRes } from './dto/getProductListRes.dto';
 import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
 import { UpdateProductInfoRes } from './dto/updateProductInfoRes.dto';
-import { ProductService } from './product.service';
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
@@ -62,6 +67,9 @@ export class ProductController {
     @Param('ownerId') ownerId: number,
     @Body() productData: CreateBarcodeProcessedProductReq,
   ): Promise<CreateBarcodeProcessedProductRes> {
+    /**
+     * @exception base64 이미지 받는 로직 추가 필요
+     */
     return await this.productService.createBarcodeProcessedProduct(
       ownerId,
       productData,
@@ -79,6 +87,9 @@ export class ProductController {
     @Param('ownerId') ownerId: number,
     @Body() productData: CreateBarcodeWeightedProductReq,
   ): Promise<CreateBarcodeWeightedProductRes> {
+    /**
+     * @exception base64 이미지 받는 로직 추가 필요
+     */
     return await this.productService.createBarcodeWeightedProduct(
       ownerId,
       productData,
