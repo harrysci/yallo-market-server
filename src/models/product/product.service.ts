@@ -1229,7 +1229,7 @@ export class ProductService {
       .createQueryBuilder('product')
       .where('product.store=:storeId', { storeId: storeIdName.storeId })
       .andWhere('product.product_barcode=:barcode', { barcode: barcode })
-      // .leftJoinAndSelect('product.product_image', 'product_image')
+      .leftJoinAndSelect('product.product_image', 'product_image')
       .leftJoinAndSelect('product.processed_product', 'processed_product')
       .leftJoinAndSelect('product.weighted_product', 'weighted_product')
       .leftJoinAndSelect('product.onsale_product', 'onsale_product')
