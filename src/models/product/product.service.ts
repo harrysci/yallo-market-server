@@ -666,8 +666,10 @@ export class ProductService {
       }
 
       return false;
-    } catch (err) {
-      console.log('nsbsdabdsba', err.message);
+    } catch {
+      throw new Error(
+        `[getBarcodeProductInfo Error] key Error, not exist ownerId: ${ownerId} or barcode: ${barcode}`,
+      );
     }
   }
 

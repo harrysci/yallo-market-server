@@ -85,8 +85,6 @@ export class ImageStorageService {
 
     const imgBuffer = Buffer.from(base64ImageString, 'base64');
 
-    console.log(bucket);
-
     const params = {
       Bucket: bucket,
       Key: this.s3PathSelector(pathCase, String(pathKey), fileMimeType),
