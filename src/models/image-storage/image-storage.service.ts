@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { S3ConfigService } from 'src/config/aws/s3/configuration.service';
 import * as AWS from 'aws-sdk';
+
+/* AWS S3 config provider */
+import { S3ConfigService } from 'src/config/aws/s3/configuration.service';
+
+/* type and interfaces */
+import { PathCase } from '../store/constants/pathCase.type';
 import { S3UploadImageRes } from './interfaces/s3UploadImageRes.interface';
 import { S3DownloadImageRes } from './interfaces/s3DownloadImageRes.interface';
 import { S3GetImageUrlRes } from './interfaces/s3GetImageUrlRes.interface';
-import { PathCase } from '../store/constants/pathCase.type';
 
+/**
+ * @name S3_이미지_CRUD_Provider_Class
+ */
 @Injectable()
 export class ImageStorageService {
   private s3: any;
@@ -59,6 +66,14 @@ export class ImageStorageService {
     });
   }
 
+  /**
+   * @name uploadImage
+   * s3 의 지정된 경로에 전달 받은 이미지 base64 string을 저장/수정 하는 메소드
+   * @param base64ImageString 이미지 base64 string, default mimeType = png
+   * @param pathCase s3 폴더 위치를 선택하기 위한 이미지의 소속 경우 명시
+   * @param pathKey 이미지가 위치한 db table primary key
+   * @returns 저장된 이미지 파일 url 링크, s3 file path 반환
+   */
   async uploadImageWithBase64(
     base64ImageString: string,
     pathCase: PathCase,
