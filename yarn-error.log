@@ -1,8 +1,8 @@
 Arguments: 
-  /Users/beobwoo/.nvm/versions/node/v14.16.0/bin/node /opt/homebrew/Cellar/yarn/1.22.10/libexec/bin/yarn.js add forever
+  /Users/beobwoo/.nvm/versions/node/v14.16.0/bin/node /opt/homebrew/Cellar/yarn/1.22.10/libexec/bin/yarn.js
 
 PATH: 
-  /Users/beobwoo/.nvm/versions/node/v14.16.0/bin:/opt/anaconda3/bin:/Users/beobwoo/opt/anaconda3/bin:/Users/beobwoo/opt/anaconda3/condabin:/Users/beobwoo/Library/Android/sdk/platform-tools:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin:/Users/beobwoo/Library/Android/sdk/emulator:/Users/beobwoo/Library/Android/sdk/tools:/Users/beobwoo/Library/Android/sdk/tools/bin:/Users/beobwoo/Library/Android/sdk/platform-toolsv
+  /Users/beobwoo/.nvm/versions/node/v14.16.0/bin:/opt/anaconda3/bin:/Users/beobwoo/opt/anaconda3/bin:/Users/beobwoo/Library/Android/sdk/platform-tools:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin:/Users/beobwoo/Library/Android/sdk/emulator:/Users/beobwoo/Library/Android/sdk/tools:/Users/beobwoo/Library/Android/sdk/tools/bin:/Users/beobwoo/Library/Android/sdk/platform-toolsv
 
 Yarn version: 
   1.22.10
@@ -14,7 +14,7 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: EACCES: permission denied, unlink '/Users/beobwoo/baycat/yallo-market-server/node_modules/.bin/atob'
+  Error: EACCES: permission denied, mkdir '/Users/beobwoo/baycat/yallo-market-server/node_modules/@eslint/eslintrc/node_modules/globals'
 
 npm manifest: 
   {

@@ -20,7 +20,6 @@ import { ProductModule } from './models/product/product.module';
 
 @Module({
   imports: [
-    // GCPMysqlDatabaseProviderModule,
     MysqlDatabaseProviderModule,
     AppConfigModule,
     AuthCustomerModule,
