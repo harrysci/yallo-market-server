@@ -19,8 +19,8 @@ export class GetImageProductListRes {
   representativeProductImage: string;
   detailProductImageId: number;
   detailProductImage: string;
-  additionalProductImageId: number;
-  additionalProductImage: string;
+  additionalProductImageId?: number;
+  additionalProductImage?: string;
 
   // processed_product attributes
   processedProductId?: number;

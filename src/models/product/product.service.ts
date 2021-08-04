@@ -180,8 +180,10 @@ export class ProductService {
         representativeProductImage: each.product_image[0].product_image,
         detailProductImageId: each.product_image[1].product_image_id,
         detailProductImage: each.product_image[1].product_image,
-        additionalProductImageId: each.product_image[2].product_image_id,
-        additionalProductImage: each.product_image[2].product_image,
+        additionalProductImageId:
+          each.product_image[2] && each.product_image[2].product_image_id,
+        additionalProductImage:
+          each.product_image[2] && each.product_image[2].product_image,
 
         processedProductId:
           each.product_is_processed == false
