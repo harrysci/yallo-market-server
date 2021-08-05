@@ -54,6 +54,7 @@ export class ProductController {
   /**
    * [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 조회
    * @name 상품단건조회_barcode
+   * @link https://www.notion.so/C-R-U-D-0afbc293ba0a48f79c484ba417ef1083
    * @param ownerId
    * @param barcode
    * @returns GetBarcodeProductRes; owner_id 에 해당하는 store 가 존재하고 barcode 에 해당하는 상품이 존재하는 경우 -> 상품정보 반환
@@ -70,6 +71,7 @@ export class ProductController {
   /**
    * [소비자 모바일 애플리케이션] store_id 를 통한 상품정보 목록 조회
    * @name 상품목록조회_storeId
+   * @link https://www.notion.so/R-95a9c87a83d74b44a8e7120b987f9fcb
    * @param storeId store_id
    * @returns GetImageProductListRes[];
    */
@@ -83,6 +85,7 @@ export class ProductController {
   /**
    * [점주 및 점포관리인 웹] store_id 를 통한 상품정보 목록 조회
    * @name 상품목록조회_storeId
+   * @link https://www.notion.so/R-U-D-c2cab0bb47d94c0db9501cb95fb5dda0
    * @param storeId store_id
    * @returns GetProductListRes[]; 웹 요청 상품 정보 리스트 반환
    */
@@ -112,6 +115,7 @@ export class ProductController {
   /**
    * [얄로마켓 관리자 웹] excel 파일을 통한 상품목록 생성
    * @name 상품목록생성_excel
+   * @link https://www.notion.so/excel-C-56afb01705a64b4a91258cac2df5c28c
    * @param file 상품정보 목록이 담긴 excel file
    * @param store_id store_id
    * @returns void;
@@ -128,6 +132,7 @@ export class ProductController {
   /**
    * [점주 및 점포관리인 모바일 애플리케이션] owner_id 를 통한 공산품 생성
    * @name 공산품생성_ownerId
+   * @link https://www.notion.so/C-R-U-D-0afbc293ba0a48f79c484ba417ef1083
    * @param ownerId owner_id (PRIMARY KEY)
    * @param productData 상품 정보
    * @returns CreateBarcodeProcessedProductRes;
@@ -149,6 +154,7 @@ export class ProductController {
   /**
    * [점주 및 점포관리인 모바일 애플리케이션] owner_id 를 통한 저울상품 생성
    * @name 저울상품생성_ownerId
+   * @link https://www.notion.so/C-R-U-D-0afbc293ba0a48f79c484ba417ef1083
    * @param ownerId owner_id (PRIMARY KEY)
    * @param productData 상품 정보
    * @returns CreateBarcodeWeightedProductRes;
@@ -183,6 +189,7 @@ export class ProductController {
   /**
    * [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 갱신
    * @name 상품정보갱신_ownerId_barcode
+   * @link https://www.notion.so/C-R-U-D-0afbc293ba0a48f79c484ba417ef1083
    * @param ownerId owner_id
    * @param barcode product_barcode
    * @param updateProductInfo 갱신할 상품 정보
@@ -204,6 +211,7 @@ export class ProductController {
   /**
    * [점주 및 점포관리인 웹] product_id 릍 통한 개별 상품 정보 갱신
    * @name 상품정보갱신
+   * @link https://www.notion.so/R-U-D-c2cab0bb47d94c0db9501cb95fb5dda0
    * @param updateProductInfo 수정할 상품의 product_id 와 갱신할 상품 정보
    * @returns UpdateProductInfoRes; 수정된 웹 요청 상품 정보 반환
    */
@@ -231,6 +239,7 @@ export class ProductController {
   /**
    * [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 삭제
    * @name 상품단건삭제_ownerId_barcode
+   * @link https://www.notion.so/C-R-U-D-0afbc293ba0a48f79c484ba417ef1083
    * @param ownerId owner_id
    * @param barcode product_barcode
    * @returns Product; 삭제된 상품 정보
@@ -246,6 +255,7 @@ export class ProductController {
   /**
    * [점주 및 점포관리인 웹] product_id 를 통한 개별 상품 삭제 (on sale, processed, weighted 동시 삭제)
    * @name 상품단건삭제_productId
+   * @link https://www.notion.so/R-U-D-c2cab0bb47d94c0db9501cb95fb5dda0
    * @param productId 삭제할 상품의 product_id
    * @returns void;
    */

@@ -86,11 +86,12 @@ export class ProductService {
    * [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 조회
    * @param ownerId
    * @param barcode
-   * @returns
-   * 1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> product:GetBarcodeProductRes
-   * 2. 존재하지 않는 경우
-   *  (2-1). 유통상품지식뱅크 DB 에서 조회가 되는 경우 -> true
-   *  (2-2). 유통상품지식뱅크 DB 에서 조회가 되지 않는 경우 -> false
+   * @returns GetBarcodeProductRes;
+   *   1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> product:GetBarcodeProductRes
+   * @returns boolean;
+   *   2. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하지 않는 경우
+   *      (2-1). 유통상품지식뱅크 DB 에서 조회가 되는 경우 -> true
+   *      (2-2). 유통상품지식뱅크 DB 에서 조회가 되지 않는 경우 -> false
    */
   async getBarcodeProductInfo(
     ownerId: number,
@@ -144,8 +145,8 @@ export class ProductService {
 
   /**
    * [소비자 모바일 애플리케이션] store_id 를 통한 상품정보 목록 조회
-   * @param storeId
-   * @returns
+   * @param storeId store_id
+   * @returns GetImageProductListRes;
    */
   async getImageProductList(
     storeId: number,
@@ -256,8 +257,8 @@ export class ProductService {
 
   /**
    * 점주 및 점포 관리인 웹 대시보드 상품 목록 조회
-   * @param storeId 가게 id
-   * @returns GetProductListRes[], 웹 요청 상품 정보 리스트 반환
+   * @param storeId store_id
+   * @returns GetProductListRes[]; 웹 요청 상품 정보 리스트 반환
    * @추가error 존재하지 않는 store key 에 대해 throw error
    */
   async getProductList(storeId: number) {
@@ -764,13 +765,13 @@ export class ProductService {
 
   /**
    * [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 갱신
-   * @param ownerId
-   * @param barcode
+   * @param ownerId owner_id
+   * @param barcode product_barcode
    * @param updateProductInfo
-   * @returns
-   * 1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> updatedProduct:updateBarcodeProductInfoRes
-   * 2. 존재하지 않는 경우 -> [deleteBarcodeProduct Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
-   * 3. 삭제에 실패한 경우 -> [deleteBarcodeProduct Error] deletion error
+   * @returns UpdateProductInfoRes;
+   *   1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> updatedProduct:updateBarcodeProductInfoRes
+   *   2. 존재하지 않는 경우 -> [deleteBarcodeProduct Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
+   *   3. 삭제에 실패한 경우 -> [deleteBarcodeProduct Error] deletion error
    */
   async updateBarcodeProductInfo(
     ownerId: number,
@@ -885,7 +886,7 @@ export class ProductService {
   /**
    * 점주 및 점포 관리인 웹 대시보드 개별 상품 정보 수정
    * @param updateProductInfo 수정할 상품의 id 및 수정할 상품 정보
-   * @returns UpdateProductInfoRes , 수정된 웹 요청 상품 정보 반환
+   * @returns UpdateProductInfoRes; 수정된 웹 요청 상품 정보 반환
    * @추가error 존재하지 않는 product key 에 대해 throw error
    */
   async updateProductInfo(
@@ -1028,12 +1029,12 @@ export class ProductService {
 
   /**
    * [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 삭제
-   * @param ownerId
-   * @param barcode
-   * @returns
-   * 1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> 상품을 삭제하고 해당 상품 정보 반환 (rawProduct:Product)
-   * 2. 존재하지 않는 경우 -> [updateBarcodeProductInfo Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
-   * 3. 갱신에 실패한 경우 -> [updateBarcodeProductInfo Error] update error by ${ownerId}, product_barcode: ${barcode}
+   * @param ownerId owner_id
+   * @param barcode product_barcode
+   * @returns Product;
+   *   1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> 상품을 삭제하고 해당 상품 정보 반환 (rawProduct:Product)
+   *   2. 존재하지 않는 경우 -> [updateBarcodeProductInfo Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
+   *   3. 갱신에 실패한 경우 -> [updateBarcodeProductInfo Error] update error by ${ownerId}, product_barcode: ${barcode}
    */
   async deleteBarcodeProduct(
     ownerId: number,
@@ -1109,8 +1110,8 @@ export class ProductService {
 
   /**
    * [점주 및 점포관리인 웹] product_id 를 통한 개별 상품 삭제 (on sale, processed, weighted 동시 삭제)
-   * @param productId 삭제할 상품의 id
-   * @returns void
+   * @param productId 삭제할 상품의 product_id
+   * @returns void;
    * @추가error 존재하지 않는 product key 에 대해 throw error
    */
   async deleteProductInfo(productId: number): Promise<void> {
@@ -1194,6 +1195,7 @@ export class ProductService {
 
   /**
    * 한국 유통DB에 바코드정보 조회 메서드
+   * @link https://www.notion.so/API-4639f996fc7842f19b845cd7c9b9c1c8
    * @param barcode product_barcode
    * @returns AxiosRequest<Dto>; (notion db명세 참조)
    * 
@@ -1221,11 +1223,11 @@ export class ProductService {
 
   /**
    * 중복 상품 검사
-   * @param store
-   * @param barcode
+   * @param store Store
+   * @param barcode product_barcode
    * @returns boolean;
-   *  1. store 에 이미 barcode 로 등록된 상품이 존재하는 경우 (중복 O) -> false
-   *  2. store 에 barcode 로 등록된 상품이 존재하지 않는 경우 (중복 X) -> true
+   *   1. store 에 이미 barcode 로 등록된 상품이 존재하는 경우 (중복 O) -> false
+   *   2. store 에 barcode 로 등록된 상품이 존재하지 않는 경우 (중복 X) -> true
    */
   private async checkDupplicatedProductByStoreAndBarcode(
     store: Store,
@@ -1242,8 +1244,8 @@ export class ProductService {
 
   /**
    * 상품단건조회
-   * @param ownerId
-   * @param barcode
+   * @param ownerId owner_id
+   * @param barcode product_barcode
    * @returns Product;
    */
   private async getProductByOwnerIdAndBarcode(
@@ -1279,8 +1281,8 @@ export class ProductService {
 
   /**
    * 이미지 포함 상품단건조회
-   * @param ownerId
-   * @param barcode
+   * @param ownerId owner_id
+   * @param barcode product_barcode
    * @returns Product;
    */
   private async getImageProductByOwnerIdAndBarcode(
