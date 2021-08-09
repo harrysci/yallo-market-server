@@ -258,8 +258,8 @@ export class ProductService {
   async createBarcodeProcessedProduct(
     ownerId: number,
     productData: CreateBarcodeProcessedProductReq,
-    // ): Promise<CreateBarcodeProcessedProductRes> {
-  ): Promise<any> {
+    images: Express.Multer.File[],
+  ): Promise<CreateBarcodeProcessedProductRes> {
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
 
@@ -383,20 +383,15 @@ export class ProductService {
       };
 
       /* s3 이미지 저장 */
-      /**
-       * @exception base64 이미지 dummy 처리
-       * dummy 데이터는 base64 string (.png)
-       */
-      const dummyImage = dummy;
       const repImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImageWithBase64(
-          dummyImage,
+        await this.imageStorageService.uploadImage(
+          images[0],
           'productRep',
           newTempProcessedProduct.product_id,
         );
       const detailImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImageWithBase64(
-          dummyImage,
+        await this.imageStorageService.uploadImage(
+          images[1],
           'productDet',
           newTempProcessedProduct.product_id,
         );
@@ -458,6 +453,7 @@ export class ProductService {
   async createBarcodeWeightedProduct(
     ownerId: number,
     productData: CreateBarcodeWeightedProductReq,
+    images: Express.Multer.File[],
   ): Promise<CreateBarcodeWeightedProductRes> {
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
@@ -549,20 +545,15 @@ export class ProductService {
       };
 
       /* s3 이미지 저장 */
-      /**
-       * @exception base64 이미지 dummy 처리
-       * dummy 데이터는 base64 string (.png)
-       */
-      const dummyImage = dummy;
       const repImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImageWithBase64(
-          dummyImage,
+        await this.imageStorageService.uploadImage(
+          images[0],
           'productRep',
           newTempWeightedProduct.product_id,
         );
       const detailImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImageWithBase64(
-          dummyImage,
+        await this.imageStorageService.uploadImage(
+          images[1],
           'productDet',
           newTempWeightedProduct.product_id,
         );

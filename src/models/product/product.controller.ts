@@ -1,6 +1,11 @@
 /* nestjs core library */
-import { Controller, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  Controller,
+  UploadedFile,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
   Body,
   Delete,
@@ -60,19 +65,20 @@ export class ProductController {
    * @name 가공상품_생성
    * @param ownerId 점주 id (pk)
    * @param productData 상품 정보
+   * @param images [상품 대표 이미지 File Blob, 상품 상세 이미지 File Blob]
    * @returns CreateBarcodeProcessedProductRes
    */
   @Post('/createProcessedProduct/:ownerId')
+  @UseInterceptors(FilesInterceptor('images', 2))
   async createBarcodeProcessedProduct(
     @Param('ownerId') ownerId: number,
     @Body() productData: CreateBarcodeProcessedProductReq,
+    @UploadedFiles() images: Express.Multer.File[],
   ): Promise<CreateBarcodeProcessedProductRes> {
-    /**
-     * @exception base64 이미지 받는 로직 추가 필요
-     */
     return await this.productService.createBarcodeProcessedProduct(
       ownerId,
       productData,
+      images,
     );
   }
 
@@ -80,19 +86,20 @@ export class ProductController {
    * @name 저울상품_생성
    * @param ownerId 점주 id (pk)
    * @param productData 상품 정보
+   * @param images [상품 대표 이미지 File Blob, 상품 상세 이미지 File Blob]
    * @returns CreateBarcodeWeightedProductRes
    */
   @Post('/createWeightedProduct/:ownerId')
+  @UseInterceptors(FilesInterceptor('images', 2))
   async createBarcodeWeightedProduct(
     @Param('ownerId') ownerId: number,
     @Body() productData: CreateBarcodeWeightedProductReq,
+    @UploadedFiles() images: Express.Multer.File[],
   ): Promise<CreateBarcodeWeightedProductRes> {
-    /**
-     * @exception base64 이미지 받는 로직 추가 필요
-     */
     return await this.productService.createBarcodeWeightedProduct(
       ownerId,
       productData,
+      images,
     );
   }
 

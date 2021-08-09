@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsString, IsDate } from 'class-validator';
+import { IsBoolean, IsNumber, IsString, IsDateString } from 'class-validator';
 
 /**
  * @점주_및_점포관리인_App_상품정보_입력_요청
@@ -28,8 +28,8 @@ export class CreateBarcodeProcessedProductReq {
   @IsBoolean()
   productIsProcessed: boolean;
 
-  @IsDate()
-  productCreatedAt: Date;
+  @IsDateString()
+  productCreatedAt: string;
 
   @IsString()
   productVolume: string;
@@ -46,11 +46,11 @@ export class CreateBarcodeProcessedProductReq {
   productDescription: string;
 
   @IsString()
-  representativeProductImage: string;
+  representativeProductImage?: string;
 
   @IsString()
-  detailProductImage: string;
+  detailProductImage?: string;
 
   @IsString()
-  additionalProductImage: string;
+  additionalProductImage?: string;
 }

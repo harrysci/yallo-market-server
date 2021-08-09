@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsString, IsDate } from 'class-validator';
+import { IsBoolean, IsNumber, IsString, IsDateString } from 'class-validator';
 
 /**
  * @점주_및_점포관리인_App_상품정보_입력_요청
@@ -28,8 +28,8 @@ export class CreateBarcodeWeightedProductReq {
   @IsBoolean()
   productIsProcessed: boolean;
 
-  @IsDate()
-  productCreatedAt: Date;
+  @IsDateString()
+  productCreatedAt: string;
 
   @IsString()
   productVolume: string;
