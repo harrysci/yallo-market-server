@@ -1,4 +1,4 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpException, HttpService, Injectable } from '@nestjs/common';
 
 /* typeorm */
 import { InjectRepository } from '@nestjs/typeorm';
@@ -573,8 +573,9 @@ export class ProductService {
     }
     // 상품이 중복된 경우 -> throw Error
     else {
-      throw new Error(
+      throw new HttpException(
         `[createBarcodeProcessedProduct Error] duplicated product with owner_id: ${ownerId}, store_id: ${storeIdName.storeId}, product_barcode: ${productData.productBarcode}`,
+        401,
       );
     }
   }
@@ -630,7 +631,7 @@ export class ProductService {
         product_is_processed: productData.productIsProcessed,
         product_is_soldout: productData.productIsSoldout,
         product_onsale: false,
-        product_category: '미분류',
+        product_category: '저울상품',
         product_created_at: productData.productCreatedAt,
 
         store: store,
