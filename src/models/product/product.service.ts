@@ -1,4 +1,4 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpException, HttpService, Injectable } from '@nestjs/common';
 
 /* typeorm */
 import { InjectRepository } from '@nestjs/typeorm';
@@ -393,8 +393,8 @@ export class ProductService {
   async createBarcodeProcessedProduct(
     ownerId: number,
     productData: CreateBarcodeProcessedProductReq,
-    // ): Promise<CreateBarcodeProcessedProductRes> {
-  ): Promise<any> {
+    images: Express.Multer.File[],
+  ): Promise<CreateBarcodeProcessedProductRes> {
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
 
@@ -518,20 +518,15 @@ export class ProductService {
       };
 
       /* s3 이미지 저장 */
-      /**
-       * @exception base64 이미지 dummy 처리
-       * dummy 데이터는 base64 string (.png)
-       */
-      const dummyImage = dummy;
       const repImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImageWithBase64(
-          dummyImage,
+        await this.imageStorageService.uploadImage(
+          images[0],
           'productRep',
           newTempProcessedProduct.product_id,
         );
       const detailImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImageWithBase64(
-          dummyImage,
+        await this.imageStorageService.uploadImage(
+          images[1],
           'productDet',
           newTempProcessedProduct.product_id,
         );
@@ -578,8 +573,9 @@ export class ProductService {
     }
     // 상품이 중복된 경우 -> throw Error
     else {
-      throw new Error(
+      throw new HttpException(
         `[createBarcodeProcessedProduct Error] duplicated product with owner_id: ${ownerId}, store_id: ${storeIdName.storeId}, product_barcode: ${productData.productBarcode}`,
+        401,
       );
     }
   }
@@ -593,6 +589,7 @@ export class ProductService {
   async createBarcodeWeightedProduct(
     ownerId: number,
     productData: CreateBarcodeWeightedProductReq,
+    images: Express.Multer.File[],
   ): Promise<CreateBarcodeWeightedProductRes> {
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
@@ -634,7 +631,7 @@ export class ProductService {
         product_is_processed: productData.productIsProcessed,
         product_is_soldout: productData.productIsSoldout,
         product_onsale: false,
-        product_category: '미분류',
+        product_category: '저울상품',
         product_created_at: productData.productCreatedAt,
 
         store: store,
@@ -684,20 +681,15 @@ export class ProductService {
       };
 
       /* s3 이미지 저장 */
-      /**
-       * @exception base64 이미지 dummy 처리
-       * dummy 데이터는 base64 string (.png)
-       */
-      const dummyImage = dummy;
       const repImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImageWithBase64(
-          dummyImage,
+        await this.imageStorageService.uploadImage(
+          images[0],
           'productRep',
           newTempWeightedProduct.product_id,
         );
       const detailImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImageWithBase64(
-          dummyImage,
+        await this.imageStorageService.uploadImage(
+          images[1],
           'productDet',
           newTempWeightedProduct.product_id,
         );

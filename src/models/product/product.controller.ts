@@ -1,6 +1,13 @@
 /* nestjs core library */
-import { Controller, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  Bind,
+  Controller,
+  UploadedFile,
+  UploadedFiles,
+  UseInterceptors,
+  UsePipes,
+} from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
   Body,
   Delete,
@@ -30,6 +37,7 @@ import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.d
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
 import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
+import { FormToObject } from 'src/common/decorator/form-to-object.decorator';
 
 @Controller('product')
 export class ProductController {
@@ -135,19 +143,20 @@ export class ProductController {
    * @link https://www.notion.so/C-R-U-D-0afbc293ba0a48f79c484ba417ef1083
    * @param ownerId owner_id (PRIMARY KEY)
    * @param productData 상품 정보
-   * @returns CreateBarcodeProcessedProductRes;
+   * @param images [상품 대표 이미지 File Blob, 상품 상세 이미지 File Blob]
+   * @returns CreateBarcodeProcessedProductRes
    */
   @Post('/createProcessedProduct/:ownerId')
+  @UseInterceptors(FilesInterceptor('images', 2))
   async createBarcodeProcessedProduct(
     @Param('ownerId') ownerId: number,
-    @Body() productData: CreateBarcodeProcessedProductReq,
+    @FormToObject('productData') productData: CreateBarcodeProcessedProductReq,
+    @UploadedFiles() images: Express.Multer.File[],
   ): Promise<CreateBarcodeProcessedProductRes> {
-    /**
-     * @exception base64 이미지 받는 로직 추가 필요
-     */
     return await this.productService.createBarcodeProcessedProduct(
       ownerId,
       productData,
+      images,
     );
   }
 
@@ -157,19 +166,20 @@ export class ProductController {
    * @link https://www.notion.so/C-R-U-D-0afbc293ba0a48f79c484ba417ef1083
    * @param ownerId owner_id (PRIMARY KEY)
    * @param productData 상품 정보
-   * @returns CreateBarcodeWeightedProductRes;
+   * @param images [상품 대표 이미지 File Blob, 상품 상세 이미지 File Blob]
+   * @returns CreateBarcodeWeightedProductRes
    */
   @Post('/createWeightedProduct/:ownerId')
+  @UseInterceptors(FilesInterceptor('images', 2))
   async createBarcodeWeightedProduct(
     @Param('ownerId') ownerId: number,
-    @Body() productData: CreateBarcodeWeightedProductReq,
-  ): Promise<CreateBarcodeWeightedProductRes> {
-    /**
-     * @exception base64 이미지 받는 로직 추가 필요
-     */
+    @FormToObject('productData') productData: CreateBarcodeWeightedProductReq,
+    @UploadedFiles() images: Express.Multer.File[],
+  ): Promise<CreateBarcodeWeightedProductRes | any> {
     return await this.productService.createBarcodeWeightedProduct(
       ownerId,
-      productData,
+      productData as CreateBarcodeWeightedProductReq,
+      images,
     );
   }
 

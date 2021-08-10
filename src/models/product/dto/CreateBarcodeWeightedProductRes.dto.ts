@@ -43,13 +43,13 @@ export class CreateBarcodeWeightedProductRes {
 
   // product_image attributes
   @IsString()
-  representativeProductImage: string;
+  representativeProductImage?: string;
 
   @IsString()
-  detailProductImage: string;
+  detailProductImage?: string;
 
   @IsString()
-  additionalProductImage: string;
+  additionalProductImage?: string;
 
   // weighted_product attributes
   @IsNumber()
