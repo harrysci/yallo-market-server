@@ -1,9 +1,11 @@
 /* nestjs core library */
 import {
+  Bind,
   Controller,
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -35,6 +37,7 @@ import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.d
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
 import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
+import { FormToObject } from 'src/common/decorator/form-to-object.decorator';
 
 @Controller('product')
 export class ProductController {
@@ -147,11 +150,9 @@ export class ProductController {
   @UseInterceptors(FilesInterceptor('images', 2))
   async createBarcodeProcessedProduct(
     @Param('ownerId') ownerId: number,
-    @Body() productData: CreateBarcodeProcessedProductReq,
+    @FormToObject('productData') productData: CreateBarcodeProcessedProductReq,
     @UploadedFiles() images: Express.Multer.File[],
   ): Promise<CreateBarcodeProcessedProductRes> {
-    console.log(productData);
-
     return await this.productService.createBarcodeProcessedProduct(
       ownerId,
       productData,
@@ -172,12 +173,12 @@ export class ProductController {
   @UseInterceptors(FilesInterceptor('images', 2))
   async createBarcodeWeightedProduct(
     @Param('ownerId') ownerId: number,
-    @Body() productData: CreateBarcodeWeightedProductReq,
+    @FormToObject('productData') productData: CreateBarcodeWeightedProductReq,
     @UploadedFiles() images: Express.Multer.File[],
-  ): Promise<CreateBarcodeWeightedProductRes> {
+  ): Promise<CreateBarcodeWeightedProductRes | any> {
     return await this.productService.createBarcodeWeightedProduct(
       ownerId,
-      productData,
+      productData as CreateBarcodeWeightedProductReq,
       images,
     );
   }
