@@ -75,6 +75,8 @@ export class ProductController {
     @Body() productData: CreateBarcodeProcessedProductReq,
     @UploadedFiles() images: Express.Multer.File[],
   ): Promise<CreateBarcodeProcessedProductRes> {
+    console.log(productData);
+
     return await this.productService.createBarcodeProcessedProduct(
       ownerId,
       productData,
