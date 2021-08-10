@@ -94,7 +94,7 @@ export class ImageStorageService {
     return new Promise<S3UploadImageRes>((resolve, reject) => {
       awsS3.upload(params, (err, data: S3UploadImageRes) => {
         if (err) {
-          reject('[S3 Image Upload Fail ...] ' + err.message);
+          reject('[S3 Image Upload Fail ...abc] ' + err.message);
         } else {
           console.log('[S3 Image Upload SUCCESS] ');
           resolve(data);
