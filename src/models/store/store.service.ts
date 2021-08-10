@@ -21,8 +21,24 @@ export class StoreService {
   ) {}
 
   /**
-   * store list 조회
-   * @return GetStoreListRes[]
+   ************************************************************************************************************************
+   * Get Method
+   *
+   * @name getStoreList
+   * @description 점포정보목록조회
+   *
+   * @name getStoreNameByOwnerId
+   * @description owner_id 를 통한 store_id, store_name 조회
+   *
+   * @name getStore
+   * @description 점포단건조회
+   *
+   ************************************************************************************************************************
+   */
+
+  /**
+   * 점포정보목록조회
+   * @return GetStoreListRes[];
    */
   async getStoreList(): Promise<GetStoreListRes[]> {
     try {
@@ -69,10 +85,12 @@ export class StoreService {
   }
 
   /**
-   *
-   * @param ownerId
-   *  ownerId 에 해당하는 store 가 존재하는 경우 -> @return storeIdName
-   *  ownerId 에 해당하는 store 가 존재하지 않는 경우 -> @return null
+   * owner_id 를 통한 store_id, store_name 조회
+   * @param ownerId owner_id
+   * @returns StoreIdNameRes;
+   *   1. ownerId 에 해당하는 store 가 존재하는 경우 -> storeIdName 반환
+   * @returns null;
+   *   2. ownerId 에 해당하는 store 가 존재하지 않는 경우 -> null 반환
    */
   async getStoreIdNameByOwnerId(ownerId: number): Promise<StoreIdNameRes> {
     try {
@@ -97,10 +115,12 @@ export class StoreService {
   }
 
   /**
-   *
-   * @param storeId
-   *  ownerId 에 해당하는 store 가 존재하는 경우 -> @return store
-   *  ownerId 에 해당하는 store 가 존재하지 않는 경우 -> @return null
+   * 점포단건조회
+   * @param storeId store_id
+   * @return Store;
+   *   1. ownerId 에 해당하는 store 가 존재하는 경우 -> Store 반환
+   * @return null;
+   *   2. ownerId 에 해당하는 store 가 존재하지 않는 경우 -> @return null
    */
   async getStore(storeId: number): Promise<Store> {
     const store = await this.storeRepository
