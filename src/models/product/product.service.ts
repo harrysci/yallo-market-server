@@ -1,27 +1,57 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpException, HttpService, Injectable } from '@nestjs/common';
+
+/* typeorm */
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+<<<<<<< HEAD
+=======
+
+/* Excel file 처리 */
+>>>>>>> 1a1a90c672d19305c23e4d09b8d3edd0ca3b810a
 import * as XLSX from 'xlsx';
-import { StoreIdNameRes } from '../store/dto/StoreIdNameRes.dto';
+
+/* External Provider */
 import { StoreService } from '../store/store.service';
+<<<<<<< HEAD
 import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
 import { GetProductListRes } from './dto/getProductListRes.dto';
 import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
 import { UpdateProductInfoRes } from './dto/updateProductInfoRes.dto';
+=======
+import { KorchamConfigService } from '../../config/korcham/configuration.service';
+import { ImageStorageService } from '../image-storage/image-storage.service';
+import { S3UploadImageRes } from '../image-storage/interfaces/s3UploadImageRes.interface';
+
+/* Entities */
+>>>>>>> 1a1a90c672d19305c23e4d09b8d3edd0ca3b810a
 import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { ProductImage } from './entities/product-image.entity';
 import { Product } from './entities/product.entity';
 import { WeightedProduct } from './entities/weighted-product.entity';
-import { KorchamConfigService } from '../../config/korcham/configuration.service';
+import { Store } from '../store/entities/store.entity';
+
+/* Req,Res dto */
+import { FindStoreProductDto } from './dto/FindStoreProduct.dto';
+import { ProductDetailDto } from './dto/ProductDetailDto.dto';
+import { StoreIdNameRes } from '../store/dto/StoreIdNameRes.dto';
+import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
+import { GetProductListRes } from './dto/getProductListRes.dto';
+import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
+import { UpdateProductInfoRes } from './dto/updateProductInfoRes.dto';
 import { updateBarcodeProductInfoReq } from './dto/updateBarcodeProductInfoReq.dto';
 import { CreateBarcodeProcessedProductReq } from './dto/CreateBarcodeProcessedProductReq.dto';
 import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
 import { CreateBarcodeWeightedProductReq } from './dto/CreateBarcodeWeightedProductReq.dto';
-import { Store } from '../store/entities/store.entity';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
-import { raw } from 'express';
+
+/* test dummy data */
+import dummy from './dummy/dummyBase64';
+
+/**
+ * @name 상품_Provider_Class
+ */
 @Injectable()
 export class ProductService {
   constructor(
@@ -40,88 +70,211 @@ export class ProductService {
     private readonly productImageRepository: Repository<ProductImage>,
 
     private readonly storeService: StoreService,
+
     private readonly httpService: HttpService,
+
     private readonly korchamConfig: KorchamConfigService,
+
+    private readonly imageStorageService: ImageStorageService, // s3 image storage service
   ) {}
-
-  async uploadExcelFile(
-    file: Express.Multer.File,
-    store_id: number,
-  ): Promise<void> {
-    const workBook: XLSX.WorkBook = XLSX.read(file.buffer, {
-      type: 'buffer',
-      cellDates: true,
-      cellNF: false,
-    });
-    /*첫번째 sheet이름 사용*/
-    const sheetName = workBook?.SheetNames[0];
-    // console.log(sheetName);
-    /*sheet의 전체 정보*/
-    const sheet: XLSX.WorkSheet = workBook.Sheets[sheetName];
-    /*json 파일 변환*/
-    const jsonData = XLSX.utils.sheet_to_json(sheet, {
-      defval: null,
-    });
-    /*store 정보*/
-    const newStore = await this.storeService.getStore(store_id);
-    jsonData.map(async (iter) => {
-      /*save할 data*/
-      const ExcelData = new Product();
-      if (iter['바코드'] != null) {
-        ExcelData.store = newStore;
-        ExcelData.product_barcode = iter['바코드'].toString();
-        ExcelData.product_name = iter['상품명'];
-        ExcelData.product_original_price = iter['원가'];
-        ExcelData.product_current_price = iter['판가'];
-        ExcelData.product_description = iter['상품상세설명'];
-        ExcelData.product_profit =
-          iter['원가'] == 0
-            ? 0
-            : 100 * ((iter['판가'] - iter['원가']) / iter['원가']);
-        ExcelData.product_is_processed =
-          ExcelData.product_barcode.slice(0, 3) == '880' ? true : false;
-        ExcelData.product_is_soldout = iter['재고'] == 0 ? true : false;
-        ExcelData.product_onsale = false;
-        ExcelData.product_category = iter['분류이름'];
-        if (ExcelData.product_is_processed) {
-          const processedData = new ProcessedProduct();
-          processedData.processed_product_name = iter['상품명'];
-          processedData.processed_product_adult = 'N';
-          processedData.processed_product_company = iter['상품회사'];
-          processedData.processed_product_standard_type = iter['규격'];
-          processedData.processed_product_standard_values = iter['규격'];
-          processedData.processed_product_composition = iter['상품구성'];
-          processedData.processed_product_volume = iter['총중량'];
-          processedData.processed_product_caution = iter['주의사항'];
-          ExcelData.processed_product = processedData;
-        } else {
-          const weightedData = new WeightedProduct();
-          weightedData.weighted_product_volume = iter['상품의 양'];
-          ExcelData.weighted_product = weightedData;
-        }
-        const onsaleData = new OnsaleProduct();
-        onsaleData.product_onsale_price = iter['할인판가']
-          ? iter['할인판가']
-          : 0;
-        ExcelData.onsale_product = onsaleData;
-
-        await this.productRepository.save(ExcelData);
-      }
-    });
-  }
-  /*Array사용시 저장할 Promise함수*/
-  //Promise.all(ExcelDataArray).then(async function(values){
-  //console.log(values);
-  //await this.productRepository.save(values);
-  //})
-
+<<<<<<< HEAD
+=======
   /**********************************************************************************
-   * @점주_Mobile_Application
+   * @소비자 App
    **********************************************************************************/
   /**
-   * store_id 를 통한 상품 정보 조회
+  /**
+   * [점주 및 점포관리인 모바일 애플리케이션] product_id, store_id 를 통한 상품 정보 조회
+   * @name 상품상세조회
+   * @link https://www.notion.so/R-a19a0bd46bc243c79f0addb6e6024733
+   * @param productId
    * @param storeId
-   * @returns
+   * @returns ProductDetailDto; store_id 에 해당하는 product 가 존재하고  productId에 해당하는 상품이 존재하는 경우 -> 상품정보 반환
+   * 1. storeId, productId 에 해당하는 상품이 product 테이블에 존재하는 경우 -> product:ProductDetailInfo
+   */
+  async getProductDetailInfo(
+    req: FindStoreProductDto,
+  ): Promise<ProductDetailDto> {
+    /*조회 결과*/
+    const productRawInfo = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.product_id=:id', { id: req.product_id })
+      .andWhere('product.store.store_id=:store_id', { store_id: req.store_id })
+      .leftJoinAndSelect('product.product_image', 'product_image')
+      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .getOne();
+    /*정보 리스트 정제*/
+    const productDetailInfo: ProductDetailDto = {
+      productId: productRawInfo.product_id,
+      productBarcode: productRawInfo.product_barcode,
+      productName: productRawInfo.product_name,
+      productOriginalPrice: productRawInfo.product_original_price,
+      productCurrentPrice: productRawInfo.product_current_price,
+      productProfit: productRawInfo.product_profit,
+      productDescription: productRawInfo.product_description,
+      productIsProcessed: productRawInfo.product_is_processed,
+      productIsSoldout: productRawInfo.product_is_soldout,
+      productOnsale: productRawInfo.product_onsale,
+      productCategory: productRawInfo.product_category,
+      productCreatedAt: productRawInfo.product_created_at,
+
+      representativeProductImageId:
+        productRawInfo.product_image[0].product_image_id,
+      representativeProductImage: productRawInfo.product_image[0].product_image,
+      detailProductImageId: productRawInfo.product_image[1].product_image_id,
+      detailProductImage: productRawInfo.product_image[1].product_image,
+      additionalProductImageId:
+        productRawInfo.product_image[2].product_image_id,
+      additionalProductImage: productRawInfo.product_image[2].product_image,
+      // processed_product attributes
+      onsaleProductId:
+        productRawInfo.onsale_product != null
+          ? productRawInfo.onsale_product.onsale_product_id
+          : null,
+      productOnsalePrice:
+        productRawInfo.onsale_product != null
+          ? productRawInfo.onsale_product.product_onsale_price
+          : null,
+      processedProductId:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_id
+          : null,
+      processedProductName:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_name
+          : null,
+      processedProductCompany:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_company
+          : null,
+      processedProductStandardType:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_standard_type
+          : null,
+      processedProductStandardValues:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_standard_values
+          : null,
+      processedProductComposition:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_composition
+          : null,
+      processedProductVolume:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_volume
+          : null,
+      processedProductAdult:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_adult
+          : null,
+      processedProductCaution:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_caution
+          : null,
+      processedProductInformation:
+        productRawInfo.processed_product != null
+          ? productRawInfo.processed_product.processed_product_information
+          : null,
+      // weighted_product attributes
+      weightedProductId:
+        productRawInfo.weighted_product != null
+          ? productRawInfo.weighted_product.weighted_product_id
+          : null,
+      weightedProductVolume:
+        productRawInfo.weighted_product != null
+          ? productRawInfo.weighted_product.weighted_product_volume
+          : null,
+    };
+    return productDetailInfo;
+  }
+  /**********************************************************************************
+   * @점주WebApp
+   **********************************************************************************/
+>>>>>>> 1a1a90c672d19305c23e4d09b8d3edd0ca3b810a
+
+  /**
+   ************************************************************************************************************************
+   * Get Method
+   *
+   * @name getBarcodeProductInfo
+   * @description [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 조회
+   *
+   * @name getImageProductList
+   * @description [소비자 모바일 애플리케이션] store_id 를 통한 상품정보 목록 조회
+   *
+   * @name getProductList (getProductListForOwnerWeb)
+   * @description [점주 및 점포관리인 웹] store_id 를 통한 상품정보 목록 조회
+   *
+   ************************************************************************************************************************
+   */
+
+  /**
+   * [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 조회
+   * @param ownerId
+   * @param barcode
+   * @returns GetBarcodeProductRes;
+   *   1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> product:GetBarcodeProductRes
+   * @returns boolean;
+   *   2. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하지 않는 경우
+   *      (2-1). 유통상품지식뱅크 DB 에서 조회가 되는 경우 -> true
+   *      (2-2). 유통상품지식뱅크 DB 에서 조회가 되지 않는 경우 -> false
+   */
+  async getBarcodeProductInfo(
+    ownerId: number,
+    barcode: string,
+  ): Promise<GetBarcodeProductRes | boolean> {
+    const rawProduct: Product = await this.getImageProductByOwnerIdAndBarcode(
+      ownerId,
+      barcode,
+    );
+
+    /**
+     * 해당 product 가 존재하는 경우 -> product 를 GetBarcodeProductRes 로 formatting 후 반환
+     * 해당 product 가 존재하지 않는 경우 -> 유통상품지식뱅크 DB 조회 후 존재 여부 boolean 반환
+     */
+    try {
+      if (rawProduct) {
+        // GetBarcodeProductRes 로 formatting
+        const product: GetBarcodeProductRes = {
+          productBarcode: rawProduct.product_barcode,
+          productCategory: rawProduct.product_category,
+          productCreatedAt: rawProduct.product_created_at,
+          productCurrentPrice: rawProduct.product_current_price,
+          productName: rawProduct.product_name,
+          productOnsale: rawProduct.product_onsale,
+          productVolume: rawProduct.product_is_processed
+            ? // 공산품인 경우 -> processed_product.processed_product_volume
+              rawProduct.processed_product.processed_product_volume
+            : // 저울상품인 경우 -> weighted_product.weighted_product_volume
+              rawProduct.weighted_product.weighted_product_volume,
+          storeName: rawProduct.store.store_name,
+          productImages: rawProduct.product_image,
+          productOnsalePrice: rawProduct.product_onsale
+            ? rawProduct.onsale_product.product_onsale_price
+            : null,
+        };
+
+        return product;
+      } else {
+        const isPresent: any = await this.requestKorchamApi(barcode);
+
+        if (isPresent) return true;
+      }
+
+      return false;
+    } catch {
+      throw new Error(
+        `[getBarcodeProductInfo Error] key Error, not exist ownerId: ${ownerId} or barcode: ${barcode}`,
+      );
+    }
+  }
+
+  /**
+   * [소비자 모바일 애플리케이션] store_id 를 통한 상품정보 목록 조회
+   * @param storeId store_id
+   * @returns GetImageProductListRes;
    */
   async getImageProductList(
     storeId: number,
@@ -161,8 +314,10 @@ export class ProductService {
         representativeProductImage: each.product_image[0].product_image,
         detailProductImageId: each.product_image[1].product_image_id,
         detailProductImage: each.product_image[1].product_image,
-        additionalProductImageId: each.product_image[2].product_image_id,
-        additionalProductImage: each.product_image[2].product_image,
+        additionalProductImageId:
+          each.product_image[2] && each.product_image[2].product_image_id,
+        additionalProductImage:
+          each.product_image[2] && each.product_image[2].product_image,
 
         processedProductId:
           each.product_is_processed == false
@@ -229,7 +384,138 @@ export class ProductService {
   }
 
   /**
-   * 바코드를 통한 공산품 생성
+   * 점주 및 점포 관리인 웹 대시보드 상품 목록 조회
+   * @param storeId store_id
+   * @returns GetProductListRes[]; 웹 요청 상품 정보 리스트 반환
+   * @추가error 존재하지 않는 store key 에 대해 throw error
+   */
+  async getProductList(storeId: number) {
+    /* Database 조회 결과 */
+    const selectProductListRawResult = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.store_id = :store_id', { store_id: storeId })
+      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+      .leftJoinAndSelect('product.processed_product', 'processed_product')
+      .getMany();
+
+    if (!selectProductListRawResult) {
+      throw new Error('getProductList [Get] Not Exist store Key  ... ');
+    }
+
+    /* 점주 및 점포 관리인 WEB 상품 정보 리스트 조회 결과로 변환*/
+    const productList: GetProductListRes[] =
+      selectProductListRawResult.map<GetProductListRes>((eachProduct) => ({
+        productId: eachProduct.product_id,
+        productBarcode: eachProduct.product_barcode,
+        productName: eachProduct.product_name,
+        productOriginPrice: eachProduct.product_original_price,
+        productCurrentPrice: eachProduct.product_current_price,
+        productOnSalePrice: eachProduct.onsale_product
+          ? eachProduct.onsale_product.product_onsale_price
+          : null,
+        productProfit: eachProduct.product_profit,
+        productIsProcessed: eachProduct.product_is_processed,
+        productOnSale: eachProduct.product_onsale,
+        productVolume: eachProduct.processed_product
+          ? eachProduct.processed_product.processed_product_volume
+          : eachProduct.weighted_product.weighted_product_volume,
+      }));
+
+    return productList;
+  }
+
+  /**
+   ************************************************************************************************************************
+   * Post Method
+   *
+   * @name uploadExcelFile
+   * @description [얄로마켓 관리자 웹] excel 파일을 통한 상품목록 생성
+   *
+   * @name createBarcodeProcessedProduct
+   * @description [점주 및 점포관리인 모바일 애플리케이션] owner_id 를 통한 공산품 생성
+   *
+   * @name createBarcodeWeightedProduct
+   * @description [점주 및 점포관리인 모바일 애플리케이션] owner_id 를 통한 저울상품 생성
+   *
+   ************************************************************************************************************************
+   */
+
+  /**
+   * [얄로마켓 관리자 웹] excel 파일을 통한 상품목록 생성
+   * @param file
+   * @param store_id
+   */
+  async uploadExcelFile(
+    file: Express.Multer.File,
+    store_id: number,
+  ): Promise<void> {
+    const workBook: XLSX.WorkBook = XLSX.read(file.buffer, {
+      type: 'buffer',
+      cellDates: true,
+      cellNF: false,
+    });
+    /*첫번째 sheet이름 사용*/
+    const sheetName = workBook?.SheetNames[0];
+
+    /*sheet의 전체 정보*/
+    const sheet: XLSX.WorkSheet = workBook.Sheets[sheetName];
+
+    /*json 파일 변환*/
+    const jsonData = XLSX.utils.sheet_to_json(sheet, {
+      defval: null,
+    });
+
+    /*store 정보*/
+    const newStore = await this.storeService.getStore(store_id);
+    jsonData.map(async (iter) => {
+      /*save할 data*/
+      const ExcelData = new Product();
+      if (iter['바코드'] != null) {
+        ExcelData.store = newStore;
+        ExcelData.product_barcode = iter['바코드'].toString();
+        ExcelData.product_name = iter['상품명'];
+        ExcelData.product_original_price = iter['원가'];
+        ExcelData.product_current_price = iter['판가'];
+        ExcelData.product_description = iter['상품상세설명'];
+        ExcelData.product_profit =
+          iter['원가'] == 0
+            ? 0
+            : 100 * ((iter['판가'] - iter['원가']) / iter['원가']);
+        ExcelData.product_is_processed =
+          ExcelData.product_barcode.slice(0, 3) == '880' ? true : false;
+        ExcelData.product_is_soldout = iter['재고'] == 0 ? true : false;
+        ExcelData.product_onsale = false;
+        ExcelData.product_category = iter['분류이름'];
+        if (ExcelData.product_is_processed) {
+          const processedData = new ProcessedProduct();
+          processedData.processed_product_name = iter['상품명'];
+          processedData.processed_product_adult = 'N';
+          processedData.processed_product_company = iter['상품회사'];
+          processedData.processed_product_standard_type = iter['규격'];
+          processedData.processed_product_standard_values = iter['규격'];
+          processedData.processed_product_composition = iter['상품구성'];
+          processedData.processed_product_volume = iter['총중량'];
+          processedData.processed_product_caution = iter['주의사항'];
+          ExcelData.processed_product = processedData;
+        } else {
+          const weightedData = new WeightedProduct();
+          weightedData.weighted_product_volume = iter['상품의 양'];
+          ExcelData.weighted_product = weightedData;
+        }
+        const onsaleData = new OnsaleProduct();
+        onsaleData.product_onsale_price = iter['할인판가']
+          ? iter['할인판가']
+          : 0;
+        ExcelData.onsale_product = onsaleData;
+
+        await this.productRepository.save(ExcelData);
+      }
+    });
+  }
+
+  /**
+   * [점주 및 점포관리인 모바일 애플리케이션] owner_id 를 통한 공산품 생성
    * @param ownerId
    * @param productData
    * @return createdProduct
@@ -237,6 +523,7 @@ export class ProductService {
   async createBarcodeProcessedProduct(
     ownerId: number,
     productData: CreateBarcodeProcessedProductReq,
+    images: Express.Multer.File[],
   ): Promise<CreateBarcodeProcessedProductRes> {
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
@@ -303,38 +590,9 @@ export class ProductService {
         processed_product: processed_product,
         weighted_product: null,
       });
-      await this.productRepository.save(product);
-
-      // 상품 대표 이미지 생성 및 저장
-      const representativeImage: ProductImage =
-        this.productImageRepository.create({
-          is_additional: false,
-          is_detail: false,
-          is_representative: true,
-          product: product,
-          product_image: productData.representativeProductImage,
-        });
-      await this.productImageRepository.save(representativeImage);
-
-      // 상품 상세 이미지 생성 및 저장
-      const detailImage: ProductImage = this.productImageRepository.create({
-        is_additional: false,
-        is_detail: true,
-        is_representative: false,
-        product: product,
-        product_image: productData.detailProductImage,
-      });
-      await this.productImageRepository.save(detailImage);
-
-      // 상품 추가 이미지 생성 및 저장
-      const additionalImage: ProductImage = this.productImageRepository.create({
-        is_additional: true,
-        is_detail: false,
-        is_representative: false,
-        product: product,
-        product_image: productData.additionalProductImage,
-      });
-      await this.productImageRepository.save(additionalImage);
+      const newTempProcessedProduct = await this.productRepository.save(
+        product,
+      );
 
       // 생성한 상품 조회
       const rawCreatedProduct: Product =
@@ -345,11 +603,16 @@ export class ProductService {
 
       // CreateBarcodeProcessedProductRes 로 formatting
       const createdProduct: CreateBarcodeProcessedProductRes = {
-        representativeProductImage:
-          rawCreatedProduct.product_image[0].product_image,
-        detailProductImage: rawCreatedProduct.product_image[1].product_image,
-        additionalProductImage:
-          rawCreatedProduct.product_image[2].product_image,
+        // representativeProductImage:
+        //   rawCreatedProduct.product_image[0].product_image,
+        // detailProductImage: rawCreatedProduct.product_image[1].product_image,
+        // additionalProductImage:
+        //   rawCreatedProduct.product_image[2].product_image,
+
+        representativeProductImage: '',
+        detailProductImage: '',
+        additionalProductImage: '',
+
         productBarcode: rawCreatedProduct.product_barcode,
         productCategory: rawCreatedProduct.product_category,
         productCreatedAt: rawCreatedProduct.product_created_at,
@@ -384,18 +647,71 @@ export class ProductService {
           rawCreatedProduct.processed_product.processed_product_adult,
       };
 
+      /* s3 이미지 저장 */
+      const repImageFromS3: S3UploadImageRes =
+        await this.imageStorageService.uploadImage(
+          images[0],
+          'productRep',
+          newTempProcessedProduct.product_id,
+        );
+      const detailImageFromS3: S3UploadImageRes =
+        await this.imageStorageService.uploadImage(
+          images[1],
+          'productDet',
+          newTempProcessedProduct.product_id,
+        );
+
+      // 상품 대표 이미지 생성 및 저장
+      const representativeImage: ProductImage =
+        this.productImageRepository.create({
+          is_additional: false,
+          is_detail: false,
+          is_representative: true,
+          product: product,
+          product_image: repImageFromS3.Location, // s3 에 저장된 이미지의 s3 url
+        });
+      await this.productImageRepository.save(representativeImage);
+
+      // 상품 상세 이미지 생성 및 저장
+      const detailImage: ProductImage = this.productImageRepository.create({
+        is_additional: false,
+        is_detail: true,
+        is_representative: false,
+        product: product,
+        product_image: detailImageFromS3.Location, // s3 에 저장된 이미지의 s3 url
+      });
+      await this.productImageRepository.save(detailImage);
+
+      /**
+       * @exception 추가 이미지 생성 및 저장 로직 주석 처리
+       * 추가 이미지 촬영이 추가 된 이후 해제
+       */
+      // 상품 추가 이미지 생성 및 저장
+      // const additionalImage: ProductImage = this.productImageRepository.create({
+      //   is_additional: true,
+      //   is_detail: false,
+      //   is_representative: false,
+      //   product: product,
+      //   product_image: productData.additionalProductImage,
+      // });
+      // await this.productImageRepository.save(additionalImage);
+
+      createdProduct.representativeProductImage = repImageFromS3.Location;
+      createdProduct.detailProductImage = detailImageFromS3.Location;
+
       return createdProduct;
     }
     // 상품이 중복된 경우 -> throw Error
     else {
-      throw new Error(
+      throw new HttpException(
         `[createBarcodeProcessedProduct Error] duplicated product with owner_id: ${ownerId}, store_id: ${storeIdName.storeId}, product_barcode: ${productData.productBarcode}`,
+        401,
       );
     }
   }
 
   /**
-   * 바코드를 통한 저울 상품 생성
+   * [점주 및 점포관리인 모바일 애플리케이션] owner_id 를 통한 저울상품 생성
    * @param ownerId
    * @param productData
    * @return createdProduct
@@ -403,6 +719,7 @@ export class ProductService {
   async createBarcodeWeightedProduct(
     ownerId: number,
     productData: CreateBarcodeWeightedProductReq,
+    images: Express.Multer.File[],
   ): Promise<CreateBarcodeWeightedProductRes> {
     const storeIdName: StoreIdNameRes =
       await this.storeService.getStoreIdNameByOwnerId(ownerId);
@@ -444,7 +761,7 @@ export class ProductService {
         product_is_processed: productData.productIsProcessed,
         product_is_soldout: productData.productIsSoldout,
         product_onsale: false,
-        product_category: '미분류',
+        product_category: '저울상품',
         product_created_at: productData.productCreatedAt,
 
         store: store,
@@ -453,37 +770,7 @@ export class ProductService {
         weighted_product: weighted_product,
       });
       await this.productRepository.save(product);
-
-      // 상품 대표 이미지 생성 및 저장
-      const representativeImage: ProductImage =
-        this.productImageRepository.create({
-          is_additional: false,
-          is_detail: false,
-          is_representative: true,
-          product: product,
-          product_image: productData.representativeProductImage,
-        });
-      await this.productImageRepository.save(representativeImage);
-
-      // 상품 상세 이미지 생성 및 저장
-      const detailImage: ProductImage = this.productImageRepository.create({
-        is_additional: false,
-        is_detail: true,
-        is_representative: false,
-        product: product,
-        product_image: productData.detailProductImage,
-      });
-      await this.productImageRepository.save(detailImage);
-
-      // 상품 추가 이미지 생성 및 저장
-      const additionalImage: ProductImage = this.productImageRepository.create({
-        is_additional: true,
-        is_detail: false,
-        is_representative: false,
-        product: product,
-        product_image: productData.additionalProductImage,
-      });
-      await this.productImageRepository.save(additionalImage);
+      const newTempWeightedProduct = await this.productRepository.save(product);
 
       // 생성한 상품 조회
       const rawCreatedProduct: Product =
@@ -493,7 +780,7 @@ export class ProductService {
         );
 
       // CreateBarcodeWeightedProductRes 로 formatting
-      const createdProduct: CreateBarcodeWeightedProductRes = {
+      const createdProduct: CreateBarcodeWeightedProductRes | any = {
         productId: rawCreatedProduct.product_id,
         productBarcode: rawCreatedProduct.product_barcode,
         productName: rawCreatedProduct.product_name,
@@ -506,16 +793,74 @@ export class ProductService {
         productOnsale: rawCreatedProduct.product_onsale,
         productCategory: rawCreatedProduct.product_category,
         productCreatedAt: rawCreatedProduct.product_created_at,
-        representativeProductImage:
-          rawCreatedProduct.product_image[0].product_image,
-        detailProductImage: rawCreatedProduct.product_image[1].product_image,
-        additionalProductImage:
-          rawCreatedProduct.product_image[2].product_image,
+
+        // representativeProductImage:
+        //   rawCreatedProduct.product_image[0].product_image,
+        // detailProductImage: rawCreatedProduct.product_image[1].product_image,
+        // additionalProductImage:
+        //   rawCreatedProduct.product_image[2].product_image,
+
+        representativeProductImage: '',
+        detailProductImage: '',
+        additionalProductImage: '',
+
         weightedProductId:
           rawCreatedProduct.weighted_product.weighted_product_id,
         weightedProductVolume:
           rawCreatedProduct.weighted_product.weighted_product_volume,
       };
+
+      /* s3 이미지 저장 */
+      const repImageFromS3: S3UploadImageRes =
+        await this.imageStorageService.uploadImage(
+          images[0],
+          'productRep',
+          newTempWeightedProduct.product_id,
+        );
+      const detailImageFromS3: S3UploadImageRes =
+        await this.imageStorageService.uploadImage(
+          images[1],
+          'productDet',
+          newTempWeightedProduct.product_id,
+        );
+
+      // 상품 대표 이미지 생성 및 저장
+      const representativeImage: ProductImage =
+        this.productImageRepository.create({
+          is_additional: false,
+          is_detail: false,
+          is_representative: true,
+          product: product,
+          product_image: repImageFromS3.Location,
+        });
+      await this.productImageRepository.save(representativeImage);
+
+      // 상품 상세 이미지 생성 및 저장
+      const detailImage: ProductImage = this.productImageRepository.create({
+        is_additional: false,
+        is_detail: true,
+        is_representative: false,
+        product: product,
+        product_image: detailImageFromS3.Location,
+      });
+      await this.productImageRepository.save(detailImage);
+
+      /**
+       * @exception 추가 이미지 생성 및 저장 로직 주석 처리
+       * 추가 이미지 촬영이 추가 된 이후 해제
+       */
+      // 상품 추가 이미지 생성 및 저장
+      // const additionalImage: ProductImage = this.productImageRepository.create({
+      //   is_additional: true,
+      //   is_detail: false,
+      //   is_representative: false,
+      //   product: product,
+      //   product_image: productData.additionalProductImage,
+      // });
+      // await this.productImageRepository.save(additionalImage);
+
+      createdProduct.representativeProductImage = repImageFromS3.Location;
+      createdProduct.detailProductImage = detailImageFromS3.Location;
 
       return createdProduct;
     }
@@ -528,72 +873,27 @@ export class ProductService {
   }
 
   /**
-   * 바코드를 통한 상품 정보 조회
-   * @param ownerId
-   * @param barcode
-   * @returns
-   * 1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> product:GetBarcodeProductRes
-   * 2. 존재하지 않는 경우
-   *  (2-1). 유통상품지식뱅크 DB 에서 조회가 되는 경우 -> true
-   *  (2-2). 유통상품지식뱅크 DB 에서 조회가 되지 않는 경우 -> false
+   ************************************************************************************************************************
+   * Put Method
+   *
+   * @name updateBarcodeProductInfo
+   * @description [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 갱신
+   *
+   * @name updateProductInfo (updateProductInfoForOwnerWeb)
+   * @description [점주 및 점포관리인 웹] product_id 릍 통한 개별 상품 정보 갱신
+   *
+   ************************************************************************************************************************
    */
-  async getBarcodeProductInfo(
-    ownerId: number,
-    barcode: string,
-  ): Promise<GetBarcodeProductRes | boolean> {
-    const rawProduct: Product = await this.getImageProductByOwnerIdAndBarcode(
-      ownerId,
-      barcode,
-    );
-
-    /**
-     * 해당 product 가 존재하는 경우 -> product 를 GetBarcodeProductRes 로 formatting 후 반환
-     * 해당 product 가 존재하지 않는 경우 -> 유통상품지식뱅크 DB 조회 후 존재 여부 boolean 반환
-     */
-    try {
-      if (rawProduct) {
-        // GetBarcodeProductRes 로 formatting
-        const product: GetBarcodeProductRes = {
-          productBarcode: rawProduct.product_barcode,
-          productCategory: rawProduct.product_category,
-          productCreatedAt: rawProduct.product_created_at,
-          productCurrentPrice: rawProduct.product_current_price,
-          productName: rawProduct.product_name,
-          productOnsale: rawProduct.product_onsale,
-          productVolume: rawProduct.product_is_processed
-            ? // 공산품인 경우 -> processed_product.processed_product_volume
-              rawProduct.processed_product.processed_product_volume
-            : // 저울상품인 경우 -> weighted_product.weighted_product_volume
-              rawProduct.weighted_product.weighted_product_volume,
-          storeName: rawProduct.store.store_name,
-          productImages: rawProduct.product_image,
-          productOnsalePrice: rawProduct.product_onsale
-            ? rawProduct.onsale_product.product_onsale_price
-            : null,
-        };
-
-        return product;
-      } else {
-        const isPresent: any = await this.requestKorchamApi(barcode);
-
-        if (isPresent) return true;
-      }
-
-      return false;
-    } catch (err) {
-      console.log('nsbsdabdsba', err.message);
-    }
-  }
 
   /**
-   * 바코드를 통한 상품 정보 갱신
-   * @param ownerId
-   * @param barcode
+   * [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 갱신
+   * @param ownerId owner_id
+   * @param barcode product_barcode
    * @param updateProductInfo
-   * @returns
-   * 1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> updatedProduct:updateBarcodeProductInfoRes
-   * 2. 존재하지 않는 경우 -> [deleteBarcodeProduct Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
-   * 3. 삭제에 실패한 경우 -> [deleteBarcodeProduct Error] deletion error
+   * @returns UpdateProductInfoRes;
+   *   1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> updatedProduct:updateBarcodeProductInfoRes
+   *   2. 존재하지 않는 경우 -> [deleteBarcodeProduct Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
+   *   3. 삭제에 실패한 경우 -> [deleteBarcodeProduct Error] deletion error
    */
   async updateBarcodeProductInfo(
     ownerId: number,
@@ -706,6 +1006,7 @@ export class ProductService {
   }
 
   /**
+<<<<<<< HEAD
    * 바코드를 통한 상품 정보 삭제
    * @param ownerId
    * @param barcode
@@ -832,9 +1133,11 @@ export class ProductService {
   }
 
   /**
+=======
+>>>>>>> 1a1a90c672d19305c23e4d09b8d3edd0ca3b810a
    * 점주 및 점포 관리인 웹 대시보드 개별 상품 정보 수정
    * @param updateProductInfo 수정할 상품의 id 및 수정할 상품 정보
-   * @returns UpdateProductInfoRes , 수정된 웹 요청 상품 정보 반환
+   * @returns UpdateProductInfoRes; 수정된 웹 요청 상품 정보 반환
    * @추가error 존재하지 않는 product key 에 대해 throw error
    */
   async updateProductInfo(
@@ -963,9 +1266,103 @@ export class ProductService {
   }
 
   /**
-   * 점주 및 점포 관리인 웹 대시보드 개별 상품 삭제 (on sale, processed, weighted 동시 삭제)
-   * @param productId 삭제할 상품의 id
-   * @returns void
+   ************************************************************************************************************************
+   * Delete Method
+   *
+   * @name deleteBarcodeProduct
+   * @description [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 삭제
+   *
+   * @name deleteProductInfo (deleteProductInfoForOwnerWeb)
+   * @description [점주 및 점포관리인 웹] product_id 를 통한 개별 상품 삭제 (on sale, processed, weighted 동시 삭제)
+   *
+   ************************************************************************************************************************
+   */
+
+  /**
+   * [점주 및 점포관리인 모바일 애플리케이션] product_barcode 를 통한 상품 정보 삭제
+   * @param ownerId owner_id
+   * @param barcode product_barcode
+   * @returns Product;
+   *   1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> 상품을 삭제하고 해당 상품 정보 반환 (rawProduct:Product)
+   *   2. 존재하지 않는 경우 -> [updateBarcodeProductInfo Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
+   *   3. 갱신에 실패한 경우 -> [updateBarcodeProductInfo Error] update error by ${ownerId}, product_barcode: ${barcode}
+   */
+  async deleteBarcodeProduct(
+    ownerId: number,
+    barcode: string,
+  ): Promise<Product> {
+    const rawProduct: Product = await this.getImageProductByOwnerIdAndBarcode(
+      ownerId,
+      barcode,
+    );
+
+    /**
+     * 해당 product 가 존재하는 경우 -> 상품 삭제
+     * 해당 product 가 존재하지 않는 경우 -> throw Error
+     */
+    if (rawProduct) {
+      try {
+        // product_image 테이블에서 상품 이미지 삭제
+        if (rawProduct.product_image.length) {
+          await this.productImageRepository
+            .createQueryBuilder('product_image')
+            .delete()
+            .from(ProductImage)
+            .where('product_image.product_id=:productId', {
+              productId: rawProduct.product_id,
+            })
+            .execute();
+        }
+
+        // product 테이블에서 상품 삭제
+        await this.productRepository.remove(rawProduct);
+
+        // processed_product 테이블에서 공산품 상세정보 삭제
+        if (rawProduct.processed_product) {
+          const deleteTarget: ProcessedProduct =
+            await this.processedProductRepository.findOne({
+              processed_product_id:
+                rawProduct.processed_product.processed_product_id,
+            });
+          await this.processedProductRepository.remove(deleteTarget);
+        }
+
+        // weighted_product 테이블에서 저울 식품 상세정보 삭제
+        if (rawProduct.weighted_product) {
+          const deleteTarget: WeightedProduct =
+            await this.weightedProductRepository.findOne({
+              weighted_product_id:
+                rawProduct.weighted_product.weighted_product_id,
+            });
+
+          await this.weightedProductRepository.remove(deleteTarget);
+        }
+
+        // onsale_product 테이블에서 상품 할인정보 삭제
+        if (rawProduct.onsale_product) {
+          const deleteTarget: OnsaleProduct =
+            await this.onSaleProductRepository.findOne({
+              onsale_product_id: rawProduct.onsale_product.onsale_product_id,
+            });
+
+          await this.onSaleProductRepository.remove(deleteTarget);
+        }
+      } catch {
+        throw new Error('[deleteBarcodeProduct Error] deletion error');
+      }
+    } else {
+      throw new Error(
+        `[deleteBarcodeProduct Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}`,
+      );
+    }
+
+    return rawProduct;
+  }
+
+  /**
+   * [점주 및 점포관리인 웹] product_id 를 통한 개별 상품 삭제 (on sale, processed, weighted 동시 삭제)
+   * @param productId 삭제할 상품의 product_id
+   * @returns void;
    * @추가error 존재하지 않는 product key 에 대해 throw error
    */
   async deleteProductInfo(productId: number): Promise<void> {
@@ -1028,19 +1425,37 @@ export class ProductService {
     }
   }
 
-  /*
-  ************************************************
-  한국 유통DB에 바코드정보 조회 메서드
-  ************************************************
-  메서드 입력값 : 바코드정보(barcode: string)
-  메서드동작 :  korcham API 에 GET요청후 리턴값반환
-  - KorchamAPI -
-    request: GET.
-    header : Content-Type, yallomarket appkey,
-    url: korchamurl/{barcode},
-  메서드 반환값 : -notion db명세 참조 (AxiosRequest<Dto>)
-  ************************************************
-  */
+  /**
+   ************************************************************************************************************************
+   * Private Method
+   *
+   * @name requestKorchamApi
+   * @description 한국 유통DB에 바코드정보 조회 메서드
+   *
+   * @name checkDupplicatedProductByStoreAndBarcode
+   * @description 중복 상품 검사
+   *
+   * @name getProductByOwnerIdAndBarcode
+   * @description 상품단건조회
+   *
+   * @name getImageProductByOwnerIdAndBarcode
+   * @description 이미지 포함 상품단건조회
+   *
+   ************************************************************************************************************************
+   */
+
+  /**
+   * 한국 유통DB에 바코드정보 조회 메서드
+   * @link https://www.notion.so/API-4639f996fc7842f19b845cd7c9b9c1c8
+   * @param barcode product_barcode
+   * @returns AxiosRequest<Dto>; (notion db명세 참조)
+   * 
+   * 메서드동작: korcham API 에 GET 요청 후 리턴값 반환
+     - KorchamAPI -
+       request: GET.
+       header : Content-Type, yallomarket appkey,
+       url: korchamurl/{barcode},
+   */
   private async requestKorchamApi(barcode: string): Promise<any> {
     const headerRequest = new Headers();
     headerRequest.append('Content-Type', 'application/json:charset=utf-8');
@@ -1058,14 +1473,12 @@ export class ProductService {
   }
 
   /**
-   ******************************************************************
    * 중복 상품 검사
-   * @param store
-   * @param barcode
-   * @returns
-   * 1. store 에 이미 barcode 로 등록된 상품이 존재하는 경우 (중복 O) -> false
-   * 2. store 에 barcode 로 등록된 상품이 존재하지 않는 경우 (중복 X) -> true
-   ******************************************************************
+   * @param store Store
+   * @param barcode product_barcode
+   * @returns boolean;
+   *   1. store 에 이미 barcode 로 등록된 상품이 존재하는 경우 (중복 O) -> false
+   *   2. store 에 barcode 로 등록된 상품이 존재하지 않는 경우 (중복 X) -> true
    */
   private async checkDupplicatedProductByStoreAndBarcode(
     store: Store,
@@ -1081,12 +1494,10 @@ export class ProductService {
   }
 
   /**
-   ************************************************
-   *
-   * @param ownerId
-   * @param barcode
-   * @returns
-   ************************************************
+   * 상품단건조회
+   * @param ownerId owner_id
+   * @param barcode product_barcode
+   * @returns Product;
    */
   private async getProductByOwnerIdAndBarcode(
     ownerId: number,
@@ -1120,12 +1531,10 @@ export class ProductService {
   }
 
   /**
-   ************************************************
-   *
-   * @param ownerId
-   * @param barcode
-   * @returns
-   ************************************************
+   * 이미지 포함 상품단건조회
+   * @param ownerId owner_id
+   * @param barcode product_barcode
+   * @returns Product;
    */
   private async getImageProductByOwnerIdAndBarcode(
     ownerId: number,
