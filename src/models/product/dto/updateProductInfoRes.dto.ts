@@ -31,7 +31,7 @@ export class UpdateProductInfoRes {
   productCurrentPrice: number;
 
   @IsNumber()
-  productOnSalePrice: number;
+  productOnSalePrice?: number;
 
   @IsNumber()
   productProfit: number;
