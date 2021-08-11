@@ -3,27 +3,17 @@ import { HttpException, HttpService, Injectable } from '@nestjs/common';
 /* typeorm */
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-<<<<<<< HEAD
-=======
 
 /* Excel file 처리 */
->>>>>>> 1a1a90c672d19305c23e4d09b8d3edd0ca3b810a
 import * as XLSX from 'xlsx';
 
 /* External Provider */
 import { StoreService } from '../store/store.service';
-<<<<<<< HEAD
-import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
-import { GetProductListRes } from './dto/getProductListRes.dto';
-import { UpdateProductInfoReq } from './dto/updateProductInfoReq.dto';
-import { UpdateProductInfoRes } from './dto/updateProductInfoRes.dto';
-=======
 import { KorchamConfigService } from '../../config/korcham/configuration.service';
 import { ImageStorageService } from '../image-storage/image-storage.service';
 import { S3UploadImageRes } from '../image-storage/interfaces/s3UploadImageRes.interface';
 
 /* Entities */
->>>>>>> 1a1a90c672d19305c23e4d09b8d3edd0ca3b810a
 import { OnsaleProduct } from './entities/onsale-product.entity';
 import { ProcessedProduct } from './entities/processed-product.entity';
 import { ProductImage } from './entities/product-image.entity';
@@ -77,8 +67,6 @@ export class ProductService {
 
     private readonly imageStorageService: ImageStorageService, // s3 image storage service
   ) {}
-<<<<<<< HEAD
-=======
   /**********************************************************************************
    * @소비자 App
    **********************************************************************************/
@@ -192,7 +180,6 @@ export class ProductService {
   /**********************************************************************************
    * @점주WebApp
    **********************************************************************************/
->>>>>>> 1a1a90c672d19305c23e4d09b8d3edd0ca3b810a
 
   /**
    ************************************************************************************************************************
@@ -1006,135 +993,6 @@ export class ProductService {
   }
 
   /**
-<<<<<<< HEAD
-   * 바코드를 통한 상품 정보 삭제
-   * @param ownerId
-   * @param barcode
-   * @returns
-   * 1. ownerId, barcode 에 해당하는 상품이 product 테이블에 존재하는 경우 -> 상품을 삭제하고 해당 상품 정보 반환 (rawProduct:Product)
-   * 2. 존재하지 않는 경우 -> [updateBarcodeProductInfo Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}
-   * 3. 갱신에 실패한 경우 -> [updateBarcodeProductInfo Error] update error by ${ownerId}, product_barcode: ${barcode}
-   */
-  async deleteBarcodeProduct(
-    ownerId: number,
-    barcode: string,
-  ): Promise<Product> {
-    const rawProduct: Product = await this.getImageProductByOwnerIdAndBarcode(
-      ownerId,
-      barcode,
-    );
-
-    /**
-     * 해당 product 가 존재하는 경우 -> 상품 삭제
-     * 해당 product 가 존재하지 않는 경우 -> throw Error
-     */
-    if (rawProduct) {
-      try {
-        // product_image 테이블에서 상품 이미지 삭제
-        if (rawProduct.product_image.length) {
-          await this.productImageRepository
-            .createQueryBuilder('product_image')
-            .delete()
-            .from(ProductImage)
-            .where('product_image.product_id=:productId', {
-              productId: rawProduct.product_id,
-            })
-            .execute();
-        }
-
-        // product 테이블에서 상품 삭제
-        await this.productRepository.remove(rawProduct);
-
-        // processed_product 테이블에서 공산품 상세정보 삭제
-        if (rawProduct.processed_product) {
-          const deleteTarget: ProcessedProduct =
-            await this.processedProductRepository.findOne({
-              processed_product_id:
-                rawProduct.processed_product.processed_product_id,
-            });
-          await this.processedProductRepository.remove(deleteTarget);
-        }
-
-        // weighted_product 테이블에서 저울 식품 상세정보 삭제
-        if (rawProduct.weighted_product) {
-          const deleteTarget: WeightedProduct =
-            await this.weightedProductRepository.findOne({
-              weighted_product_id:
-                rawProduct.weighted_product.weighted_product_id,
-            });
-
-          await this.weightedProductRepository.remove(deleteTarget);
-        }
-
-        // onsale_product 테이블에서 상품 할인정보 삭제
-        if (rawProduct.onsale_product) {
-          const deleteTarget: OnsaleProduct =
-            await this.onSaleProductRepository.findOne({
-              onsale_product_id: rawProduct.onsale_product.onsale_product_id,
-            });
-
-          await this.onSaleProductRepository.remove(deleteTarget);
-        }
-      } catch {
-        throw new Error('[deleteBarcodeProduct Error] deletion error');
-      }
-    } else {
-      throw new Error(
-        `[deleteBarcodeProduct Error] no product was found by owner_id: ${ownerId}, product_barcode: ${barcode}`,
-      );
-    }
-
-    return rawProduct;
-  }
-
-  /**********************************************************************************
-   * @점주WebApp
-   **********************************************************************************/
-  /**
-   * 점주 및 점포 관리인 웹 대시보드 상품 목록 조회
-   * @param storeId 가게 id
-   * @returns GetProductListRes[], 웹 요청 상품 정보 리스트 반환
-   * @추가error 존재하지 않는 store key 에 대해 throw error
-   */
-  async getProductList(storeId: number) {
-    /* Database 조회 결과 */
-    const selectProductListRawResult = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store_id = :store_id', { store_id: storeId })
-      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-      .leftJoinAndSelect('product.processed_product', 'processed_product')
-      .getMany();
-
-    if (!selectProductListRawResult) {
-      throw new Error('getProductList [Get] Not Exist store Key  ... ');
-    }
-
-    /* 점주 및 점포 관리인 WEB 상품 정보 리스트 조회 결과로 변환*/
-    const productList: GetProductListRes[] =
-      selectProductListRawResult.map<GetProductListRes>((eachProduct) => ({
-        productId: eachProduct.product_id,
-        productBarcode: eachProduct.product_barcode,
-        productName: eachProduct.product_name,
-        productOriginPrice: eachProduct.product_original_price,
-        productCurrentPrice: eachProduct.product_current_price,
-        productOnSalePrice: eachProduct.onsale_product
-          ? eachProduct.onsale_product.product_onsale_price
-          : null,
-        productProfit: eachProduct.product_profit,
-        productIsProcessed: eachProduct.product_is_processed,
-        productOnSale: eachProduct.product_onsale,
-        productVolume: eachProduct.processed_product
-          ? eachProduct.processed_product.processed_product_volume
-          : eachProduct.weighted_product.weighted_product_volume,
-      }));
-
-    return productList;
-  }
-
-  /**
-=======
->>>>>>> 1a1a90c672d19305c23e4d09b8d3edd0ca3b810a
    * 점주 및 점포 관리인 웹 대시보드 개별 상품 정보 수정
    * @param updateProductInfo 수정할 상품의 id 및 수정할 상품 정보
    * @returns UpdateProductInfoRes; 수정된 웹 요청 상품 정보 반환
