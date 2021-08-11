@@ -1,4 +1,4 @@
 export interface S3UploadImageReq {
-  file: Express.Multer.File;
+  file: any;
   path: string;
 }

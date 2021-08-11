@@ -1,3 +1,4 @@
+
 /* nestjs core library */
 import {
   Bind,
@@ -27,6 +28,8 @@ import { Product } from './entities/product.entity';
 import { ProductService } from './product.service';
 
 /* Req, Res dto */
+import { FindStoreProductDto } from './dto/FindStoreProduct.dto';
+import { ProductDetailDto } from './dto/ProductDetailDto.dto';
 import { CreateBarcodeProcessedProductRes } from './dto/CreateBarcodeProcessedProductRes.dto';
 import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProductRes.dto';
 import { GetBarcodeProductRes } from './dto/GetBarcodeProductRes.dto';
@@ -42,7 +45,27 @@ import { FormToObject } from 'src/common/decorator/form-to-object.decorator';
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
-
+  /**********************************************************************************
+   * @소비자 App
+   **********************************************************************************/
+  /**
+  /**
+   * [점주 및 점포관리인 모바일 애플리케이션] product_id, store_id 를 통한 상품 정보 조회
+   * @name 상품상세조회
+   * @link https://www.notion.so/R-a19a0bd46bc243c79f0addb6e6024733
+   * @param productId
+   * @param storeId
+   * @returns ProductDetailDto; store_id 에 해당하는 product 가 존재하고  productId에 해당하는 상품이 존재하는 경우 -> 상품정보 반환
+   */
+  @Get('/detail-info')
+  async getProductDetailInfo(
+    @Query() req:FindStoreProductDto): Promise<ProductDetailDto>{
+    console.log(req);
+    return await this.productService.getProductDetailInfo(req);
+    }
+  /**********************************************************************************
+   * @점주WebApp
+   **********************************************************************************/
   /**
    ************************************************************************************************************************
    * Get Router
