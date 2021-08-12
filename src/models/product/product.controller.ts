@@ -60,9 +60,9 @@ export class ProductController {
   async getProductDetailInfo(
     @Query() req: FindStoreProductDto,
   ): Promise<ProductDetailDto> {
-    console.log(req);
     return await this.productService.getProductDetailInfo(req);
   }
+
   /**********************************************************************************
    * @점주WebApp
    **********************************************************************************/
@@ -198,7 +198,7 @@ export class ProductController {
     @Param('ownerId') ownerId: number,
     @FormToObject('productData') productData: CreateBarcodeWeightedProductReq,
     @UploadedFiles() images: Express.Multer.File[],
-  ): Promise<CreateBarcodeWeightedProductRes | any> {
+  ): Promise<CreateBarcodeWeightedProductRes> {
     return await this.productService.createBarcodeWeightedProduct(
       ownerId,
       productData as CreateBarcodeWeightedProductReq,

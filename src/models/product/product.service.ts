@@ -542,7 +542,7 @@ export class ProductService {
       // console.log(test);
 
       // 공산품 정보 생성 및 저장
-      const processed_product = this.processedProductRepository.create({
+      const processed_product = await this.processedProductRepository.create({
         processed_product_adult: 'adult dummy',
         processed_product_caution: 'caution dummy',
         processed_product_company: 'company dummy',
@@ -556,7 +556,7 @@ export class ProductService {
       await this.processedProductRepository.save(processed_product);
 
       // 상품 정보 생성 및 저장
-      const product = this.productRepository.create({
+      const product = await this.productRepository.create({
         product_barcode: productData.productBarcode,
         product_name: productData.productName,
         product_original_price: productData.productOriginPrice,
@@ -650,7 +650,7 @@ export class ProductService {
 
       // 상품 대표 이미지 생성 및 저장
       const representativeImage: ProductImage =
-        this.productImageRepository.create({
+        await this.productImageRepository.create({
           is_additional: false,
           is_detail: false,
           is_representative: true,
@@ -660,13 +660,14 @@ export class ProductService {
       await this.productImageRepository.save(representativeImage);
 
       // 상품 상세 이미지 생성 및 저장
-      const detailImage: ProductImage = this.productImageRepository.create({
-        is_additional: false,
-        is_detail: true,
-        is_representative: false,
-        product: product,
-        product_image: detailImageFromS3.Location, // s3 에 저장된 이미지의 s3 url
-      });
+      const detailImage: ProductImage =
+        await this.productImageRepository.create({
+          is_additional: false,
+          is_detail: true,
+          is_representative: false,
+          product: product,
+          product_image: detailImageFromS3.Location, // s3 에 저장된 이미지의 s3 url
+        });
       await this.productImageRepository.save(detailImage);
 
       /**
@@ -683,8 +684,12 @@ export class ProductService {
       // });
       // await this.productImageRepository.save(additionalImage);
 
-      createdProduct.representativeProductImage = repImageFromS3.Location;
-      createdProduct.detailProductImage = detailImageFromS3.Location;
+      // createdProduct.representativeProductImage = repImageFromS3.Location;
+      // createdProduct.detailProductImage = detailImageFromS3.Location;
+
+      createdProduct.representativeProductImage =
+        representativeImage.product_image;
+      createdProduct.detailProductImage = detailImage.product_image;
 
       return createdProduct;
     }
@@ -767,7 +772,59 @@ export class ProductService {
         );
 
       // CreateBarcodeWeightedProductRes 로 formatting
-      const createdProduct: CreateBarcodeWeightedProductRes | any = {
+
+      /* s3 이미지 저장 */
+      const repImageFromS3: S3UploadImageRes =
+        await this.imageStorageService.uploadImage(
+          images[0],
+          'productRep',
+          newTempWeightedProduct.product_id,
+        );
+      const detailImageFromS3: S3UploadImageRes =
+        await this.imageStorageService.uploadImage(
+          images[1],
+          'productDet',
+          newTempWeightedProduct.product_id,
+        );
+
+      // 상품 대표 이미지 생성 및 저장
+      const representativeImage: ProductImage =
+        await this.productImageRepository.create({
+          is_additional: false,
+          is_detail: false,
+          is_representative: true,
+          product: product,
+          product_image: repImageFromS3.Location,
+        });
+      const repResult = await this.productImageRepository.save(
+        representativeImage,
+      );
+
+      // 상품 상세 이미지 생성 및 저장
+      const detailImage: ProductImage =
+        await this.productImageRepository.create({
+          is_additional: false,
+          is_detail: true,
+          is_representative: false,
+          product: product,
+          product_image: detailImageFromS3.Location,
+        });
+      const detResult = await this.productImageRepository.save(detailImage);
+
+      /**
+       * @exception 추가 이미지 생성 및 저장 로직 주석 처리
+       * 추가 이미지 촬영이 추가 된 이후 해제
+       */
+      // 상품 추가 이미지 생성 및 저장
+      // const additionalImage: ProductImage = this.productImageRepository.create({
+      //   is_additional: true,
+      //   is_detail: false,
+      //   is_representative: false,
+      //   product: product,
+      //   product_image: productData.additionalProductImage,
+      // });
+      // await this.productImageRepository.save(additionalImage);
+      const createdProduct: CreateBarcodeWeightedProductRes = {
         productId: rawCreatedProduct.product_id,
         productBarcode: rawCreatedProduct.product_barcode,
         productName: rawCreatedProduct.product_name,
@@ -787,8 +844,8 @@ export class ProductService {
         // additionalProductImage:
         //   rawCreatedProduct.product_image[2].product_image,
 
-        representativeProductImage: '',
-        detailProductImage: '',
+        representativeProductImage: repResult.product_image,
+        detailProductImage: detResult.product_image,
         additionalProductImage: '',
 
         weightedProductId:
@@ -796,58 +853,6 @@ export class ProductService {
         weightedProductVolume:
           rawCreatedProduct.weighted_product.weighted_product_volume,
       };
-
-      /* s3 이미지 저장 */
-      const repImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImage(
-          images[0],
-          'productRep',
-          newTempWeightedProduct.product_id,
-        );
-      const detailImageFromS3: S3UploadImageRes =
-        await this.imageStorageService.uploadImage(
-          images[1],
-          'productDet',
-          newTempWeightedProduct.product_id,
-        );
-
-      // 상품 대표 이미지 생성 및 저장
-      const representativeImage: ProductImage =
-        this.productImageRepository.create({
-          is_additional: false,
-          is_detail: false,
-          is_representative: true,
-          product: product,
-          product_image: repImageFromS3.Location,
-        });
-      await this.productImageRepository.save(representativeImage);
-
-      // 상품 상세 이미지 생성 및 저장
-      const detailImage: ProductImage = this.productImageRepository.create({
-        is_additional: false,
-        is_detail: true,
-        is_representative: false,
-        product: product,
-        product_image: detailImageFromS3.Location,
-      });
-      await this.productImageRepository.save(detailImage);
-
-      /**
-       * @exception 추가 이미지 생성 및 저장 로직 주석 처리
-       * 추가 이미지 촬영이 추가 된 이후 해제
-       */
-      // 상품 추가 이미지 생성 및 저장
-      // const additionalImage: ProductImage = this.productImageRepository.create({
-      //   is_additional: true,
-      //   is_detail: false,
-      //   is_representative: false,
-      //   product: product,
-      //   product_image: productData.additionalProductImage,
-      // });
-      // await this.productImageRepository.save(additionalImage);
-
-      createdProduct.representativeProductImage = repImageFromS3.Location;
-      createdProduct.detailProductImage = detailImageFromS3.Location;
 
       return createdProduct;
     }
