@@ -31,8 +31,6 @@ export class TestController {
       'ownerIdf',
       3,
     );
-
-    console.log(image);
   }
 
   @Get('download')
