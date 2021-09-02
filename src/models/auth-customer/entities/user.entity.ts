@@ -1,5 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { AccountType } from '../constants/accountType.type';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { UserBase } from '../interfaces/user-base.interface';
+import { RegularStore } from './regular-store.entity';
+import { UserOrder } from './user-order.entity';
 
 /**
  * Entity Schema for Users
@@ -8,62 +10,33 @@ import { AccountType } from '../constants/accountType.type';
 @Entity({
   name: 'user',
 })
-export class User {
-  @PrimaryGeneratedColumn()
-  _id?: number;
+export class User implements UserBase {
+  @PrimaryColumn({ type: 'string' })
+  user_email: string;
 
-  @Column()
-  userId: string;
+  @Column({ type: 'string' })
+  user_password: string;
 
-  @Column({
-    nullable: true,
-  })
-  name!: string;
+  @Column({ type: 'string' })
+  user_account_type: 'local' | 'kakao' | 'apple';
 
-  @Column({
-    nullable: true,
-  })
-  nickName: string;
+  @Column({ type: 'string' })
+  user_nickname: string;
 
-  @Column({
-    nullable: true,
-  })
-  gender: string;
+  @Column({ type: 'date' })
+  user_birthday: Date;
 
-  @Column({
-    nullable: true,
-  })
-  birthday!: string;
+  @Column({ type: 'string' })
+  user_phone: string;
 
-  @Column({
-    nullable: true,
-  })
-  age!: string;
+  @Column({ type: 'boolean' })
+  user_marketing_agree: boolean;
 
-  @Column()
-  email: string;
+  // User(1) <-> RegularStore(*)
+  @OneToMany(() => RegularStore, (regular_store) => regular_store.user)
+  regular_store!: RegularStore[];
 
-  @Column({
-    nullable: true,
-  })
-  phone: string;
-
-  @Column({
-    nullable: true,
-  })
-  address!: string;
-
-  @Column({
-    nullable: true,
-  })
-  thumbnail!: string;
-
-  @Column()
-  accountType: AccountType;
-
-  @Column({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  createdAt?: string;
+  // User(1) <-> UserOrder(*)
+  @OneToMany(() => UserOrder, (user_order) => user_order.user)
+  user_order!: UserOrder[];
 }
