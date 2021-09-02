@@ -27,6 +27,6 @@ export class UserOrder implements UserOrderBase {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @Column({ type: 'string' })
+  @Column({ type: 'char', length: 30 })
   order_number: string;
 }

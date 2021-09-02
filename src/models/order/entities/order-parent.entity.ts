@@ -1,6 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { OrderParentBase } from '../interfaces/order-parent-base.interface';
-import { OrderChild } from './order-child.entity';
 
 /**
  * Entity Schema for Order
@@ -11,31 +10,30 @@ import { OrderChild } from './order-child.entity';
 })
 export class OrderParent implements OrderParentBase {
   // OrderParent(1) <-> OrderChild(*)
-  @PrimaryColumn({ type: 'string' })
-  @OneToMany(() => OrderChild, (order_child) => order_child.order_number, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  })
+  @PrimaryColumn({ type: 'int' })
+  order_parent_id: number;
+
+  @Column({ type: 'char', length: 30 })
   order_number: string;
 
   @Column({ type: 'timestamp' })
   order_created_at: Date;
 
-  @Column({ type: 'number' })
+  @Column({ type: 'int' })
   order_status: number;
 
-  @Column({ type: 'number' })
+  @Column({ type: 'int' })
   order_total_price: number;
 
   @Column({ type: 'boolean' })
   order_is_pickup: boolean;
 
-  @Column({ type: 'number' })
+  @Column({ type: 'int' })
   store_id: number;
 
   @Column({ type: 'timestamp' })
   order_completed_at: Date;
 
-  @Column({ type: 'string' })
+  @Column({ type: 'char', length: 30 })
   order_pay_method: string;
 }

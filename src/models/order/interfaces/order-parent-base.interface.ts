@@ -3,6 +3,7 @@
  * order_parent entity base interface
  */
 export interface OrderParentBase {
+  order_parent_id: number;
   order_number: string; // 주문 번호
   order_created_at: Date; // 주문 생성 일시
   /**

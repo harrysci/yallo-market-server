@@ -27,6 +27,6 @@ export class RegularStore implements RegularStoreBase {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @Column({ type: 'number' })
+  @Column({ type: 'int' })
   store_id: number;
 }
