@@ -9,8 +9,8 @@ import { RegularStoreBase } from '../interfaces/regular-store-base.interface';
 import { User } from './user.entity';
 
 /**
- * Entity Schema for Users
- * @class User
+ * Entity Schema for AuthCustomer
+ * @class RegularStore
  */
 @Entity({
   name: 'regular_store',

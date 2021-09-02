@@ -4,7 +4,7 @@ import { RegularStore } from './regular-store.entity';
 import { UserOrder } from './user-order.entity';
 
 /**
- * Entity Schema for Users
+ * Entity Schema for AuthCustomer
  * @class User
  */
 @Entity({

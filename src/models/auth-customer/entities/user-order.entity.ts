@@ -9,7 +9,7 @@ import { UserOrderBase } from '../interfaces/user-order-base.interface';
 import { User } from './user.entity';
 
 /**
- * Entity Schema for Users
+ * Entity Schema for AuthCustomer
  * @class UserOrder
  */
 @Entity({
