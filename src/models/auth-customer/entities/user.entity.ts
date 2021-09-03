@@ -32,6 +32,9 @@ export class User implements UserBase {
   @Column({ type: 'char', length: 15 })
   user_phone: string;
 
+  @Column({ type: 'char', length: 255 })
+  user_address: string;
+
   @Column({ type: 'boolean' })
   user_marketing_agree: boolean;
 

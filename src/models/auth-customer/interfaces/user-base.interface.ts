@@ -9,5 +9,6 @@ export interface UserBase {
   user_nickname: string;
   user_birthday: Date;
   user_phone: string;
+  user_address: string;
   user_marketing_agree: boolean;
 }
