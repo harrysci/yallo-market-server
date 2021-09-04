@@ -20,6 +20,40 @@ export class AuthCustomerService {
     private readonly regularStoreRepository: Repository<RegularStore>,
   ) {}
 
+  async findAll(): Promise<User[]> {
+    console.log('유저 전체 불러오기');
+    return this.userRepository.find();
+  }
+
+  async findOne(user_email: string): Promise<User> {
+    console.log('유저 이메일로 불러오기');
+    return this.userRepository.findOne(user_email);
+  }
+
+  // async validateUser(user_email: string, user_password: string): Promise<any> {
+  //   const user = await this.userRepository.findOne(user_email);
+
+  //   console.log('validate in service', user);
+
+  //   if (user && user.user_password === user_password) {
+  //     const { user_password, ...res } = user;
+  //     return res;
+  //   }
+
+  //   return null;
+  // }
+
+  async validateUser(user_email: string, user_password: string): Promise<any> {
+    const user = await this.userRepository.findOne({ user_email: user_email });
+
+    if (user && user.user_password === user_password) {
+      const { user_password, ...res } = user;
+      return res;
+    }
+
+    return null;
+  }
+
   /**
    * 회원 정보 생성
    * @param userData CreateLocalUserReq
@@ -65,15 +99,7 @@ export class AuthCustomerService {
    */
   private async getUserByUserId(userId: number): Promise<CreateLocalUserRes> {
     const user = await this.userRepository.findOne(userId);
-    const res: CreateLocalUserRes = {
-      user_email: user.user_email,
-      user_account_type: user.user_account_type,
-      user_nickname: user.user_nickname,
-      user_birthday: user.user_birthday,
-      user_phone: user.user_phone,
-      user_address: user.user_address,
-      user_marketing_agree: user.user_marketing_agree,
-    };
+    const { user_password, ...res } = user;
 
     return res;
   }
@@ -87,15 +113,7 @@ export class AuthCustomerService {
     userEmail: string,
   ): Promise<CreateLocalUserRes> {
     const user = await this.userRepository.findOne({ user_email: userEmail });
-    const res: CreateLocalUserRes = {
-      user_email: user.user_email,
-      user_account_type: user.user_account_type,
-      user_nickname: user.user_nickname,
-      user_birthday: user.user_birthday,
-      user_phone: user.user_phone,
-      user_address: user.user_address,
-      user_marketing_agree: user.user_marketing_agree,
-    };
+    const { user_password, ...res } = user;
 
     return res;
   }
