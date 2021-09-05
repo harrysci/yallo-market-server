@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateLocalUserReq } from './dto/CreateLocalUserReq.dto';
@@ -18,6 +19,8 @@ export class AuthCustomerService {
 
     @InjectRepository(RegularStore)
     private readonly regularStoreRepository: Repository<RegularStore>,
+
+    private readonly jwtService: JwtService,
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -30,18 +33,18 @@ export class AuthCustomerService {
     return this.userRepository.findOne(user_email);
   }
 
-  // async validateUser(user_email: string, user_password: string): Promise<any> {
-  //   const user = await this.userRepository.findOne(user_email);
+  async login(user: any) {
+    console.log('login 진입');
 
-  //   console.log('validate in service', user);
+    const payload = {
+      username: user.user_email,
+      sub: user.user_id,
+    };
 
-  //   if (user && user.user_password === user_password) {
-  //     const { user_password, ...res } = user;
-  //     return res;
-  //   }
-
-  //   return null;
-  // }
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
 
   async validateUser(user_email: string, user_password: string): Promise<any> {
     const user = await this.userRepository.findOne({ user_email: user_email });
