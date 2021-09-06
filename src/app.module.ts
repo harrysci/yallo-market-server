@@ -15,20 +15,18 @@ import { AuthOwnerController } from './models/auth-owner/auth-owner.controller';
 import { AuthOwnerModule } from './models/auth-owner/auth-owner.module';
 import { StoreController } from './models/store/store.controller';
 import { StoreModule } from './models/store/store.module';
-import { TestModule } from './models/test/test.module';
 import { ProductModule } from './models/product/product.module';
+import { OrderModule } from './models/order/order.module';
 
 @Module({
   imports: [
-    // GCPMysqlDatabaseProviderModule,
     MysqlDatabaseProviderModule,
     AppConfigModule,
     AuthCustomerModule,
     AuthOwnerModule,
     StoreModule,
     ProductModule,
-    TestModule,
-    ProductModule,
+    OrderModule,
   ],
   controllers: [AppController, AuthOwnerController, StoreController],
   providers: [AppService],

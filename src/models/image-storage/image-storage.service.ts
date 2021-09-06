@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { S3ConfigService } from 'src/config/aws/s3/configuration.service';
 import * as AWS from 'aws-sdk';
+
+/* AWS S3 config provider */
+import { S3ConfigService } from 'src/config/aws/s3/configuration.service';
+
+/* type and interfaces */
+import { PathCase } from '../store/constants/pathCase.type';
 import { S3UploadImageRes } from './interfaces/s3UploadImageRes.interface';
 import { S3DownloadImageRes } from './interfaces/s3DownloadImageRes.interface';
 import { S3GetImageUrlRes } from './interfaces/s3GetImageUrlRes.interface';
-import { PathCase } from '../store/constants/pathCase.type';
 
+/**
+ * @name S3_이미지_CRUD_Provider_Class
+ */
 @Injectable()
 export class ImageStorageService {
   private s3: any;
@@ -60,6 +67,43 @@ export class ImageStorageService {
   }
 
   /**
+   * @name uploadImage
+   * s3 의 지정된 경로에 전달 받은 이미지 base64 string을 저장/수정 하는 메소드
+   * @param base64ImageString 이미지 base64 string, default mimeType = png
+   * @param pathCase s3 폴더 위치를 선택하기 위한 이미지의 소속 경우 명시
+   * @param pathKey 이미지가 위치한 db table primary key
+   * @returns 저장된 이미지 파일 url 링크, s3 file path 반환
+   */
+  async uploadImageWithBase64(
+    base64ImageString: string,
+    pathCase: PathCase,
+    pathKey: number,
+  ) {
+    const awsS3 = this.s3;
+    const bucket: string = this.getS3Bucket();
+    const fileMimeType = 'png';
+
+    const imgBuffer = Buffer.from(base64ImageString, 'base64');
+
+    const params = {
+      Bucket: bucket,
+      Key: this.s3PathSelector(pathCase, String(pathKey), fileMimeType),
+      Body: imgBuffer,
+    };
+
+    return new Promise<S3UploadImageRes>((resolve, reject) => {
+      awsS3.upload(params, (err, data: S3UploadImageRes) => {
+        if (err) {
+          reject('[S3 Image Upload Fail ...abc] ' + err.message);
+        } else {
+          console.log('[S3 Image Upload SUCCESS] ');
+          resolve(data);
+        }
+      });
+    });
+  }
+
+  /**
    * @name downloadImage
    * 전달받은 s3 경로에 존재하는 이미지 파일을 blob 형태로 리턴하는 메소드
    * @param path s3 bucket 내의 경로 및 파일 이름
@@ -88,15 +132,21 @@ export class ImageStorageService {
   /**
    * @name getImageUrl
    * 전달받은 s3 경로에 존재하는 이미지의 http url 을 리턴하는 메소드
-   * @param path s3 bucket 내의 경로 및 파일 이름
+   * @param pathCase s3 폴더 위치를 선택하기 위한 이미지의 소속 경우 명시
+   * @param pathKey 이미지가 위치한 db table primary key
+   * @param mimeType 이미지 확장자 타입 (jpg, png, ... )
    * @returns 저장된 이미지 파일 접속 url 링크
    */
-  async getImageUrl(path: string): Promise<S3GetImageUrlRes> {
+  async getImageUrl(
+    pathCase: PathCase,
+    pathKey: string,
+    mimeType: string,
+  ): Promise<S3GetImageUrlRes> {
     const awsS3 = this.s3;
     const bucket = this.getS3Bucket();
     const params = {
       Bucket: bucket,
-      Key: path,
+      Key: this.s3PathSelector(pathCase, pathKey, mimeType),
     };
 
     return new Promise<S3GetImageUrlRes>((resolve, reject) => {
