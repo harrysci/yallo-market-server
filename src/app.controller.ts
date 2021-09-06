@@ -16,15 +16,15 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @UseGuards(LocalAuthGuard)
-  @Post('auth-owner/login')
-  async login(@Request() req) {
-    return this.authOwnerService.login(req.user);
-  }
+  // @UseGuards(LocalAuthGuard)
+  // @Post('auth-owner/login')
+  // async login(@Request() req) {
+  //   return this.authOwnerService.login(req.user);
+  // }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Get('profile')
+  // getProfile(@Request() req) {
+  //   return req.user;
+  // }
 }

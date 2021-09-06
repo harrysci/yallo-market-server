@@ -22,6 +22,6 @@ import { LocalUserStrategy } from './passport/local.strategy';
   ],
   controllers: [AuthCustomerController],
   providers: [AuthCustomerService, LocalUserStrategy, JwtUserStrategy],
-  exports: [AuthCustomerService],
+  exports: [AuthCustomerService, JwtModule],
 })
 export class AuthCustomerModule {}

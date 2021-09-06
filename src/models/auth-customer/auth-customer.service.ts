@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateLocalUserReq } from './dto/CreateLocalUserReq.dto';
 import { CreateLocalUserRes } from './dto/CreateLocalUserRes.dto';
+import { LocalLoginRes } from './dto/LocalLoginRes.dto';
 import { RegularStore } from './entities/regular-store.entity';
 import { UserOrder } from './entities/user-order.entity';
 import { User } from './entities/user.entity';
@@ -23,19 +24,24 @@ export class AuthCustomerService {
     private readonly jwtService: JwtService,
   ) {}
 
+  /**
+   * 유저 목록 조회
+   * @returns User[];
+   */
   async findAll(): Promise<User[]> {
-    console.log('유저 전체 불러오기');
     return this.userRepository.find();
   }
 
+  /**
+   * 이메일을 통한 유저 단건 조회
+   * @param user_email
+   * @returns User;
+   */
   async findOne(user_email: string): Promise<User> {
-    console.log('유저 이메일로 불러오기');
-    return this.userRepository.findOne(user_email);
+    return this.userRepository.findOne({ user_email: user_email });
   }
 
   async login(user: any) {
-    console.log('login 진입');
-
     const payload = {
       username: user.user_email,
       sub: user.user_id,
@@ -46,7 +52,10 @@ export class AuthCustomerService {
     };
   }
 
-  async validateUser(user_email: string, user_password: string): Promise<any> {
+  async validateUser(
+    user_email: string,
+    user_password: string,
+  ): Promise<LocalLoginRes> {
     const user = await this.userRepository.findOne({ user_email: user_email });
 
     if (user && user.user_password === user_password) {
