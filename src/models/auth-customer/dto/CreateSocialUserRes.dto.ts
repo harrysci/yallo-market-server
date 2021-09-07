@@ -1,4 +1,4 @@
-export class CreateLocalUserRes {
+export class CreateSocialUserRes {
   user_id: number;
   user_email: string;
   user_account_type: 'local' | 'kakao' | 'apple';
@@ -7,4 +7,5 @@ export class CreateLocalUserRes {
   user_phone: string;
   user_address: string;
   user_marketing_agree: boolean;
+  access_token: string;
 }

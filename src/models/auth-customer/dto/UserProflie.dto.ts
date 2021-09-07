@@ -1,4 +1,4 @@
-export class CreateLocalUserRes {
+export class UserProfile {
   user_id: number;
   user_email: string;
   user_account_type: 'local' | 'kakao' | 'apple';

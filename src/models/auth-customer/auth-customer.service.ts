@@ -2,12 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { CreateLocalUserReq } from './dto/CreateLocalUserReq.dto';
 import { CreateLocalUserRes } from './dto/CreateLocalUserRes.dto';
+import { CreateSocialUserReq } from './dto/CreateSocialUserReq.dto';
+import { CreateSocialUserRes } from './dto/CreateSocialUserRes.dto';
+import { EmailDupleCheckRes } from './dto/EmailDupleCheckRes.dto';
 import { LocalLoginRes } from './dto/LocalLoginRes.dto';
+import { UserProfile } from './dto/UserProflie.dto';
+
 import { RegularStore } from './entities/regular-store.entity';
 import { UserOrder } from './entities/user-order.entity';
 import { User } from './entities/user.entity';
+import { JWTPayload } from './interfaces/user-token-payload.interface';
 
 @Injectable()
 export class AuthCustomerService {
@@ -30,6 +37,11 @@ export class AuthCustomerService {
    */
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
+  }
+
+  async getProfile(userId: number): Promise<UserProfile> {
+    const result = await this.getUserByUserId(userId);
+    return result;
   }
 
   /**
@@ -92,6 +104,84 @@ export class AuthCustomerService {
   }
 
   /**
+   * 소셜 계정회원 정보 생성
+   * @param userData CreateSocialUserReq
+   * @returns CreateSocialUserRes;
+   */
+  async createSocialUser(
+    userData: CreateSocialUserReq,
+  ): Promise<CreateSocialUserRes> {
+    const user = await this.userRepository.create({
+      user_email: userData.user_email,
+      user_password: userData.user_password,
+      user_account_type: userData.user_account_type,
+      user_nickname: userData.user_nickname,
+      user_birthday: userData.user_birthday,
+      user_phone: userData.user_phone,
+      user_address: userData.user_address,
+      user_marketing_agree: userData.user_marketing_agree,
+    });
+    await this.userRepository.save(user);
+
+    const tokenPayload: JWTPayload = {
+      username: user.user_email,
+      sub: user.user_id,
+    };
+    const accessToken = await this.jwtService.sign(tokenPayload);
+
+    const resWithAccessToken: CreateSocialUserRes = {
+      ...(await this.getUserByUserId(user.user_id)),
+      access_token: accessToken,
+    };
+
+    return resWithAccessToken;
+  }
+
+  /**
+   * @name 이메일중복검사_및_소셜로그인처리_메소드
+   * @param email user_email
+   * @param type kakao or apple or local
+   * @returns EmailDupleCheckRes
+   */
+  async emailDupleCheck(
+    email: string,
+    type: 'kakao' | 'apple' | 'local',
+  ): Promise<EmailDupleCheckRes> {
+    const user = await this.getUserByUserEmail(email);
+
+    if (user !== null) {
+      if (
+        (user.user_account_type === 'kakao' &&
+          type === 'kakao' &&
+          user.user_email === email) ||
+        (user.user_account_type === 'apple' &&
+          type === 'apple' &&
+          user.user_email === email)
+      ) {
+        const tokenPayload: JWTPayload = {
+          username: user.user_email,
+          sub: user.user_id,
+        };
+        const socialLoginSuccessToken = this.jwtService.sign(tokenPayload);
+        return {
+          checkResult: 'SUCCESS',
+          type: user.user_account_type,
+          access_token: socialLoginSuccessToken,
+        };
+      } else
+        (user.user_account_type === 'kakao' && type !== 'kakao') ||
+          (user.user_account_type === 'apple' && type !== 'apple');
+      return {
+        checkResult: 'EXIST_OTHER_TYPE',
+        existEmail: user.user_email,
+        type: user.user_account_type,
+      };
+    } else {
+      return { checkResult: 'NOT_EXIST' };
+    }
+  }
+
+  /**
    ************************************************************************************************************************
    * Private Method
    *
@@ -109,11 +199,14 @@ export class AuthCustomerService {
    * @param userId user_id
    * @returns CreateLocalUserRes;
    */
-  private async getUserByUserId(userId: number): Promise<CreateLocalUserRes> {
+  private async getUserByUserId(userId: number): Promise<UserProfile | null> {
     const user = await this.userRepository.findOne(userId);
-    const { user_password, ...res } = user;
+    if (user) {
+      const { user_password, ...res } = user;
+      return res;
+    }
 
-    return res;
+    return null;
   }
 
   /**
@@ -123,10 +216,13 @@ export class AuthCustomerService {
    */
   private async getUserByUserEmail(
     userEmail: string,
-  ): Promise<CreateLocalUserRes> {
+  ): Promise<UserProfile | null> {
     const user = await this.userRepository.findOne({ user_email: userEmail });
-    const { user_password, ...res } = user;
+    if (user) {
+      const { user_password, ...res } = user;
+      return res;
+    }
 
-    return res;
+    return null;
   }
 }
