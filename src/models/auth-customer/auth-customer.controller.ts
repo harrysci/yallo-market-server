@@ -80,7 +80,7 @@ export class AuthCustomerController {
     return result;
   }
 
-  @Post('local')
+  @Post('create-local-user')
   async createLocalUser(
     @Body() userData: CreateLocalUserReq,
   ): Promise<CreateLocalUserRes> {
@@ -109,7 +109,6 @@ export class AuthCustomerController {
     @Query('user_email') user_email: string,
     @Query('user_phone') user_phone: string,
   ): Promise<boolean> {
-    console.log('findone controller');
     const res = await this.authCustomerService.findUserByEmailAndPhone(
       user_email,
       user_phone,
@@ -120,7 +119,7 @@ export class AuthCustomerController {
     return res;
   }
 
-  @Post('social')
+  @Post('create-social-user')
   async createSocialUser(
     @Body() userData: CreateSocialUserReq,
   ): Promise<CreateSocialUserRes> {
