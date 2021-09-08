@@ -53,12 +53,7 @@ export class AuthCustomerService {
     return this.userRepository.findOne({ user_email: user_email });
   }
 
-  async login(user: any) {
-    const payload = {
-      username: user.user_email,
-      sub: user.user_id,
-    };
-
+  async login(payload: JWTPayload): Promise<{ access_token: string }> {
     return {
       access_token: this.jwtService.sign(payload),
     };

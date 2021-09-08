@@ -30,8 +30,13 @@ export class AuthCustomerController {
    */
   @UseGuards(LocalAuthCustomerGuard)
   @Post('local')
-  async login(@Req() req) {
-    return this.authCustomerService.login(req.user);
+  async login(@Req() req): Promise<{ access_token: string }> {
+    if (req.user) {
+      const targetUser: JWTPayload = req.user as JWTPayload;
+      return this.authCustomerService.login(targetUser);
+    }
+
+    return;
   }
 
   /**
