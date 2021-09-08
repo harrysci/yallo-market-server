@@ -2,13 +2,16 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
+  Put,
   Query,
   Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthCustomerService } from './auth-customer.service';
+import { ChangePasswordReq } from './dto/ChangePasswordReq.dto';
 import { CreateLocalUserReq } from './dto/CreateLocalUserReq.dto';
 import { CreateLocalUserRes } from './dto/CreateLocalUserRes.dto';
 import { CreateSocialUserReq } from './dto/CreateSocialUserReq.dto';
@@ -56,13 +59,16 @@ export class AuthCustomerController {
   }
 
   @Get('all')
-  findAll(): Promise<User[]> {
-    return this.authCustomerService.findAll();
+  async findAll(): Promise<User[]> {
+    return await this.authCustomerService.findAll();
   }
 
   @Get('one')
-  findOne(@Body() user_email: string): Promise<User> {
-    return this.authCustomerService.findOne(user_email);
+  async findOne(
+    @Body('user_email') user_email: string,
+  ): Promise<CreateLocalUserRes> {
+    console.log('findone controller');
+    return await this.authCustomerService.findOne(user_email);
   }
 
   @Get('email-duple-check')
@@ -74,11 +80,44 @@ export class AuthCustomerController {
     return result;
   }
 
-  @Post()
+  @Post('local')
   async createLocalUser(
     @Body() userData: CreateLocalUserReq,
   ): Promise<CreateLocalUserRes> {
     return await this.authCustomerService.createLocalUser(userData);
+  }
+
+  @Get('get-auth-number')
+  async getAuthNumber(): Promise<string> {
+    return await this.authCustomerService.getAuthNumber();
+  }
+
+  @Get('get-user-email/:user_phone')
+  async getUserEmailByPhoneNumber(
+    @Param('user_phone') user_phone: string,
+  ): Promise<any> {
+    return await this.authCustomerService.getUserEmailByPhoneNumber(user_phone);
+  }
+
+  @Put('update-user-password')
+  async updateUserPassword(@Body() userData: ChangePasswordReq): Promise<any> {
+    return await this.authCustomerService.updateUserPassword(userData);
+  }
+
+  @Get('find-user-by-email-phone')
+  async findUserByEmailAndPhone(
+    @Query('user_email') user_email: string,
+    @Query('user_phone') user_phone: string,
+  ): Promise<boolean> {
+    console.log('findone controller');
+    const res = await this.authCustomerService.findUserByEmailAndPhone(
+      user_email,
+      user_phone,
+    );
+
+    console.log('res: ', res);
+    console.log(user_email);
+    return res;
   }
 
   @Post('social')
