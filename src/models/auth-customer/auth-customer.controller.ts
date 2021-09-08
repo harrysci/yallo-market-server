@@ -51,10 +51,15 @@ export class AuthCustomerController {
     return this.authCustomerService.findOne(user_email);
   }
 
-  @Post()
+  @Post('create-user')
   async createLocalUser(
     @Body() userData: CreateLocalUserReq,
   ): Promise<CreateLocalUserRes> {
     return await this.authCustomerService.createLocalUser(userData);
+  }
+
+  @Get('get-auth-number')
+  async getAuthNumber(): Promise<string> {
+    return await this.authCustomerService.getAuthNumber();
   }
 }

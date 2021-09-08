@@ -91,6 +91,16 @@ export class AuthCustomerService {
     return res;
   }
 
+  async getAuthNumber(): Promise<string> {
+    let authNumber = '';
+
+    for (let i = 0; i < 4; i += 1) {
+      authNumber += Math.floor(Math.random() * 10);
+    }
+
+    return authNumber;
+  }
+
   /**
    ************************************************************************************************************************
    * Private Method
