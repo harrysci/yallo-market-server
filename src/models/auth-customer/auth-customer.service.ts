@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-<<<<<<< HEAD
 import { ChangePasswordReq } from './dto/ChangePasswordReq.dto';
-=======
-
->>>>>>> bdaf1efeedbc292a2bb5d5620cd9c079dba8c6c4
 import { CreateLocalUserReq } from './dto/CreateLocalUserReq.dto';
 import { CreateLocalUserRes } from './dto/CreateLocalUserRes.dto';
 import { CreateSocialUserReq } from './dto/CreateSocialUserReq.dto';
@@ -105,6 +101,8 @@ export class AuthCustomerService {
     await this.userRepository.save(user);
 
     const res: CreateLocalUserRes = await this.getUserByUserId(user.user_id);
+
+    console.log(res);
 
     return res;
   }
@@ -275,7 +273,6 @@ export class AuthCustomerService {
    */
   private async getUserByUserId(userId: number): Promise<UserProfile | null> {
     const user = await this.userRepository.findOne(userId);
-<<<<<<< HEAD
 
     if (user) {
       const { user_password, ...res } = user;
@@ -286,14 +283,6 @@ export class AuthCustomerService {
         `[getUserByUserId Error] no user was found by user_id: ${userId}`,
       );
     }
-=======
-    if (user) {
-      const { user_password, ...res } = user;
-      return res;
-    }
-
-    return null;
->>>>>>> bdaf1efeedbc292a2bb5d5620cd9c079dba8c6c4
   }
 
   /**
@@ -305,7 +294,6 @@ export class AuthCustomerService {
     userEmail: string,
   ): Promise<UserProfile | null> {
     const user = await this.userRepository.findOne({ user_email: userEmail });
-<<<<<<< HEAD
 
     console.log(`userEmail: ${userEmail}`);
 
@@ -318,13 +306,5 @@ export class AuthCustomerService {
         `[getUserByUserEmail Error] no user was found by user_email: ${userEmail}`,
       );
     }
-=======
-    if (user) {
-      const { user_password, ...res } = user;
-      return res;
-    }
-
-    return null;
->>>>>>> bdaf1efeedbc292a2bb5d5620cd9c079dba8c6c4
   }
 }
