@@ -45,7 +45,7 @@ import { OrderParent } from 'src/models/order/entities/order-parent.entity';
           OrderChild,
           OrderParent,
         ],
-        synchronize: false,
+        synchronize: true,
       }),
       inject: [MysqlConfigService],
     } as TypeOrmModuleAsyncOptions),

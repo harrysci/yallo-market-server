@@ -18,6 +18,9 @@ export default class CreateOrderReq {
   storeId: number;
 
   @IsNumber()
+  storeName: string;
+
+  @IsNumber()
   orderPayMethod: string;
 
   @IsArray()

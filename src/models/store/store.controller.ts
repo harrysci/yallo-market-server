@@ -1,6 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { GetStoreListRes } from './dto/GetStoreListRes.dto';
 import { StoreIdNameRes } from './dto/StoreIdNameRes.dto';
+import { StoreBank } from './entities/store-bank.entity';
 import { Store } from './entities/store.entity';
 import { StoreService } from './store.service';
 
@@ -59,5 +60,18 @@ export class StoreController {
   @Get('/getStore/:storeId')
   async getStore(@Param('storeId') storeId: number): Promise<Store> {
     return await this.storeService.getStore(storeId);
+  }
+
+  /**
+   * 점포 계좌정보 단건 조회
+   * @name 계좌정보단건조회_storeId
+   * @link
+   * @param storeId store_id
+   * @returns Store;
+   */
+  @Get('/getStoreBank/:storeId')
+  // async getStoreBank(@Param('storeId') storeId: number): Promise<StoreBank> {
+  async getStoreBank(@Param('storeId') storeId: number): Promise<any> {
+    return await this.storeService.getStoreBank(storeId);
   }
 }

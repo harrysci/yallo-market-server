@@ -36,4 +36,7 @@ export class OrderParent implements OrderParentBase {
 
   @Column({ type: 'char', length: 30 })
   order_pay_method: string;
+
+  @Column({ type: 'char', length: 20 })
+  store_name: string;
 }

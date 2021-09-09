@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import CreateOrderReq from './dto/CreateOrderReq.dto';
+import { Store } from '../store/entities/store.entity';
 import { OrderChildGet } from './dto/OrderChildGet.dto';
 import { OrderParentGet } from './dto/OrderParentGet.dto';
 import { OrderChild } from './entities/order-child.entity';
@@ -37,6 +38,7 @@ export class OrderService {
       store_id: req.storeId,
       order_pay_method: req.orderPayMethod,
       order_created_at : new Date(),
+      store_name : req.storeName,
     });
 
     await this.orderParentRepository.save(rawOrderParent);
@@ -63,14 +65,14 @@ export class OrderService {
       .getMany();
 
     console.log(rawLastOrderNumber);
-    // let flag=0
-    // rawLastOrderNumber.map((each)=>{
-    //   console.log('flag:',flag);
-    //   if(parseInt(each.order_number)>flag){
-    //     flag= parseInt(each.order_number)
-    //   }
-    // })
-    // return String(flag)
+    let flag=0
+    rawLastOrderNumber.map((each)=>{
+      console.log('flag:',flag);
+      if(parseInt(each.order_number)>flag){
+        flag= parseInt(each.order_number)
+      }
+    })
+    return String(flag)
   }
   // async deleteOrderOne(order_number: string): Promise
 }
