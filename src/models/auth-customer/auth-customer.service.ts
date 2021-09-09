@@ -9,7 +9,7 @@ import { CreateSocialUserReq } from './dto/CreateSocialUserReq.dto';
 import { CreateSocialUserRes } from './dto/CreateSocialUserRes.dto';
 import { EmailDupleCheckRes } from './dto/EmailDupleCheckRes.dto';
 import { LocalLoginRes } from './dto/LocalLoginRes.dto';
-import { UserProfile } from './dto/UserProflie.dto';
+import { UserProfile } from './dto/UserProfile.dto';
 
 import { RegularStore } from './entities/regular-store.entity';
 import { UserOrder } from './entities/user-order.entity';
@@ -55,12 +55,7 @@ export class AuthCustomerService {
     else return user;
   }
 
-  async login(user: any) {
-    const payload = {
-      username: user.user_email,
-      sub: user.user_id,
-    };
-
+  async login(payload: JWTPayload): Promise<{ access_token: string }> {
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -88,23 +83,25 @@ export class AuthCustomerService {
   async createLocalUser(
     userData: CreateLocalUserReq,
   ): Promise<CreateLocalUserRes> {
-    const user = await this.userRepository.create({
-      user_email: userData.user_email,
-      user_password: userData.user_password,
-      user_account_type: userData.user_account_type,
-      user_nickname: userData.user_nickname,
-      user_birthday: userData.user_birthday,
-      user_phone: userData.user_phone,
-      user_address: userData.user_address,
-      user_marketing_agree: userData.user_marketing_agree,
-    });
-    await this.userRepository.save(user);
+    try {
+      const user = await this.userRepository.create({
+        user_email: userData.user_email,
+        user_password: userData.user_password,
+        user_account_type: userData.user_account_type,
+        user_nickname: userData.user_nickname,
+        user_birthday: userData.user_birthday,
+        user_phone: userData.user_phone,
+        user_address: userData.user_address,
+        user_marketing_agree: userData.user_marketing_agree,
+      });
+      await this.userRepository.save(user);
 
-    const res: CreateLocalUserRes = await this.getUserByUserId(user.user_id);
+      const res: CreateLocalUserRes = await this.getUserByUserId(user.user_id);
 
-    console.log(res);
-
-    return res;
+      return res;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async getAuthNumber(): Promise<string> {
@@ -128,7 +125,7 @@ export class AuthCustomerService {
       const userEmailList: string[] = [];
 
       for (let i = 0; i < users.length; i += 1) {
-        const position = users[i].user_email.indexOf('@');
+        // const position = users[i].user_email.indexOf('@');
 
         userEmailList.push(users[i].user_email);
       }
@@ -219,9 +216,9 @@ export class AuthCustomerService {
     email: string,
     type: 'kakao' | 'apple' | 'local',
   ): Promise<EmailDupleCheckRes> {
-    const user = await this.getUserByUserEmail(email);
+    try {
+      const user = await this.getUserByUserEmail(email);
 
-    if (user !== null) {
       if (
         (user.user_account_type === 'kakao' &&
           type === 'kakao' &&
@@ -248,9 +245,43 @@ export class AuthCustomerService {
         existEmail: user.user_email,
         type: user.user_account_type,
       };
-    } else {
+    } catch {
+      console.log('err');
       return { checkResult: 'NOT_EXIST' };
     }
+
+    // const user = await this.getUserByUserEmail(email);
+
+    // if (user) {
+    //   if (
+    //     (user.user_account_type === 'kakao' &&
+    //       type === 'kakao' &&
+    //       user.user_email === email) ||
+    //     (user.user_account_type === 'apple' &&
+    //       type === 'apple' &&
+    //       user.user_email === email)
+    //   ) {
+    //     const tokenPayload: JWTPayload = {
+    //       username: user.user_email,
+    //       sub: user.user_id,
+    //     };
+    //     const socialLoginSuccessToken = this.jwtService.sign(tokenPayload);
+    //     return {
+    //       checkResult: 'SUCCESS',
+    //       type: user.user_account_type,
+    //       access_token: socialLoginSuccessToken,
+    //     };
+    //   } else
+    //     (user.user_account_type === 'kakao' && type !== 'kakao') ||
+    //       (user.user_account_type === 'apple' && type !== 'apple');
+    //   return {
+    //     checkResult: 'EXIST_OTHER_TYPE',
+    //     existEmail: user.user_email,
+    //     type: user.user_account_type,
+    //   };
+    // } else {
+    //   return { checkResult: 'NOT_EXIST' };
+    // }
   }
 
   /**
