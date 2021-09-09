@@ -28,4 +28,7 @@ export class OrderParentGet implements OrderParentBase {
 
   @IsString()
   order_pay_method: string;
+
+  @IsString()
+  store_phone: string;
 }

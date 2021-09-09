@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { createQueryBuilder, Repository } from 'typeorm';
 import { Store } from '../store/entities/store.entity';
 import { OrderChildGet } from './dto/OrderChildGet.dto';
 import { OrderParentGet } from './dto/OrderParentGet.dto';
@@ -16,8 +16,24 @@ export class OrderService {
     private readonly orderChildRepository: Repository<OrderChild>,
   ) {}
 
-  async getOrderParentList(): Promise<OrderParentGet[]> {
-    const data = await this.orderParentRepository.find();
+  async getOrderParentList(): Promise<OrderParentGet[] | any> {
+    const data = await this.orderParentRepository
+      .createQueryBuilder('order_parent')
+      .innerJoinAndMapOne(
+        'order_parent.store_id',
+        Store,
+        'store',
+        'order_parent.store_id = store.store_id',
+      )
+      .getMany();
+
+    // const list_item = await data.map((item: any) => {
+    //   return this.orderChildRepository
+    //     .createQueryBuilder()
+    //     .where(`order_number = ${item.order_number}`)
+    //     .getMany();
+    // });
+    // console.log(list_item);
     return data;
   }
 
