@@ -61,8 +61,6 @@ export class AuthCustomerService {
   }
 
   async login(payload: any): Promise<{ access_token: string }> {
-    // console.log(payload);
-
     const newPayload = {
       username: payload.user_email,
       sub: payload.user_id,
@@ -313,13 +311,43 @@ export class AuthCustomerService {
             store_star_point: rawStore.store_star_point,
           };
 
-          console.log(store);
-
           regularStoreList.push(store);
         }
       }
 
+      // console.log(regularStoreList);
+
       return regularStoreList;
+    }
+  }
+
+  async addRegularStore(user_id: number, store_id: number): Promise<any> {
+    // console.log('add');
+    // console.log('user_id:', user_id);
+    // console.log('store_id:', store_id);
+  }
+
+  async removeRegularStore(user_id: number, store_id: number): Promise<any> {
+    // console.log('remove');
+    // console.log('user_id:', user_id);
+    // console.log('store_id:', store_id);
+
+    const deleteTarget = await this.regularStoreRepository
+      .createQueryBuilder('regular_store')
+      .where('regular_store.user_id=:user_id', { user_id: user_id })
+      .andWhere('regular_store.store_id=:store_id', { store_id: store_id })
+      .getOne();
+
+    console.log('removeRegularStore - deleteTarget:', deleteTarget);
+
+    if (deleteTarget) {
+      try {
+        await this.regularStoreRepository.remove(deleteTarget);
+      } catch {
+        throw new Error(
+          `[removeRegularStore Error] deletion error with user_id: ${user_id}, store_id: ${store_id}.`,
+        );
+      }
     }
   }
 
@@ -364,8 +392,6 @@ export class AuthCustomerService {
     userEmail: string,
   ): Promise<UserProfile | null> {
     const user = await this.userRepository.findOne({ user_email: userEmail });
-
-    console.log(`userEmail: ${userEmail}`);
 
     if (user) {
       const { user_password, ...res } = user;
