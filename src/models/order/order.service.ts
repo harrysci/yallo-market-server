@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Store } from '../store/entities/store.entity';
 import { OrderChildGet } from './dto/OrderChildGet.dto';
 import { OrderParentGet } from './dto/OrderParentGet.dto';
 import { OrderChild } from './entities/order-child.entity';
