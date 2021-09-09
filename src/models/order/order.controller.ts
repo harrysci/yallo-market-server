@@ -1,4 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { FormToObject } from 'src/common/decorator/form-to-object.decorator';
+import CreateOrderReq from './dto/CreateOrderReq.dto';
 import { OrderChildGet } from './dto/OrderChildGet.dto';
 import { OrderParentGet } from './dto/OrderParentGet.dto';
 import { OrderParent } from './entities/order-parent.entity';
@@ -18,5 +20,19 @@ export class OrderController {
     @Param('order_number') order_number: string,
   ): Promise<OrderChildGet[]> {
     return this.orderService.getOrderChildrenList(order_number);
+  }
+
+  @Post('/create')
+  createOrderList(
+    @FormToObject('payInfo') req: any
+  ): Promise<OrderParent> {
+    return this.orderService.createOrderList(req.body);
+  }
+
+  // @Get('/get/lastOrderNum')
+  @Get('/lastOrderNum')
+  // getLastOrderNumber(): Promise<string>{
+  getLastOrderNumber(): Promise<any>{
+    return this.orderService.getLastOrderNumber();
   }
 }
