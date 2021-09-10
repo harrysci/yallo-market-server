@@ -2,7 +2,6 @@ import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { JwtUserAuthGuard } from '../auth-customer/guards/jwt-auth-customer.guard';
 import { GetStoreListRes } from './dto/GetStoreListRes.dto';
 import { StoreIdNameRes } from './dto/StoreIdNameRes.dto';
-import { StoreBank } from './entities/store-bank.entity';
 import { Store } from './entities/store.entity';
 import { StoreService } from './store.service';
 

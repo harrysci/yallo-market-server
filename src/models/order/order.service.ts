@@ -7,8 +7,7 @@ import { OrderChildGet } from './dto/OrderChildGet.dto';
 import { OrderParentGet } from './dto/OrderParentGet.dto';
 import { OrderChild } from './entities/order-child.entity';
 import { OrderParent } from './entities/order-parent.entity';
-import { UserOrder } from '../auth-customer/entities/user-order.entity';
-import { User } from '../auth-customer/entities/user.entity';
+
 @Injectable()
 export class OrderService {
   constructor(
@@ -18,8 +17,18 @@ export class OrderService {
     private readonly orderChildRepository: Repository<OrderChild>,
   ) {}
 
-  async getOrderParentList(): Promise<OrderParentGet[]> {
-    const data = await this.orderParentRepository.find();
+  async getOrderParentList(): Promise<OrderParentGet[] | any> {
+    const data = await this.orderParentRepository
+      .createQueryBuilder('order_parent')
+      .innerJoinAndMapOne(
+        'order_parent.store_id',
+        Store,
+        'store',
+        'order_parent.store_id = store.store_id',
+      )
+      .orderBy('order_parent.order_status', 'DESC')
+      .getMany();
+
     return data;
   }
 

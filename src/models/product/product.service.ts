@@ -37,7 +37,6 @@ import { CreateBarcodeWeightedProductRes } from './dto/CreateBarcodeWeightedProd
 import { GetImageProductListRes } from './dto/GetImageProductListRes.dto';
 
 /* test dummy data */
-import dummy from './dummy/dummyBase64';
 
 /**
  * @name 상품_Provider_Class

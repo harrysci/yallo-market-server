@@ -1,11 +1,9 @@
 /* nestjs core library */
 import {
-  Bind,
   Controller,
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
