@@ -271,6 +271,20 @@ export class AuthCustomerService {
     }
   }
 
+  /**
+   * @name RegularStore목록_조회
+   * @param user_id 유저 아이디
+   * @returns RegularStore[]
+   */
+  async getRegularStoreIdList(user_id: number): Promise<RegularStore[]> {
+    const rawRegularStoreList = await this.regularStoreRepository
+      .createQueryBuilder('regular_store')
+      .where('regular_store.user_id=:user_id', { user_id: user_id })
+      .getMany();
+
+    return rawRegularStoreList;
+  }
+
   async getRegularStoreList(user_id: number): Promise<GetStoreListRes[]> {
     const rawRegularStoreList = await this.regularStoreRepository
       .createQueryBuilder('regular_store')

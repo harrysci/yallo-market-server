@@ -18,6 +18,7 @@ import { CreateLocalUserRes } from './dto/CreateLocalUserRes.dto';
 import { CreateSocialUserReq } from './dto/CreateSocialUserReq.dto';
 import { CreateSocialUserRes } from './dto/CreateSocialUserRes.dto';
 import { EmailDupleCheckRes } from './dto/EmailDupleCheckRes.dto';
+import { RegularStore } from './entities/regular-store.entity';
 import { User } from './entities/user.entity';
 import { LocalAuthCustomerGuard } from './guards/auth-customer.guard';
 import { JwtUserAuthGuard } from './guards/jwt-auth-customer.guard';
@@ -128,6 +129,13 @@ export class AuthCustomerController {
   // async getRegularStoreList(@Param('userId') userId: number): Promise<any> {
   //   return await this.authCustomerService.getRegularStoreList(userId);
   // }
+
+  @Get('regular-store/:user_id')
+  async getRegularStore(
+    @Query('user_id') user_id: number,
+  ): Promise<RegularStore[]> {
+    return await this.authCustomerService.getRegularStoreIdList(user_id);
+  }
 
   @Get('getRegularStoreList/:user_id')
   async getRegularStoreList(
