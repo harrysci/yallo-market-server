@@ -1,4 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { JwtUserAuthGuard } from '../auth-customer/guards/jwt-auth-customer.guard';
 import { GetStoreListRes } from './dto/GetStoreListRes.dto';
 import { StoreIdNameRes } from './dto/StoreIdNameRes.dto';
 import { Store } from './entities/store.entity';
@@ -59,5 +60,18 @@ export class StoreController {
   @Get('/getStore/:storeId')
   async getStore(@Param('storeId') storeId: number): Promise<Store> {
     return await this.storeService.getStore(storeId);
+  }
+
+  /**
+   * @name 가게명_포함_가게리스트조회
+   * @param storeName 가게 이름
+   * @returns Store[]
+   */
+  @UseGuards(JwtUserAuthGuard)
+  @Get('/get-store-list')
+  async getStoreListByStoreName(
+    @Query('storeName') storeName: string,
+  ): Promise<Store[]> {
+    return await this.storeService.getStoreListByStoreName(storeName);
   }
 }
