@@ -130,23 +130,15 @@ export class StoreService {
 
     return store;
   }
-
-  // async getStoreBank(storeId: number): Promise<StoreBank> {
   async getStoreBank(storeId: number): Promise<any> {
-    // const storeBank = await this.storeBankRepository
-    //   .createQueryBuilder('store_bank')
-    //   .select(['store_id, store_bank_name, store_account_number'])
-    //   .where('store_bank.store_id=:storeId', { storeId: storeId })
-    //   .getOne();
-
     const raw = await this.storeRepository
       .createQueryBuilder('store')
       .where('store_bank.store_id=:storeId', { storeId: storeId })
       .leftJoinAndSelect('store.store_bank', 'store_bank')
       .getMany();
 
-    console.log('service');
-    console.log(raw[0].store_bank);
-    // return storeBank;
+    // console.log('service');
+    // console.log(raw);
+    return raw;
   }
 }

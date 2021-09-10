@@ -5,7 +5,7 @@ import { AuthCustomerService } from './auth-customer.service';
 // import { User } from './entities/user.entity';
 
 @Module({
-  // imports: [TypeOrmModule.forFeature([User])],
+  //imports: [TypeOrmModule.forFeature([User])],
   exports: [AuthCustomerService],
   controllers: [AuthCustomerController],
   providers: [AuthCustomerService],

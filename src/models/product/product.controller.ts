@@ -110,6 +110,7 @@ export class ProductController {
   async getImageProductList(
     @Param('storeId') storeId: number,
   ): Promise<GetImageProductListRes[]> {
+    console.log(storeId);
     return await this.productService.getImageProductList(storeId);
   }
 

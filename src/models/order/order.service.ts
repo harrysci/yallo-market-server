@@ -7,7 +7,8 @@ import { OrderChildGet } from './dto/OrderChildGet.dto';
 import { OrderParentGet } from './dto/OrderParentGet.dto';
 import { OrderChild } from './entities/order-child.entity';
 import { OrderParent } from './entities/order-parent.entity';
-
+import { UserOrder } from '../auth-customer/entities/user-order.entity';
+import { User } from '../auth-customer/entities/user.entity';
 @Injectable()
 export class OrderService {
   constructor(
@@ -29,7 +30,9 @@ export class OrderService {
       .getMany();
   }
 
-  async createOrderList(req: CreateOrderReq):Promise<any>{
+  async createOrderList(req: CreateOrderReq): Promise<any> {
+    //console.log(req.storeName);
+    //console.log('수량:', req.orderProductArray[0].quantity);
     const rawOrderParent = await this.orderParentRepository.create({
       order_number: req.orderNumber,
       order_status: 0,
@@ -37,42 +40,42 @@ export class OrderService {
       order_is_pickup: req.orderIsPickup,
       store_id: req.storeId,
       order_pay_method: req.orderPayMethod,
-      order_created_at : new Date(),
-      store_name : req.storeName,
+      order_created_at: new Date(),
+      store_name: req.storeName,
     });
 
     await this.orderParentRepository.save(rawOrderParent);
 
-    req.orderProductArray.map(async (each)=>{
+    req.orderProductArray.map(async (each) => {
+      //console.log('수량:', each.quantity);
       const rawOrderChild = await this.orderChildRepository.create({
-        order_number : rawOrderParent.order_number,
+        order_number: rawOrderParent.order_number,
         order_product_name: each.productName,
         order_quantity: each.quantity,
+
         order_unit_price: parseInt(each.price),
-      })
+      });
 
       await this.orderChildRepository.save(rawOrderChild);
-    })
-
+    });
     return await rawOrderParent;
   }
 
-  // async getLastOrderNumber():Promise<string>{
-  async getLastOrderNumber():Promise<any>{
-    const rawLastOrderNumber=await this.orderParentRepository
+  async getLastOrderNumber(): Promise<any> {
+    const rawLastOrderNumber = await this.orderParentRepository
       .createQueryBuilder('order_parent')
       .select('order_parent.order_number')
       .getMany();
 
     console.log(rawLastOrderNumber);
-    let flag=0
-    rawLastOrderNumber.map((each)=>{
-      console.log('flag:',flag);
-      if(parseInt(each.order_number)>flag){
-        flag= parseInt(each.order_number)
+    let flag = 0;
+    rawLastOrderNumber.map((each) => {
+      console.log('flag:', flag);
+      if (parseInt(each.order_number) > flag) {
+        flag = parseInt(each.order_number);
       }
-    })
-    return String(flag)
+    });
+    return String(flag);
   }
   // async deleteOrderOne(order_number: string): Promise
 }
