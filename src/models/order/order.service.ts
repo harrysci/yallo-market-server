@@ -25,15 +25,9 @@ export class OrderService {
         'store',
         'order_parent.store_id = store.store_id',
       )
+      .orderBy('order_parent.order_status', 'DESC')
       .getMany();
 
-    // const list_item = await data.map((item: any) => {
-    //   return this.orderChildRepository
-    //     .createQueryBuilder()
-    //     .where(`order_number = ${item.order_number}`)
-    //     .getMany();
-    // });
-    // console.log(list_item);
     return data;
   }
 

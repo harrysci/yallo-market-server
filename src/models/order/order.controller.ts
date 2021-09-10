@@ -17,6 +17,7 @@ export class OrderController {
   getOrderChildList(
     @Param('order_number') order_number: string,
   ): Promise<OrderChildGet[]> {
+    console.log(order_number);
     return this.orderService.getOrderChildrenList(order_number);
   }
 }
