@@ -329,8 +329,6 @@ export class AuthCustomerService {
         }
       }
 
-      console.log(regularStoreList);
-
       // store_id 를 기준으로 오름차순 정렬
       const sortingField = 'store_id';
       regularStoreList.sort((a, b) => {
