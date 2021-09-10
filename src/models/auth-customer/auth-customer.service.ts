@@ -315,23 +315,41 @@ export class AuthCustomerService {
         }
       }
 
-      // console.log(regularStoreList);
+      console.log(regularStoreList);
+
+      // store_id 를 기준으로 오름차순 정렬
+      const sortingField = 'store_id';
+      regularStoreList.sort((a, b) => {
+        return a[sortingField] - b[sortingField];
+      });
 
       return regularStoreList;
     }
   }
 
   async addRegularStore(user_id: number, store_id: number): Promise<any> {
-    // console.log('add');
-    // console.log('user_id:', user_id);
-    // console.log('store_id:', store_id);
+    const user = await this.getUserByUserId(user_id);
+
+    const dupCheck = await this.regularStoreRepository.findOne({
+      user: user,
+      store_id: store_id,
+    });
+
+    if (!dupCheck) {
+      const regularStore = await this.regularStoreRepository.create({
+        store_id: store_id,
+        user: user,
+      });
+
+      await this.regularStoreRepository.save(regularStore);
+    } else {
+      throw new Error(
+        `[addRegularStore Error] already registered with user_id: ${user_id}, store_id: ${store_id}.`,
+      );
+    }
   }
 
   async removeRegularStore(user_id: number, store_id: number): Promise<any> {
-    // console.log('remove');
-    // console.log('user_id:', user_id);
-    // console.log('store_id:', store_id);
-
     const deleteTarget = await this.regularStoreRepository
       .createQueryBuilder('regular_store')
       .where('regular_store.user_id=:user_id', { user_id: user_id })
