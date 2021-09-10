@@ -126,6 +126,8 @@ export class StoreService {
     const store = await this.storeRepository
       .createQueryBuilder('store')
       .where('store.store_id=:storeId', { storeId: storeId })
+      .leftJoinAndSelect('store.store_paymethod', 'store_paymethod')
+      .leftJoinAndSelect('store.store_bank', 'store_bank')
       .getOne();
 
     return store;

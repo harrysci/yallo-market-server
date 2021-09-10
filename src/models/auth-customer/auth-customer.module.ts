@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { StoreModule } from '../store/store.module';
 import { AuthCustomerController } from './auth-customer.controller';
 import { AuthCustomerService } from './auth-customer.service';
 import { userJwtConstants } from './constants/userJwtConstants';
@@ -19,6 +20,7 @@ import { LocalUserStrategy } from './passport/local.strategy';
       secret: userJwtConstants.secret,
       signOptions: { expiresIn: '3600s' },
     }),
+    StoreModule,
   ],
   controllers: [AuthCustomerController],
   providers: [AuthCustomerService, LocalUserStrategy, JwtUserStrategy],

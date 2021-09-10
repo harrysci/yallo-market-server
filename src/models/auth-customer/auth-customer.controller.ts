@@ -10,6 +10,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { GetStoreListRes } from '../store/dto/GetStoreListRes.dto';
 import { AuthCustomerService } from './auth-customer.service';
 import { ChangePasswordReq } from './dto/ChangePasswordReq.dto';
 import { CreateLocalUserReq } from './dto/CreateLocalUserReq.dto';
@@ -67,7 +68,6 @@ export class AuthCustomerController {
   async findOne(
     @Body('user_email') user_email: string,
   ): Promise<CreateLocalUserRes> {
-    console.log('findone controller');
     return await this.authCustomerService.findOne(user_email);
   }
 
@@ -114,8 +114,6 @@ export class AuthCustomerController {
       user_phone,
     );
 
-    console.log('res: ', res);
-    console.log(user_email);
     return res;
   }
 
@@ -124,5 +122,33 @@ export class AuthCustomerController {
     @Body() userData: CreateSocialUserReq,
   ): Promise<CreateSocialUserRes> {
     return await this.authCustomerService.createSocialUser(userData);
+  }
+
+  // @Post('getRegularStoreList/:userId')
+  // async getRegularStoreList(@Param('userId') userId: number): Promise<any> {
+  //   return await this.authCustomerService.getRegularStoreList(userId);
+  // }
+
+  @Get('getRegularStoreList/:user_id')
+  async getRegularStoreList(
+    @Param('user_id') user_id: number,
+  ): Promise<GetStoreListRes[]> {
+    return await this.authCustomerService.getRegularStoreList(user_id);
+  }
+
+  @Post('add-regular-store')
+  async addRegularStore(
+    @Query('user_id') user_id: number,
+    @Query('store_id') store_id: number,
+  ): Promise<any> {
+    return await this.authCustomerService.addRegularStore(user_id, store_id);
+  }
+
+  @Post('remove-regular-store')
+  async removeRegularStore(
+    @Query('user_id') user_id: number,
+    @Query('store_id') store_id: number,
+  ): Promise<any> {
+    return await this.authCustomerService.removeRegularStore(user_id, store_id);
   }
 }

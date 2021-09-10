@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { GetStoreListRes } from '../store/dto/GetStoreListRes.dto';
+import { Store } from '../store/entities/store.entity';
+import { StoreService } from '../store/store.service';
 import { ChangePasswordReq } from './dto/ChangePasswordReq.dto';
 import { CreateLocalUserReq } from './dto/CreateLocalUserReq.dto';
 import { CreateLocalUserRes } from './dto/CreateLocalUserRes.dto';
@@ -9,7 +12,7 @@ import { CreateSocialUserReq } from './dto/CreateSocialUserReq.dto';
 import { CreateSocialUserRes } from './dto/CreateSocialUserRes.dto';
 import { EmailDupleCheckRes } from './dto/EmailDupleCheckRes.dto';
 import { LocalLoginRes } from './dto/LocalLoginRes.dto';
-import { UserProfile } from './dto/UserProflie.dto';
+import { UserProfile } from './dto/UserProfile.dto';
 
 import { RegularStore } from './entities/regular-store.entity';
 import { UserOrder } from './entities/user-order.entity';
@@ -29,6 +32,8 @@ export class AuthCustomerService {
     private readonly regularStoreRepository: Repository<RegularStore>,
 
     private readonly jwtService: JwtService,
+
+    private readonly storeService: StoreService,
   ) {}
 
   /**
@@ -55,11 +60,26 @@ export class AuthCustomerService {
     else return user;
   }
 
-  async login(payload: JWTPayload): Promise<{ access_token: string }> {
+  async login(payload: any): Promise<{ access_token: string }> {
+    const newPayload = {
+      username: payload.user_email,
+      sub: payload.user_id,
+    };
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(newPayload),
     };
   }
+
+  // async login(payload: LocalLoginRes): Promise<{ access_token: string }> {
+  //   const newPayload = {
+  //     username: payload.user_email,
+  //     sub: payload.user_id,
+  //   };
+  //   return {
+  //     access_token: this.jwtService.sign(newPayload),
+  //   };
+  // }
 
   async validateUser(
     user_email: string,
@@ -125,7 +145,7 @@ export class AuthCustomerService {
       const userEmailList: string[] = [];
 
       for (let i = 0; i < users.length; i += 1) {
-        const position = users[i].user_email.indexOf('@');
+        // const position = users[i].user_email.indexOf('@');
 
         userEmailList.push(users[i].user_email);
       }
@@ -249,39 +269,86 @@ export class AuthCustomerService {
       console.log('err');
       return { checkResult: 'NOT_EXIST' };
     }
+  }
 
-    // const user = await this.getUserByUserEmail(email);
+  async getRegularStoreList(user_id: number): Promise<GetStoreListRes[]> {
+    const rawRegularStoreList = await this.regularStoreRepository
+      .createQueryBuilder('regular_store')
+      .where('regular_store.user_id=:user_id', { user_id: user_id })
+      .getMany();
 
-    // if (user) {
-    //   if (
-    //     (user.user_account_type === 'kakao' &&
-    //       type === 'kakao' &&
-    //       user.user_email === email) ||
-    //     (user.user_account_type === 'apple' &&
-    //       type === 'apple' &&
-    //       user.user_email === email)
-    //   ) {
-    //     const tokenPayload: JWTPayload = {
-    //       username: user.user_email,
-    //       sub: user.user_id,
-    //     };
-    //     const socialLoginSuccessToken = this.jwtService.sign(tokenPayload);
-    //     return {
-    //       checkResult: 'SUCCESS',
-    //       type: user.user_account_type,
-    //       access_token: socialLoginSuccessToken,
-    //     };
-    //   } else
-    //     (user.user_account_type === 'kakao' && type !== 'kakao') ||
-    //       (user.user_account_type === 'apple' && type !== 'apple');
-    //   return {
-    //     checkResult: 'EXIST_OTHER_TYPE',
-    //     existEmail: user.user_email,
-    //     type: user.user_account_type,
-    //   };
-    // } else {
-    //   return { checkResult: 'NOT_EXIST' };
-    // }
+    if (rawRegularStoreList.length === 0) {
+      return [];
+    } else {
+      const regularStoreList: GetStoreListRes[] = [];
+
+      for (let i = 0; i < rawRegularStoreList.length; i += 1) {
+        const rawStore = await this.storeService.getStore(
+          rawRegularStoreList[i].store_id,
+        );
+
+        if (rawStore !== undefined) {
+          const store: GetStoreListRes = {
+            store_address: rawStore.store_address,
+            store_bank: rawStore.store_bank,
+            store_business_date: rawStore.store_business_date,
+            store_business_image: rawStore.store_business_image,
+            store_business_number: rawStore.store_business_number,
+            store_business_owner_birthday:
+              rawStore.store_business_owner_birthday,
+            store_business_owner_name: rawStore.store_business_owner_name,
+            store_business_store_address: rawStore.store_business_store_address,
+            store_business_store_name: rawStore.store_business_store_name,
+            store_close_time: rawStore.store_close_time,
+            store_id: rawStore.store_id,
+            store_image: rawStore.store_image,
+            store_is_delivery: rawStore.store_is_delivery,
+            store_is_open: rawStore.store_is_open,
+            store_name: rawStore.store_name,
+            store_open_time: rawStore.store_open_time,
+            store_paymethod: rawStore.store_paymethod,
+            store_phone: rawStore.store_phone,
+            store_star_point: rawStore.store_star_point,
+          };
+
+          regularStoreList.push(store);
+        }
+      }
+
+      // console.log(regularStoreList);
+
+      return regularStoreList;
+    }
+  }
+
+  async addRegularStore(user_id: number, store_id: number): Promise<any> {
+    // console.log('add');
+    // console.log('user_id:', user_id);
+    // console.log('store_id:', store_id);
+  }
+
+  async removeRegularStore(user_id: number, store_id: number): Promise<any> {
+    // console.log('remove');
+    // console.log('user_id:', user_id);
+    // console.log('store_id:', store_id);
+
+    const deleteTarget = await this.regularStoreRepository
+      .createQueryBuilder('regular_store')
+      .where('regular_store.user_id=:user_id', { user_id: user_id })
+      .andWhere('regular_store.store_id=:store_id', { store_id: store_id })
+      .getOne();
+
+    console.log('removeRegularStore - deleteTarget:', deleteTarget);
+
+    if (deleteTarget) {
+      try {
+        await this.regularStoreRepository.remove(deleteTarget);
+      } catch {
+        throw new Error(
+          `[removeRegularStore Error] deletion error with user_id: ${user_id}, store_id: ${store_id}.`,
+        );
+      }
+    }
   }
 
   /**
@@ -325,8 +392,6 @@ export class AuthCustomerService {
     userEmail: string,
   ): Promise<UserProfile | null> {
     const user = await this.userRepository.findOne({ user_email: userEmail });
-
-    console.log(`userEmail: ${userEmail}`);
 
     if (user) {
       const { user_password, ...res } = user;
