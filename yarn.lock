@@ -746,6 +746,13 @@
     consola "^2.15.0"
     node-fetch "^2.6.1"
 
+"@pickk/sens@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@pickk/sens/-/sens-1.1.0.tgz#3e50680b94ddc19ac6cc29094d2458be53ba4754"
+  integrity sha512-o3ESVJHqlvTA0Hbldx1nJzDzEdHRgY5jAFe++pJQ0t7XgOJ0C3bL68Kjpbmu+kc31L99BL190dbLohuVOKlTDw==
+  dependencies:
+    axios "^0.21.1"
+
 "@schematics/schematics@0.1102.6":
   version "0.1102.6"
   resolved "https://registry.yarnpkg.com/@schematics/schematics/-/schematics-0.1102.6.tgz#2ce02f7c11558471628eafeb34faaa7f5ab4b22c"
@@ -1604,6 +1611,13 @@ axios@0.21.1:
   integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
   dependencies:
     follow-redirects "^1.10.0"
+
+axios@^0.21.1:
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
+  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
+  dependencies:
+    follow-redirects "^1.14.0"
 
 babel-jest@^26.6.3:
   version "26.6.3"
@@ -3273,6 +3287,11 @@ follow-redirects@^1.10.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.1.tgz#d9114ded0a1cfdd334e164e6662ad02bfd91ff43"
   integrity sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg==
+
+follow-redirects@^1.14.0:
+  version "1.14.3"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.3.tgz#6ada78118d8d24caee595595accdc0ac6abd022e"
+  integrity sha512-3MkHxknWMUtb23apkgz/83fDoe+y+qr0TdgacGIA7bew+QLBo3vdgEN2xEsuXNivpFy4CyDhBBZnNZOtalmenw==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -5237,6 +5256,13 @@ neo-async@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
+
+nest-sens@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/nest-sens/-/nest-sens-1.1.0.tgz#7cea36bbe57d38d0647a3bfa9a39738ffe935e29"
+  integrity sha512-fn4+8H9e/y8hQ/vGjBwBqGypudBtBIRpMqIS8z7v7TkgELYN7xI6QD7UELKJ5reWWrjtZ1x5jgejpuH/k70uqg==
+  dependencies:
+    "@pickk/sens" "^1.1.0"
 
 nice-try@^1.0.4:
   version "1.0.5"
