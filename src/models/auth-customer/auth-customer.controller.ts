@@ -146,16 +146,16 @@ export class AuthCustomerController {
 
   @Post('add-regular-store')
   async addRegularStore(
-    @Query('user_id') user_id: number,
-    @Query('store_id') store_id: number,
+    @Body('user_id') user_id: number,
+    @Body('store_id') store_id: number,
   ): Promise<any> {
     return await this.authCustomerService.addRegularStore(user_id, store_id);
   }
 
   @Post('remove-regular-store')
   async removeRegularStore(
-    @Query('user_id') user_id: number,
-    @Query('store_id') store_id: number,
+    @Body('user_id') user_id: number,
+    @Body('store_id') store_id: number,
   ): Promise<any> {
     return await this.authCustomerService.removeRegularStore(user_id, store_id);
   }
