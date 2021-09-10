@@ -14,7 +14,7 @@ export class User implements UserBase {
   @PrimaryGeneratedColumn({ type: 'int' })
   user_id: number;
 
-  @Column({ type: 'char', length: 30 })
+  @Column({ type: 'char', length: 30, unique: true })
   user_email: string;
 
   @Column({ type: 'char', length: 30 })

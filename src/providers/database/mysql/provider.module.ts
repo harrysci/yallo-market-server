@@ -14,6 +14,9 @@ import { WeightedProduct } from 'src/models/product/entities/weighted-product.en
 import { OnsaleProduct } from 'src/models/product/entities/onsale-product.entity';
 import { OrderChild } from 'src/models/order/entities/order-child.entity';
 import { OrderParent } from 'src/models/order/entities/order-parent.entity';
+import { User } from 'src/models/auth-customer/entities/user.entity';
+import { UserOrder } from 'src/models/auth-customer/entities/user-order.entity';
+import { RegularStore } from 'src/models/auth-customer/entities/regular-store.entity';
 // import { User } from 'src/models/auth/entities/user.entity';
 
 @Module({
@@ -32,7 +35,9 @@ import { OrderParent } from 'src/models/order/entities/order-parent.entity';
            * @Entity 리스트 주입
            * /model 에서 정의된 entity 를 추가한다.
            */
-          // User,
+          User,
+          UserOrder,
+          RegularStore,
           Owner,
           Store,
           StoreBank,
