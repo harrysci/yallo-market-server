@@ -143,4 +143,17 @@ export class StoreService {
     // console.log(raw);
     return raw;
   }
+  /**
+   * @name 가게명_포함_가게리스트조회
+   * @param storeName 검색할 가게 이름
+   * @returns Store[]
+   */
+  async getStoreListByStoreName(storeName: string): Promise<Store[]> {
+    const storeList = await this.storeRepository
+      .createQueryBuilder('store')
+      .where('store.store_name like :name', { name: `%${storeName}%` })
+      .getMany();
+
+    return storeList;
+  }
 }

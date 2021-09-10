@@ -271,103 +271,106 @@ export class ProductService {
      * 2. rawImageProductList 를 GetImageProductListRes 형태에 맞게 formatting
      * 3. imageProductList return
      */
+    try {
+      const rawImageProductList = await this.productRepository
+        .createQueryBuilder('product')
+        .where('product.store_id=:store_id', { store_id: storeId })
+        .leftJoinAndSelect('product.product_image', 'product_image')
+        .leftJoinAndSelect('product.processed_product', 'processed_product')
+        .leftJoinAndSelect('product.weighted_product', 'weighted_product')
+        .leftJoinAndSelect('product.onsale_product', 'onsale_product')
+        .getMany();
 
-    const rawImageProductList = await this.productRepository
-      .createQueryBuilder('product')
-      .where('product.store_id=:store_id', { store_id: storeId })
-      .leftJoinAndSelect('product.product_image', 'product_image')
-      .leftJoinAndSelect('product.processed_product', 'processed_product')
-      .leftJoinAndSelect('product.weighted_product', 'weighted_product')
-      .leftJoinAndSelect('product.onsale_product', 'onsale_product')
-      .getMany();
+      const imageProductList: GetImageProductListRes[] =
+        rawImageProductList.map<GetImageProductListRes>((each) => ({
+          productId: each.product_id,
+          storeId: storeId,
+          productBarcode: each.product_barcode,
+          productName: each.product_name,
+          productOriginalPrice: each.product_original_price,
+          productCurrentPrice: each.product_current_price,
+          productProfit: each.product_profit,
+          productDescription: each.product_description,
+          productIsProcessed: each.product_is_processed,
+          productIsSoldout: each.product_is_soldout,
+          productOnsale: each.product_onsale,
+          productCategory: each.product_category,
+          productCreatedAt: each.product_created_at,
 
-    const imageProductList: GetImageProductListRes[] =
-      rawImageProductList.map<GetImageProductListRes>((each) => ({
-        productId: each.product_id,
-        storeId: storeId,
-        productBarcode: each.product_barcode,
-        productName: each.product_name,
-        productOriginalPrice: each.product_original_price,
-        productCurrentPrice: each.product_current_price,
-        productProfit: each.product_profit,
-        productDescription: each.product_description,
-        productIsProcessed: each.product_is_processed,
-        productIsSoldout: each.product_is_soldout,
-        productOnsale: each.product_onsale,
-        productCategory: each.product_category,
-        productCreatedAt: each.product_created_at,
+          representativeProductImageId: each.product_image[0].product_image_id,
+          representativeProductImage: each.product_image[0].product_image,
+          detailProductImageId: each.product_image[1].product_image_id,
+          detailProductImage: each.product_image[1].product_image,
+          additionalProductImageId:
+            each.product_image[2] && each.product_image[2].product_image_id,
+          additionalProductImage:
+            each.product_image[2] && each.product_image[2].product_image,
 
-        representativeProductImageId: each.product_image[0].product_image_id,
-        representativeProductImage: each.product_image[0].product_image,
-        detailProductImageId: each.product_image[1].product_image_id,
-        detailProductImage: each.product_image[1].product_image,
-        additionalProductImageId:
-          each.product_image[2] && each.product_image[2].product_image_id,
-        additionalProductImage:
-          each.product_image[2] && each.product_image[2].product_image,
+          processedProductId:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_id,
 
-        processedProductId:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_id,
+          processedProductName:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_name,
+          processedProductCompany:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_company,
+          processedProductStandardType:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_standard_type,
+          processedProductStandardValues:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_standard_values,
+          processedProductComposition:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_composition,
+          processedProductVolume:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_volume,
+          processedProductAdult:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_adult,
+          processedProductCaution:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_caution,
+          processedProductInformation:
+            each.product_is_processed == false
+              ? null
+              : each.processed_product.processed_product_information,
 
-        processedProductName:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_name,
-        processedProductCompany:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_company,
-        processedProductStandardType:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_standard_type,
-        processedProductStandardValues:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_standard_values,
-        processedProductComposition:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_composition,
-        processedProductVolume:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_volume,
-        processedProductAdult:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_adult,
-        processedProductCaution:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_caution,
-        processedProductInformation:
-          each.product_is_processed == false
-            ? null
-            : each.processed_product.processed_product_information,
+          weightedProductId:
+            each.product_is_processed == true
+              ? null
+              : each.weighted_product.weighted_product_id,
+          weightedProductVolume:
+            each.product_is_processed == true
+              ? null
+              : each.weighted_product.weighted_product_volume,
 
-        weightedProductId:
-          each.product_is_processed == true
-            ? null
-            : each.weighted_product.weighted_product_id,
-        weightedProductVolume:
-          each.product_is_processed == true
-            ? null
-            : each.weighted_product.weighted_product_volume,
+          OnsaleProductId:
+            each.product_onsale == true
+              ? each.onsale_product.onsale_product_id
+              : null,
+          productOnsalePrice:
+            each.product_onsale == true
+              ? each.onsale_product.product_onsale_price
+              : null,
+        }));
 
-        OnsaleProductId:
-          each.product_onsale == true
-            ? each.onsale_product.onsale_product_id
-            : null,
-        productOnsalePrice:
-          each.product_onsale == true
-            ? each.onsale_product.product_onsale_price
-            : null,
-      }));
-
-    return imageProductList;
+      return imageProductList;
+    } catch (e) {
+      console.log('Error in getImageProductList', e);
+    }
   }
 
   /**
