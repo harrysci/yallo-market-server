@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { OrderParentBase } from '../interfaces/order-parent-base.interface';
 
 /**
@@ -10,7 +10,7 @@ import { OrderParentBase } from '../interfaces/order-parent-base.interface';
 })
 export class OrderParent implements OrderParentBase {
   // OrderParent(1) <-> OrderChild(*)
-  @PrimaryColumn({ type: 'int' })
+  @PrimaryGeneratedColumn({ type: 'int' })
   order_parent_id: number;
 
   @Column({ type: 'char', length: 30 })
@@ -36,4 +36,7 @@ export class OrderParent implements OrderParentBase {
 
   @Column({ type: 'char', length: 30 })
   order_pay_method: string;
+
+  @Column({ type: 'char', length: 20 })
+  store_name: string;
 }
