@@ -50,7 +50,7 @@ import { RegularStore } from 'src/models/auth-customer/entities/regular-store.en
           OrderChild,
           OrderParent,
         ],
-        synchronize: false,
+        synchronize: true,
       }),
       inject: [MysqlConfigService],
     } as TypeOrmModuleAsyncOptions),
