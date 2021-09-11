@@ -7,6 +7,8 @@ import { OrderChildGet } from './dto/OrderChildGet.dto';
 import { OrderParentGet } from './dto/OrderParentGet.dto';
 import { OrderChild } from './entities/order-child.entity';
 import { OrderParent } from './entities/order-parent.entity';
+import { OrderParentBase } from './interfaces/order-parent-base.interface';
+import { OrderUpdateReq } from './dto/OrderUpdateReq.dto';
 
 @Injectable()
 export class OrderService {
@@ -86,5 +88,37 @@ export class OrderService {
     });
     return String(flag);
   }
+
+  async updateOrderStatue(
+    OrderUpdateReq: OrderUpdateReq,
+  ): Promise<OrderParentBase> {
+    const data = await this.orderParentRepository
+      .createQueryBuilder('order')
+      .where(`order_number = ${OrderUpdateReq.order_number}`)
+      .getOne();
+
+    const new_data = {
+      order_parent_id: data.order_parent_id,
+      order_number: data.order_number,
+      order_created_at: data.order_created_at,
+      order_is_pickup: data.order_is_pickup,
+      store_id: data.store_id,
+      order_pay_method: data.order_pay_method,
+      order_total_price: data.order_total_price,
+      order_status: OrderUpdateReq.order_status,
+    };
+    if (OrderUpdateReq.order_status === 2) {
+      const finishedAt = new Date();
+      await this.orderParentRepository.save({
+        ...new_data,
+        order_completed_at: finishedAt,
+      });
+      return { ...new_data, order_completed_at: finishedAt };
+    } else {
+      await this.orderParentRepository.save({ ...new_data });
+      return { ...new_data };
+    }
+  }
+
   // async deleteOrderOne(order_number: string): Promise
 }

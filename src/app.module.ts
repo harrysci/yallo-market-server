@@ -18,6 +18,7 @@ import { StoreModule } from './models/store/store.module';
 import { ProductModule } from './models/product/product.module';
 import { OrderModule } from './models/order/order.module';
 import { AuthCustomerController } from './models/auth-customer/auth-customer.controller';
+import SensModules from './models/sens/sens.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AuthCustomerController } from './models/auth-customer/auth-customer.con
     StoreModule,
     ProductModule,
     OrderModule,
+    SensModules,
   ],
   controllers: [
     AppController,

@@ -28,6 +28,6 @@ export interface OrderParentBase {
    *    order_status 가 3 인 경우 (픽업 완료): 픽업 완료 일시
    *    order_status 가 4 인 경우 (주문 취소): 취소 일시
    */
-  order_completed_at: Date;
+  order_completed_at?: Date;
   order_pay_method: string; // 결제 방식
 }
