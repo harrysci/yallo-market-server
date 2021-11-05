@@ -126,8 +126,34 @@ export class StoreService {
     const store = await this.storeRepository
       .createQueryBuilder('store')
       .where('store.store_id=:storeId', { storeId: storeId })
+      .leftJoinAndSelect('store.store_paymethod', 'store_paymethod')
+      .leftJoinAndSelect('store.store_bank', 'store_bank')
       .getOne();
 
     return store;
+  }
+  async getStoreBank(storeId: number): Promise<any> {
+    const raw = await this.storeRepository
+      .createQueryBuilder('store')
+      .where('store_bank.store_id=:storeId', { storeId: storeId })
+      .leftJoinAndSelect('store.store_bank', 'store_bank')
+      .getMany();
+
+    // console.log('service');
+    // console.log(raw);
+    return raw;
+  }
+  /**
+   * @name 가게명_포함_가게리스트조회
+   * @param storeName 검색할 가게 이름
+   * @returns Store[]
+   */
+  async getStoreListByStoreName(storeName: string): Promise<Store[]> {
+    const storeList = await this.storeRepository
+      .createQueryBuilder('store')
+      .where('store.store_name like :name', { name: `%${storeName}%` })
+      .getMany();
+
+    return storeList;
   }
 }

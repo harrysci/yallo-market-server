@@ -15,6 +15,9 @@ import { AuthOwnerModule } from './models/auth-owner/auth-owner.module';
 import { StoreController } from './models/store/store.controller';
 import { StoreModule } from './models/store/store.module';
 import { ProductModule } from './models/product/product.module';
+import { OrderModule } from './models/order/order.module';
+import { AuthCustomerController } from './models/auth-customer/auth-customer.controller';
+import SensModules from './models/sens/sens.module';
 
 @Module({
   imports: [
@@ -24,8 +27,15 @@ import { ProductModule } from './models/product/product.module';
     AuthOwnerModule,
     StoreModule,
     ProductModule,
+    OrderModule,
+    SensModules,
   ],
-  controllers: [AppController, AuthOwnerController, StoreController],
+  controllers: [
+    AppController,
+    AuthCustomerController,
+    AuthOwnerController,
+    StoreController,
+  ],
   providers: [AppService],
 })
 export class AppModule {}

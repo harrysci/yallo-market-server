@@ -1,11 +1,9 @@
 /* nestjs core library */
 import {
-  Bind,
   Controller,
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -110,6 +108,7 @@ export class ProductController {
   async getImageProductList(
     @Param('storeId') storeId: number,
   ): Promise<GetImageProductListRes[]> {
+    console.log(storeId);
     return await this.productService.getImageProductList(storeId);
   }
 
